@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "request": "launch",
+            "name": "Launch Program",
+            "type": "pwa-node",
+            "program": "${workspaceFolder}/src/main.ts",
+            "cwd": "${workspaceFolder}/src",
+            "runtimeExecutable": "deno",
+            "runtimeArgs": [
+                "run",
+                "--inspect",
+                "--allow-net",
+                "--allow-read"
+            ],
+            "outputCapture": "std",
+            "attachSimplePort": 9229
+        }
+    ]
+}

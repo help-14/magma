@@ -1,0 +1,12 @@
+{
+    "server": {
+        "port": 7000,
+        "minify": true
+    },
+    "website": {
+        "title": "",
+        "description": "",
+        "background": ""
+    },
+    "addons": []
+}
