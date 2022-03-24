@@ -1,0 +1,12 @@
+#header {
+  margin-top: 10%;
+}
+
+#footer {
+  margin-bottom: 10%;
+}
+
+#header-right {
+  align-content: center;
+  float: right;
+}

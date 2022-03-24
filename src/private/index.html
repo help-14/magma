@@ -1,12 +1,37 @@
 <!DOCTYPE html>
-<html lang="{{localization}}">
-    <head>
-        <meta charset="UTF-8">
-        <title>{{title}}</title>
-        <meta name="description" content="{{description}}"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
+<html lang="{{language}}">
 
-    <body style="background: {{background}}"></body>
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/magma.css">
+</head>
+
+<body style="background: {{background}}">
+    <div class="container">
+        <div id="header" class="row">
+            <div class="two-thirds column">
+                <h5 id="clock"></h5>
+                <h1><b id="welcome">Good afternoon!</b></h1>
+                </b>
+            </div>
+            <div id="header-right" class="one-third column">
+                <canvas id="weather-icon" width="50" height="50"></canvas>
+            </div>
+        </div>
+        <div id="content" class="row"></div>
+        <div id="footer" class="row"></div>
+    </div>
+
+    <script src="js/skycons.js"></script>
+    <script src="js/magma.js"></script>
+</body>
 
 </html>

@@ -13,7 +13,9 @@ class WebsiteConfig {
   public title: string = "";
   public description: string = "";
   public background: string = "#218c74";
-  public localization: string = "en";
+  public accent: string = "#ffc107";
+  public language: string = "en";
+  public localization: string = "en-US";
 }
 
 export async function loadConfig(): Promise<Config | null> {
