@@ -15,13 +15,10 @@ export async function startServer(): Promise<void> {
   });
 
   Compile();
-  app.listen(
-    window.config.server.port,
-    () =>
-      console.log(
-        `server has started on http://localhost:${window.config.server.port} 🚀`,
-      ),
-  );
+  app.listen(7000, () =>
+    console.log(
+      `server has started on http://localhost:7000 🚀`,
+    ));
 }
 
 export async function Compile(): Promise<void> {
@@ -58,19 +55,19 @@ export async function CompileIndex(): Promise<void> {
   //Write index.html into temp folder
   ensureDirSync(tempFolder);
   window.index = indexContent;
-  //await Deno.writeTextFile(`${tempFolder}/index.html`, indexContent);
+  await Deno.writeTextFile(`${tempFolder}/index.html`, indexContent);
 }
 
 export async function CompileCSS(path: string): Promise<void> {
   if (!path) {
   }
 
-  if (window.config.server.minify) {}
+  if (!path.includes(".min.")) {}
 }
 
 export async function CompileJS(path: string): Promise<void> {
   if (!path) {
   }
 
-  if (window.config.server.minify) {}
+  if (!path.includes(".min.")) {}
 }

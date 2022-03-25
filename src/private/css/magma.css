@@ -1,7 +1,18 @@
 body {
   background-color: var(--bgColor);
-  background-image: var(--bgImage);
   color: var(--foreground);
+  z-index: -999;
+}
+
+.bg {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-image: var(--bgImage);
+  transform: scale(1.1);
+  filter: blur(0.2rem);
+  opacity: 0.6;
+  z-index: -998;
 }
 
 #header {

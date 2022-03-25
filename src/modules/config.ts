@@ -1,12 +1,6 @@
 export class Config {
-  server: ServerConfig = new ServerConfig();
   website: WebsiteConfig = new WebsiteConfig();
   addons: string[] = [];
-}
-
-class ServerConfig {
-  port: number = 7000;
-  minify: boolean = true;
 }
 
 class WebsiteConfig {
