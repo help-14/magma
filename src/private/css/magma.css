@@ -25,7 +25,7 @@ body {
   padding: 15px !important;
   margin-bottom: 0 !important;
   border-radius: 0.7rem !important;
-  align-items: center;
+  align-items: end !important;
   line-height: 2;
   transition: all 0.25s;
   display: flex;
@@ -35,10 +35,11 @@ body {
 
 .group-items h6 {
   align-items: center;
+  margin-top: 5px !important;
+  margin-bottom: 0 !important;
   margin-left: 0.5em !important;
   display: inline-block;
-  vertical-align: middle;
-  text-align: center;
+  vertical-align: bottom !important;
   font-weight: bold;
 }
 
