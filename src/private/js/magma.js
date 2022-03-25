@@ -10,14 +10,7 @@ async function loadConfig() {
 
 async function loadWeather() {
     // Get info from api
-    const response = await fetch(
-        "/weather",
-        {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        },
-    );
-    const weather = await response.json();
+    const weather = await (await fetch("./weather")).json();
 
     // Parse weather id
     let icon = null;
@@ -63,20 +56,83 @@ async function loadWeather() {
     document.querySelector("#weather-info").style.visibility = "visible";
 }
 
+async function loadBookmarks() {
+    const data = await (await fetch("./data.json")).json();
+    let contentHtml = "";
+
+    function splitToChunks(arr) {
+        var chunks = [[], [], [], []];
+        var i = 0;
+        for (let j = 0; j < arr.length; j++) {
+            chunks[i].push(arr[j]);
+            i++;
+            if (i === 4) i = 0;
+        }
+        return chunks;
+    }
+
+    data.forEach(section => {
+        contentHtml += `<div class="row group-title"><h4 class="strong">${section.title}</h4></div><div class="row">`
+        if (section.columns) {
+            section.columns.forEach(column => {
+                contentHtml += `
+                <div class="three columns group-items">
+                    <h6 class="strong accent">${column.title}</h6>`;
+                column.bookmarks.forEach(bookmark => {
+                    contentHtml += `
+                    <a href="${bookmark.url}">
+                        <i class="${bookmark.icon} fa-xl icon"></i>
+                        <h6>${bookmark.title}</h6>
+                    </a>`;
+                });
+                contentHtml += "</div>";
+            });
+        } else if (section.bookmarks) {
+            const chunks = splitToChunks(section.bookmarks)
+            chunks.forEach(chunk => {
+                contentHtml += '<div class="three columns group-items">';
+                chunk.forEach(bookmark => {
+                    contentHtml += `
+                        <a href="${bookmark.url}">
+                            <i class="${bookmark.icon} fa-xl icon"></i>
+                            <h6>${bookmark.title}</h6>
+                        </a>`;
+                });
+                contentHtml += "</div>";
+            });
+        }
+        contentHtml += "</div>";
+    });
+
+    document.querySelector("#content").innerHTML = contentHtml;
+}
+
+function loadCSS() {
+    for (let c = 0; c < document.styleSheets.length; c++) {
+        var declaration = document.styleSheets[c].cssRules[0];
+        if (declaration.selectorText === ":root") {
+            var allVar = declaration.style.cssText.split(";");
+            var cssRootKeys = {}
+            for (var i = 0; i < allVar.length; i++) {
+                var a = allVar[i].split(':');
+                if (a[0] !== "")
+                    cssRootKeys[a[0].trim()] = a[1].trim();
+            }
+            window.cssRoot = cssRootKeys;
+            return;
+        }
+    }
+}
+
 async function startWebsite() {
+    // Load bookmarks
+    loadBookmarks();
+
     // Load config
     await loadConfig();
 
     // Get CSS varriables
-    var declaration = document.styleSheets[1].cssRules[0];
-    var allVar = declaration.style.cssText.split(";");
-    var cssRootKeys = {}
-    for (var i = 0; i < allVar.length; i++) {
-        var a = allVar[i].split(':');
-        if (a[0] !== "")
-            cssRootKeys[a[0].trim()] = a[1].trim();
-    }
-    window.cssRoot = cssRootKeys;
+    loadCSS();
 
     // Set Clock
     var clock = document.getElementById("clock");

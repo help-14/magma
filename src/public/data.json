@@ -1,0 +1,132 @@
+[
+    {
+        "title": "Applications",
+        "columns": [
+            {
+                "title": "Servers",
+                "bookmarks": [
+                    {
+                        "icon": "fa-solid fa-wifi",
+                        "title": "OpenWRT",
+                        "url": "https://openwrt.org/"
+                    },
+                    {
+                        "icon": "fa-solid fa-rectangle-xmark",
+                        "title": "Proxmox",
+                        "url": "https://www.proxmox.com/en/"
+                    }
+                ]
+            },
+            {
+                "title": "Servers",
+                "bookmarks": [
+                    {
+                        "icon": "fa-solid fa-wifi",
+                        "title": "OpenWRT",
+                        "url": "https://openwrt.org/"
+                    },
+                    {
+                        "icon": "fa-solid fa-rectangle-xmark",
+                        "title": "Proxmox",
+                        "url": "https://www.proxmox.com/en/"
+                    }
+                ]
+            },
+            {
+                "title": "Servers",
+                "bookmarks": [
+                    {
+                        "icon": "fa-solid fa-wifi",
+                        "title": "OpenWRT",
+                        "url": "https://openwrt.org/"
+                    },
+                    {
+                        "icon": "fa-solid fa-rectangle-xmark",
+                        "title": "Proxmox",
+                        "url": "https://www.proxmox.com/en/"
+                    }
+                ]
+            },
+            {
+                "title": "Servers",
+                "bookmarks": [
+                    {
+                        "icon": "fa-solid fa-wifi",
+                        "title": "OpenWRT",
+                        "url": "https://openwrt.org/"
+                    },
+                    {
+                        "icon": "fa-solid fa-rectangle-xmark",
+                        "title": "Proxmox",
+                        "url": "https://www.proxmox.com/en/"
+                    }
+                ]
+            },
+            {
+                "title": "Servers",
+                "bookmarks": [
+                    {
+                        "icon": "fa-solid fa-wifi",
+                        "title": "OpenWRT",
+                        "url": "https://openwrt.org/"
+                    },
+                    {
+                        "icon": "fa-solid fa-rectangle-xmark",
+                        "title": "Proxmox",
+                        "url": "https://www.proxmox.com/en/"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "title": "Bookmarks",
+        "bookmarks": [
+            {
+                "icon": "fa-solid fa-wifi",
+                "title": "OpenWRT",
+                "url": "https://openwrt.org/"
+            },
+            {
+                "icon": "fa-solid fa-rectangle-xmark",
+                "title": "Proxmox",
+                "url": "https://www.proxmox.com/en/"
+            },
+            {
+                "icon": "fa-solid fa-wifi",
+                "title": "OpenWRT",
+                "url": "https://openwrt.org/"
+            },
+            {
+                "icon": "fa-solid fa-rectangle-xmark",
+                "title": "Proxmox",
+                "url": "https://www.proxmox.com/en/"
+            },
+            {
+                "icon": "fa-solid fa-wifi",
+                "title": "OpenWRT",
+                "url": "https://openwrt.org/"
+            },
+            {
+                "icon": "fa-solid fa-rectangle-xmark",
+                "title": "Proxmox",
+                "url": "https://www.proxmox.com/en/"
+            },
+            {
+                "icon": "fa-solid fa-wifi",
+                "title": "OpenWRT",
+                "url": "https://openwrt.org/"
+            },
+            {
+                "icon": "fa-solid fa-rectangle-xmark",
+                "title": "Proxmox",
+                "url": "https://www.proxmox.com/en/"
+            },
+            {
+                "icon": "fa-solid fa-rectangle-xmark",
+                "title": "Proxmox",
+                "url": "https://www.proxmox.com/en/"
+            }
+        ]
+    }
+]

@@ -15,6 +15,18 @@ body {
   z-index: -998;
 }
 
+.strong {
+  font-weight: bold;
+}
+
+.accent {
+  color: var(--accentColor) !important;
+}
+
+.hidden {
+  display: hidden;
+}
+
 #header {
   margin-top: 10%;
 }
@@ -34,19 +46,20 @@ body {
 
 .group-items a {
   padding: 15px !important;
+  margin-top: 10px !important;
   margin-bottom: 0 !important;
   border-radius: 0.7rem !important;
-  align-items: end !important;
+  align-items: center !important;
   line-height: 2;
   transition: all 0.25s;
   display: flex;
   width: 100%;
   color: var(--foreground);
+  text-decoration:none;
 }
 
 .group-items h6 {
   align-items: center;
-  margin-top: 5px !important;
   margin-bottom: 0 !important;
   margin-left: 0.5em !important;
   display: inline-block;
@@ -55,14 +68,9 @@ body {
 }
 
 .group-items .icon {
-  width: 32px !important;
-  height: 32px !important;
   margin-top: 0px !important;
+  margin-left: 0.5em !important;
   margin-right: 0.5em !important;
-}
-
-.group-items .icon path {
-  fill: var(--foreground);
 }
 
 .group-items a:hover {
@@ -75,8 +83,4 @@ body {
     backdrop-filter: blur(10px);
     background-color: rgba(0, 0, 0, 0.3) !important;
   }
-}
-
-.strong {
-  font-weight: bold;
 }

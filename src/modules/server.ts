@@ -59,7 +59,8 @@ export async function Compile(): Promise<void> {
         includeDirs: false,
       })
     ) {
-      console.log("Minify: " + entry.path);
+      console.log("Preparing: " + entry.path);
+
       let language = null;
       if (!entry.path.includes(".min.")) {
         if (entry.path.includes(".css")) {
