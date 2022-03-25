@@ -12,7 +12,9 @@ class WebsiteConfig {
 
 export async function loadConfig(): Promise<Config | null> {
   try {
-    const json = JSON.parse(await Deno.readTextFile("./people.json"));
+    const json = JSON.parse(
+      await Deno.readTextFile(`${Deno.cwd()}/public/config.json`),
+    );
     return json as Config;
   } catch (err) {
     console.error(err);

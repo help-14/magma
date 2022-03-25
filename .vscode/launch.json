@@ -12,7 +12,8 @@
                 "run",
                 "--inspect",
                 "--allow-net",
-                "--allow-read"
+                "--allow-read",
+                "--allow-write",
             ],
             "outputCapture": "std",
             "attachSimplePort": 9229

@@ -67,6 +67,7 @@ body {
 
 .group-items a:hover {
   background-color: rgba(0, 0, 0, 0.3) !important;
+  cursor: pointer;
 }
 @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
   .group-items a:hover {
@@ -74,4 +75,8 @@ body {
     backdrop-filter: blur(10px);
     background-color: rgba(0, 0, 0, 0.3) !important;
   }
+}
+
+.strong {
+  font-weight: bold;
 }
