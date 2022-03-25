@@ -8,6 +8,8 @@ import {
 } from "https://deno.land/std/fs/mod.ts";
 
 const tempFolder = `${Deno.cwd()}/temp`;
+let weatherCache = "";
+let weatherTimeOut = new Date().getTime();
 
 export async function startServer(): Promise<void> {
   // Create web server
@@ -16,36 +18,35 @@ export async function startServer(): Promise<void> {
   // Add resource folder
   app.use(serveStatic(tempFolder));
 
-  // Add route for index page
-  app.get("/", (req, res) => {
-    res.headers = new Headers({
-      "content-type": "text/html; charset=UTF-8",
-    });
-    res.send(window.index);
-  });
-
   // Add route for weather
   app.get("/weather", async (req, res) => {
-    const lat = "21.0425886";
-    const lon = "105.8129389";
-    const apiKey = "7b093bee7461b669e34c363d887cfdec";
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
+    if (new Date().getTime() >= weatherTimeOut) {
+      const lat = "21.0425886";
+      const lon = "105.8129389";
+      const apiKey = "7b093bee7461b669e34c363d887cfdec";
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
         },
-      },
-    );
-    res.send(response);
+      );
+      weatherCache = await response.json();
+      weatherTimeOut = new Date().getTime() + 1800000;
+    }
+    res.send(weatherCache);
   });
 
+  // Minify all files and copy to temp folder
   await Compile();
+
+  // Start web server
   app.listen(7000, () =>
     console.log(
-      `server has started on http://localhost:7000 🚀`,
+      `Server has started on http://localhost:7000 🚀`,
     ));
 }
 
@@ -58,7 +59,7 @@ export async function Compile(): Promise<void> {
         includeDirs: false,
       })
     ) {
-      console.log(entry.path);
+      console.log("Minify: " + entry.path);
       let language = null;
       if (!entry.path.includes(".min.")) {
         if (entry.path.includes(".css")) {
@@ -87,30 +88,6 @@ export async function Compile(): Promise<void> {
       }
     }
   });
-}
-
-export async function CompileIndex(): Promise<void> {
-  //Read index.html content
-  let indexPath = `${tempFolder}/index.html`;
-  let indexContent = Deno.readTextFileSync(indexPath);
-
-  //Insert config into template
-  // for (let property in window.config.website) {
-  //   indexContent = indexContent.replace(
-  //     `{{${property}}}`,
-  //     window.config.website[property],
-  //   );
-  // }
-
-  //Insert localization into template
-  // for (let key in window.language) {
-  //   indexContent = indexContent.replace(`{%${key}%}`, window.language[key]);
-  // }
-
-  //Write index.html into temp folder
-  //ensureDirSync(tempFolder);
-  window.index = indexContent;
-  //Deno.writeTextFileSync(`${tempFolder}/index.html`, indexContent);
 }
 
 function changePath(path: string, from: string, to: string) {

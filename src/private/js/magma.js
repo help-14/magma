@@ -10,7 +10,14 @@ async function loadConfig() {
 
 async function loadWeather() {
     // Get info from api
-    const weather = { "coord": { "lon": 105.8129, "lat": 21.0426 }, "weather": [{ "id": 701, "main": "Mist", "description": "mist", "icon": "50n" }], "base": "stations", "main": { "temp": 297.14, "feels_like": 297.89, "temp_min": 297.14, "temp_max": 297.14, "pressure": 1008, "humidity": 88 }, "visibility": 4300, "wind": { "speed": 1.54, "deg": 30 }, "clouds": { "all": 100 }, "dt": 1648219888, "sys": { "type": 1, "id": 9308, "country": "VN", "sunrise": 1648162598, "sunset": 1648206535 }, "timezone": 25200, "id": 1581130, "name": "Hanoi", "cod": 200 };
+    const response = await fetch(
+        "/weather",
+        {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        },
+    );
+    const weather = await response.json();
 
     // Parse weather id
     let icon = null;
