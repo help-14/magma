@@ -1,3 +1,9 @@
+body {
+  background-color: var(--bgColor);
+  background-image: var(--bgImage);
+  color: var(--foreground);
+}
+
 #header {
   margin-top: 10%;
 }
@@ -13,4 +19,47 @@
 
 .group-title {
   margin-top: 5%;
+}
+
+.group-items a {
+  padding: 15px !important;
+  margin-bottom: 0 !important;
+  border-radius: 0.7rem !important;
+  align-items: center;
+  line-height: 2;
+  transition: all 0.25s;
+  display: flex;
+  width: 100%;
+  color: var(--foreground);
+}
+
+.group-items h6 {
+  align-items: center;
+  margin-left: 0.5em !important;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: bold;
+}
+
+.group-items .icon {
+  width: 32px !important;
+  height: 32px !important;
+  margin-top: 0px !important;
+  margin-right: 0.5em !important;
+}
+
+.group-items .icon path {
+  fill: var(--foreground);
+}
+
+.group-items a:hover {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+  .group-items a:hover {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.3) !important;
+  }
 }
