@@ -9,7 +9,7 @@ Personal dashboard inspired by flame, highly customizable, lightweight and respo
 * Addons support (WIP)
 
 ## How to use
-* Download our [docker-compose.yml](./tree/master/docker-compose.yml) file
+* Download our [docker-compose.yml](./docker-compose.yml) file
 * Start with `docker-compose up -d`
 * Go to `public/config.json` to config your dashboard
 * Go to `public/data.json` to edit your bookmarks
@@ -19,7 +19,7 @@ Personal dashboard inspired by flame, highly customizable, lightweight and respo
 ## Customization
 Go to our [website](https://magma.help14.com) and read the document to  learn more.
 
-Long story short: [private folder](./tree/master/src/private) is the original source code of the dashboard, anything in [public folder](./tree/master/src/public) will replace the file with the same path in [private folder](./tree/master/src/private). 
+Long story short: [private folder](./src/private) is the original source code of the dashboard, anything in [public folder](./src/public) will replace the file with the same path in [private folder](./src/private). 
 
 ## Contribution
 Contributions welcome and needed!
