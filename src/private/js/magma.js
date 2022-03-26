@@ -8,10 +8,17 @@ async function loadConfig() {
     document.querySelector('meta[name="description"]').setAttribute("content", window.config.website.description);
 }
 
+async function loadLanguage() {
+    try {
+        window.language = await (await fetch(`./languages/${window.config.website.language}.json`)).json();
+    } catch {
+        window.language = await (await fetch(`./languages/en.json`)).json();
+    }
+}
+
 async function loadWeather() {
     // Get info from api
     const weather = await (await fetch("./weather")).json();
-
     // Parse weather id
     let icon = null;
     let isDay = Date.now().hour >= 6 && Date.now().hour < 18;
@@ -41,11 +48,9 @@ async function loadWeather() {
     } else {
         return;
     }
-
     // Set weather icon to canvas
     var skycons = new Skycons({ "color": window.cssRoot["--accentColor"] });
     skycons.add("weather-icon", icon);
-
     // Set weather info
     if (window.config.website.useMetric) {
         document.querySelector("#temp").innerText = Math.floor(weather.main.temp - 273.15) + "°C";
@@ -71,23 +76,40 @@ async function loadBookmarks() {
         return chunks;
     }
 
+    function splitToEqualChunks(arr) {
+        var chunks = [];
+        var i = 0;
+        while (i < arr.length) {
+            chunks.push(arr.slice(i, Math.min(i + 4, arr.length)));
+            i += 4;
+        }
+        return chunks;
+    }
+
     data.forEach(section => {
-        contentHtml += `<div class="row group-title"><h4 class="strong">${section.title}</h4></div><div class="row">`
+        contentHtml += `<div class="row group-title"><h4 class="strong">${section.title}</h4></div>`
         if (section.columns) {
-            section.columns.forEach(column => {
-                contentHtml += `
-                <div class="three columns group-items">
-                    <h6 class="strong accent">${column.title}</h6>`;
-                column.bookmarks.forEach(bookmark => {
+            const chunks = splitToEqualChunks(section.columns)
+            chunks.forEach(chunk => {
+                contentHtml += '<div class="row">';
+                chunk.forEach(column => {
                     contentHtml += `
+                    <div class="three columns group-items">
+                    <h6 class="accent">${column.title}</h6>`;
+                    column.bookmarks.forEach(bookmark => {
+                        contentHtml += `
                     <a href="${bookmark.url}">
                         <i class="${bookmark.icon} fa-xl icon"></i>
                         <h6>${bookmark.title}</h6>
                     </a>`;
+                    });
+                    contentHtml += "</div>";
                 });
                 contentHtml += "</div>";
             });
+
         } else if (section.bookmarks) {
+            contentHtml += '<div class="row">';
             const chunks = splitToChunks(section.bookmarks)
             chunks.forEach(chunk => {
                 contentHtml += '<div class="three columns group-items">';
@@ -100,8 +122,8 @@ async function loadBookmarks() {
                 });
                 contentHtml += "</div>";
             });
+            contentHtml += "</div>";
         }
-        contentHtml += "</div>";
     });
 
     document.querySelector("#content").innerHTML = contentHtml;
@@ -124,26 +146,43 @@ function loadCSS() {
     }
 }
 
-async function startWebsite() {
-    // Load bookmarks
-    loadBookmarks();
-
-    // Load config
-    await loadConfig();
-
-    // Get CSS varriables
-    loadCSS();
-
-    // Set Clock
-    var clock = document.getElementById("clock");
+function setClock() {
+    //Set clock
+    const clock = document.querySelector("#clock");
     const clockOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     (function clockTick() {
         clock.innerText = new Date().toLocaleTimeString(window.config.website.localization, clockOptions);
         setTimeout(clockTick, 2000);
     })();
+    //Set greeting
+    const greeting = document.querySelector("#greeting");
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+        greeting.innerText = window.language.greeting.morning;
+    }
+    else if (hour >= 12 && hour < 17) {
+        greeting.innerText = window.language.greeting.afternoon;
+    }
+    else if (hour >= 17 && hour < 20) {
+        greeting.innerText = window.language.greeting.evening;
+    }
+    else {
+        greeting.innerText = window.language.greeting.night;
+    }
+}
 
+async function startWebsite() {
+    // Load bookmarks
+    loadBookmarks();
+    // Load config
+    await loadConfig();
+    // Load language
+    await loadLanguage();
+    // Set Clock
+    setClock();
+    // Get CSS varriables
+    loadCSS();
     // Set weather
     loadWeather();
 }
-
-window.onload = startWebsite;
+startWebsite();

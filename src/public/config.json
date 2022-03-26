@@ -2,8 +2,8 @@
     "website": {
         "title": "Magma Dashboard",
         "description": "",
-        "language": "vi",
-        "localization": "vi-vn",
+        "language": "en",
+        "localization": "en-us",
         "useMetric": true
     },
     "addons": []
