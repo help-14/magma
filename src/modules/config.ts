@@ -8,6 +8,8 @@ class WebsiteConfig {
   public description: string = "";
   public language: string = "en";
   public localization: string = "en-US";
+  public useMetric: boolean = true;
+  public theme: string = "flame";
 }
 
 export async function loadConfig(): Promise<Config | null> {

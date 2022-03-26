@@ -10,9 +10,9 @@ async function loadConfig() {
 
 async function loadLanguage() {
     try {
-        window.language = await (await fetch(`./languages/${window.config.website.language}.json`)).json();
+        window.language = await (await fetch(`./${window.config.website.language}.json`)).json();
     } catch {
-        window.language = await (await fetch(`./languages/en.json`)).json();
+        window.language = await (await fetch(`./en.json`)).json();
     }
 }
 

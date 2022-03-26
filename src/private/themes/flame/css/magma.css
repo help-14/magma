@@ -8,6 +8,7 @@ body {
   width: 100%;
   height: 100%;
   position: fixed;
+  margin-top: -5%;
   background-image: var(--bgImage);
   transform: scale(1.1);
   filter: blur(0.2rem);
@@ -55,7 +56,7 @@ body {
   display: flex;
   width: 100%;
   color: var(--foreground);
-  text-decoration:none;
+  text-decoration: none;
 }
 
 .group-items h6 {

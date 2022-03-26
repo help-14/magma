@@ -44,53 +44,64 @@ export async function startServer(): Promise<void> {
   await Compile();
 
   // Start web server
-  app.listen(7000, () =>
+  app.listen(7001, () =>
     console.log(
-      `Server has started on http://localhost:7000 🚀`,
+      `Server has started on http://localhost:7001 🚀`,
     ));
 }
 
 export async function Compile(): Promise<void> {
   ensureDirSync(tempFolder);
 
-  ["private", "public"].forEach((folder) => {
-    for (
-      const entry of walkSync(`${Deno.cwd()}/${folder}/`, {
-        includeDirs: false,
-      })
-    ) {
-      console.log("Preparing: " + entry.path);
+  [`private/themes/${window.config.website.theme}`, "public"].forEach(
+    (folder) => {
+      for (
+        const entry of walkSync(`${Deno.cwd()}/${folder}/`, {
+          includeDirs: false,
+        })
+      ) {
+        console.log("Preparing: " + entry.path);
 
-      let language = null;
-      if (!entry.path.includes(".min.")) {
-        if (entry.path.includes(".css")) {
-          language = Language.CSS;
-        } else if (entry.path.includes(".json")) {
-          language = Language.JSON;
+        let language = null;
+        if (!entry.path.includes(".min.")) {
+          if (entry.path.includes(".css")) {
+            language = Language.CSS;
+          } else if (entry.path.includes(".json")) {
+            language = Language.JSON;
+          }
+          // minifier module make error when minify js and html file 🥲
+          //else if (entry.path.includes(".js")) {
+          //  language = Language.JS;
+          //}
+          //else if (entry.path.includes(".htm")) {
+          //language = Language.HTML;
+          //}
         }
-        // minifier module make error when minify js and html file 🥲
-        //else if (entry.path.includes(".js")) {
-        //  language = Language.JS;
-        //}
-        //else if (entry.path.includes(".htm")) {
-        //language = Language.HTML;
-        //}
-      }
 
-      const moveToPath = changePath(entry.path, folder, "temp");
-      ensureFileSync(moveToPath);
+        const moveToPath = convertOutputPath(entry.path, folder);
+        ensureFileSync(moveToPath);
 
-      if (language) {
-        let content = Deno.readTextFileSync(entry.path);
-        content = minify(Language.HTML, content);
-        Deno.writeTextFileSync(moveToPath, content);
-      } else {
-        Deno.copyFileSync(entry.path, moveToPath);
+        if (language) {
+          let content = Deno.readTextFileSync(entry.path);
+          content = minify(Language.HTML, content);
+          Deno.writeTextFileSync(moveToPath, content);
+        } else {
+          Deno.copyFileSync(entry.path, moveToPath);
+        }
       }
-    }
-  });
+    },
+  );
+  // Copy language
+  let languagePath =
+    `${Deno.cwd()}/public/languages/${window.config.website.language}.json`;
+  const languageOutput = convertOutputPath(languagePath, "public/languages");
+  if (!existsSync(languagePath)) {
+    languagePath =
+      `${Deno.cwd()}/private/languages/${window.config.website.language}.json`;
+  }
+  Deno.copyFileSync(languagePath, languageOutput);
 }
 
-function changePath(path: string, from: string, to: string) {
-  return Deno.cwd() + path.replace(Deno.cwd(), "").replace(from, to);
+function convertOutputPath(path: string, from: string) {
+  return Deno.cwd() + path.replace(Deno.cwd(), "").replace(from, "temp");
 }

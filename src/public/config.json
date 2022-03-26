@@ -1,5 +1,6 @@
 {
     "website": {
+        "theme": "flame",
         "title": "Magma Dashboard",
         "description": "",
         "language": "en",
