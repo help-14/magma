@@ -1,6 +1,8 @@
 # Magma Dashboard
 Personal dashboard inspired by flame, highly customizable, lightweight and responsive.
 
+![Magma dashboard preview](https://i.imgur.com/XaAvyRC.png)
+
 ## Feature
 * Light weight, fast, run with Deno
 * Run as static Html website
