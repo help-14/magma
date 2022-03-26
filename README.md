@@ -20,7 +20,7 @@ Personal dashboard inspired by flame, highly customizable, lightweight and respo
 ## Customization
 Go to our [website](https://magma.help14.com) and read the document to  learn more.
 
-Long story short: [private folder](./src/private) is the original source code of the dashboard, anything in [public folder](./src/public) will replace the file with the same path in [private/themes/{selected theme in config}](./src/private/themes). 
+Long story short: [private folder](./src/private) is the original source code of the dashboard, anything in [public folder](./src/public) will replace the file with the same path in [private/themes/{selected theme}](./src/private/themes). 
 
 ## Contribution
 Contributions welcome and needed!
