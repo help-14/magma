@@ -6,4 +6,4 @@ LABEL maintainer="mail@help14.com"
 COPY src/* /app/
 WORKDIR /app
 
-CMD deno --allow-net --allow-read --allow-write main.ts
+CMD deno run --allow-net --allow-read --allow-write main.ts
