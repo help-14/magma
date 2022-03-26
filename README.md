@@ -3,8 +3,8 @@ Personal dashboard inspired by flame, highly customizable, lightweight and respo
 
 ![Magma dashboard preview](https://i.imgur.com/XaAvyRC.png)
 
-## Feature
-* Light weight, fast, run with Deno
+## Features
+* Lightweight, fast, run with Deno
 * Run as static Html website
 * Support multiple language
 * Highly customizable, you can replace everything you want

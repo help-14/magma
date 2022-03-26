@@ -17,6 +17,18 @@
             ],
             "outputCapture": "std",
             "attachSimplePort": 9229
+        },
+        {
+            "request": "launch",
+            "name": "Docsify Serve",
+            "type": "pwa-node",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "docsify",
+            "runtimeArgs": [
+                "serve",
+                "./docs",
+            ],
+            "outputCapture": "std",
         }
     ]
 }
