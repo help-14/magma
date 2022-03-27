@@ -4,21 +4,27 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 
-	config "github.com/help-14/magma/modules"
+	modules "github.com/help-14/magma/modules"
 )
 
 func main() {
-	//fs := http.FileServer(http.Dir("./temp"))
-	//http.Handle("/static/", http.StripPrefix("/static/", fs))
-	//http.Handle("/", fs)
-	//http.HandleFunc("/", serveTemplate)
+	tempPath := filepath.Join(".", "temp")
+	err := os.MkdirAll(tempPath, os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
-	config.LoadConfig()
+	fs := http.FileServer(http.Dir("./temp"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	modules.LoadConfig()
 
 	log.Println("Listening on :7001 ...")
-	err := http.ListenAndServe(":7001", nil)
+	err = http.ListenAndServe(":7001", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

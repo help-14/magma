@@ -1,49 +1,59 @@
-package config
+package modules
 
-type YamlConfig struct {
-	website WebsiteConfig
-	addons  []string
+import (
+	"fmt"
+	"io/ioutil"
+
+	"gopkg.in/yaml.v2"
+)
+
+type Config struct {
+	Website        WebsiteConfig        `yaml:"website"`
+	OpenWeatherMap OpenWeatherMapConfig `yaml:"openweathermap"`
+	Addons         []string             `yaml:"addons"`
 }
 
 type WebsiteConfig struct {
-	title        string
-	description  string
-	language     string
-	localization string
-	useMetric    bool
-	theme        string
+	Title        string `yaml:"title"`
+	Description  string `yaml:"description"`
+	Language     string `yaml:"language"`
+	Localization string `yaml:"localization"`
+	UseMetric    bool   `yaml:"useMetric"`
+	Theme        string `yaml:"theme"`
 }
 
-func LoadConfig() YamlConfig {
-	defaultConfig := YamlConfig{
-		website: WebsiteConfig{
-			title:        "Magma Dashboard",
-			description:  "",
-			language:     "en",
-			localization: "en-us",
-			useMetric:    true,
-			theme:        "flame",
+type OpenWeatherMapConfig struct {
+	ApiKey    string `yaml:"apiKey"`
+	Longitude string `yaml:"lon"`
+	Latitude  string `yaml:"lat"`
+}
+
+func LoadConfig() Config {
+	defaultConfig := Config{
+		Website: WebsiteConfig{
+			Title:        "Magma Dashboard",
+			Description:  "",
+			Language:     "en",
+			Localization: "en-us",
+			UseMetric:    true,
+			Theme:        "flame",
 		},
-		addons: []string{},
+		Addons: []string{},
 	}
 
-	// yamlFile, err := ioutil.ReadFile("./public/config.yaml")
-	// if err != nil {
-	// 	fmt.Printf("Error reading YAML file: %s\n", err)
-	// 	return defaultConfig
-	// }
-	return defaultConfig
-	// fmt.Printf("YAML file: %s\n", yamlFile)
+	yamlFile, err := ioutil.ReadFile("./public/config.yaml")
+	if err != nil {
+		fmt.Printf("Error reading YAML file: %s\n", err)
+		return defaultConfig
+	}
 
-	// var yamlConfig YamlConfig
-	// err = yaml.Unmarshal(yamlFile, &yamlConfig)
-	// if err != nil {
-	// 	fmt.Printf("Error parsing YAML file: %s\n", err)
-	// 	return defaultConfig
-	// }
+	var yamlConfig Config
+	err = yaml.Unmarshal(yamlFile, &yamlConfig)
+	if err != nil {
+		fmt.Printf("Error parsing YAML file: %s\n", err)
+		return defaultConfig
+	}
 
-	// fmt.Printf(yamlConfig.website.title)
-	// fmt.Printf("%+v\n", yamlConfig)
-	// fmt.Printf("%+v\n", defaultConfig)
-	// return yamlConfig
+	fmt.Println("Loaded config:", yamlConfig)
+	return yamlConfig
 }
