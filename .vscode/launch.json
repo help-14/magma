@@ -5,18 +5,13 @@
             "request": "launch",
             "name": "Launch Program",
             "type": "pwa-node",
-            "program": "${workspaceFolder}/src/main.ts",
+            "program": "main.go",
             "cwd": "${workspaceFolder}/src",
-            "runtimeExecutable": "deno",
+            "runtimeExecutable": "go",
             "runtimeArgs": [
                 "run",
-                "--inspect",
-                "--allow-net",
-                "--allow-read",
-                "--allow-write",
             ],
             "outputCapture": "std",
-            "attachSimplePort": 9229
         },
         {
             "request": "launch",

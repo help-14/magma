@@ -1,0 +1,9 @@
+website:
+  theme: "flame"
+  title: "Help-14 Dashboard"
+  description: ""
+  language: "vi"
+  localization: "vi-vn"
+  useMetric: true
+
+addons:
