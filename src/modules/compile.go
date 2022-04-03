@@ -1,8 +1,6 @@
 package modules
 
 import (
-	"fmt"
-	"io/ioutil"
 	"regexp"
 
 	"github.com/tdewolff/minify"
@@ -23,24 +21,24 @@ func Compile() {
 	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
 	m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
 
-	items, _ := ioutil.ReadDir("./private")
-	for _, item := range items {
-		if item.IsDir() {
-			subitems, _ := ioutil.ReadDir(item.Name())
-			for _, subitem := range subitems {
-				if !subitem.IsDir() {
-					// handle file there
-					fmt.Println(item.Name() + "/" + subitem.Name())
-				}
-			}
-		} else {
-			// handle file there
-			fmt.Println(item.Name())
-		}
-	}
+	// items, _ := ioutil.ReadDir("./private")
+	// for _, item := range items {
+	// 	if item.IsDir() {
+	// 		subitems, _ := ioutil.ReadDir(item.Name())
+	// 		for _, subitem := range subitems {
+	// 			if !subitem.IsDir() {
+	// 				// handle file there
+	// 				fmt.Println(item.Name() + "/" + subitem.Name())
+	// 			}
+	// 		}
+	// 	} else {
+	// 		// handle file there
+	// 		fmt.Println(item.Name())
+	// 	}
+	// }
 
-	s, err = m.String(mediatype, s)
-	if err != nil {
-		panic(err)
-	}
+	// s, err = m.String(mediatype, s)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }

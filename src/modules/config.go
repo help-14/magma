@@ -41,7 +41,7 @@ func LoadConfig() Config {
 		Addons: []string{},
 	}
 
-	yamlFile, err := ioutil.ReadFile("./public/config.yaml")
+	yamlFile, err := ioutil.ReadFile("./common/config.yaml")
 	if err != nil {
 		fmt.Printf("Error reading YAML file: %s\n", err)
 		return defaultConfig
