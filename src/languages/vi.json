@@ -1,0 +1,8 @@
+{
+    "greeting": {
+        "morning": "Chào buổi sáng!",
+        "afternoon": "Chiều làm việc hiệu quả!",
+        "evening": "Chiều tối vui vẻ!",
+        "night": "Chúc ngủ ngon!"
+    }
+}

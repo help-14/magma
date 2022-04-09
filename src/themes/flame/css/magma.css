@@ -10,7 +10,7 @@ body {
   position: fixed;
   margin-top: -5%;
   background-image: var(--bgImage);
-  transform: scale(1.1);
+  transform: scale(1.2);
   filter: blur(0.2rem);
   opacity: 0.6;
   z-index: -998;
