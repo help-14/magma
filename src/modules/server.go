@@ -1,5 +1,0 @@
-package modules
-
-func StartServer() {
-
-}
