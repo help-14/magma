@@ -49,9 +49,6 @@ data:
           - name: Reddit
             icon: fa-brands fa-reddit
             url: https://www.reddit.com
-          - name: Voz
-            icon: fa-solid fa-circle-v
-            url: https://voz.vn
           - name: Youtube
             icon: fa-brands fa-youtube
             url: https://www.youtube.com
