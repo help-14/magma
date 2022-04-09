@@ -1,22 +1,24 @@
-async function loadConfig() {
-    window.config = await (await fetch("./config.json")).json();
-    // Set website language
-    document.documentElement.setAttribute("lang", window.config.website.language);
-    // Set website title
-    document.title = window.config.website.title;
-    // Set website description
-    document.querySelector('meta[name="description"]').setAttribute("content", window.config.website.description);
-}
+// async function loadConfig() {
+//     window.config = await (await fetch("./common/config.json")).json();
+//     // Set website language
+//     document.documentElement.setAttribute("lang", window.config.website.language);
+//     // Set website title
+//     document.title = window.config.website.title;
+//     // Set website description
+//     document.querySelector('meta[name="description"]').setAttribute("content", window.config.website.description);
+// }
 
 async function loadLanguage() {
     try {
-        window.language = await (await fetch(`./${window.config.website.language}.json`)).json();
+        window.language = await (await fetch(`./languages/${window.config.language}.json`)).json();
     } catch {
-        window.language = await (await fetch(`./en.json`)).json();
+        console.error("Language file not found");
+        window.language = await (await fetch(`./languages/en.json`)).json();
     }
 }
 
 async function loadWeather() {
+    return;
     // Get info from api
     const weather = await (await fetch("./weather")).json();
     // Parse weather id
@@ -52,7 +54,7 @@ async function loadWeather() {
     var skycons = new Skycons({ "color": window.cssRoot["--accentColor"] });
     skycons.add("weather-icon", icon);
     // Set weather info
-    if (window.config.website.useMetric) {
+    if (window.config.useMetric) {
         document.querySelector("#temp").innerText = Math.floor(weather.main.temp - 273.15) + "°C";
     } else {
         document.querySelector("#temp").innerText = Math.floor((weather.main.temp - 32) * 5 / 9) + "°F";
@@ -62,7 +64,7 @@ async function loadWeather() {
 }
 
 async function loadBookmarks() {
-    const data = await (await fetch("./data.json")).json();
+    const data = await (await fetch("./common/data.json")).json();
     let contentHtml = "";
 
     function splitToChunks(arr) {
@@ -129,29 +131,12 @@ async function loadBookmarks() {
     document.querySelector("#content").innerHTML = contentHtml;
 }
 
-function loadCSS() {
-    for (let c = 0; c < document.styleSheets.length; c++) {
-        var declaration = document.styleSheets[c].cssRules[0];
-        if (declaration.selectorText === ":root") {
-            var allVar = declaration.style.cssText.split(";");
-            var cssRootKeys = {}
-            for (var i = 0; i < allVar.length; i++) {
-                var a = allVar[i].split(':');
-                if (a[0] !== "")
-                    cssRootKeys[a[0].trim()] = a[1].trim();
-            }
-            window.cssRoot = cssRootKeys;
-            return;
-        }
-    }
-}
-
 function setClock() {
     //Set clock
     const clock = document.querySelector("#clock");
     const clockOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     (function clockTick() {
-        clock.innerText = new Date().toLocaleTimeString(window.config.website.localization, clockOptions);
+        clock.innerText = new Date().toLocaleTimeString(window.config.localization, clockOptions);
         setTimeout(clockTick, 2000);
     })();
     //Set greeting
@@ -172,17 +157,10 @@ function setClock() {
 }
 
 async function startWebsite() {
-    // Load bookmarks
     loadBookmarks();
-    // Load config
-    await loadConfig();
-    // Load language
     await loadLanguage();
-    // Set Clock
     setClock();
-    // Get CSS varriables
     loadCSS();
-    // Set weather
     loadWeather();
 }
 startWebsite();

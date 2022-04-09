@@ -9,46 +9,36 @@ import (
 	"github.com/help-14/magma/modules"
 )
 
+var appConfig modules.Config
+
 func main() {
-	appConfig := modules.LoadConfig()
+	appConfig = modules.LoadConfig()
 
 	commonfs := http.FileServer(http.Dir("./common"))
 	http.Handle("/common/", http.StripPrefix("/common/", commonfs))
+
+	languagefs := http.FileServer(http.Dir("./languages"))
+	http.Handle("/languages/", http.StripPrefix("/languages/", languagefs))
 
 	themePath := "/themes/" + appConfig.Website.Theme + "/"
 	themefs := http.FileServer(http.Dir("." + themePath))
 	http.Handle("/theme/", http.StripPrefix("/theme/", themefs))
 
 	http.HandleFunc("/", serveTemplate)
-	// tempPath := filepath.Join(".", "temp")
-	// err := os.MkdirAll(tempPath, os.ModePerm)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	return
-	// }
 
-	log.Println("Listening on :7001 ...")
+	log.Println("Listening on http://localhost:7001 ...")
 	err := http.ListenAndServe(":7001", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-// func TemplatedHandler(response http.ResponseWriter, request *http.Request) {
-// 	tmplt := template.New("hello template")
-// 	tmplt, _ = tmplt.Parse("Top Student: {{.Id}} - {{.Name}}!")
-
-// 	p := Student{Id: 1, Name: "Aisha"} //define an instance with required field
-
-// 	tmplt.Execute(response, p) //merge template ‘t’ with content of ‘p’
-// }
-
 func serveTemplate(w http.ResponseWriter, r *http.Request) {
-	lp := filepath.Join("templates", "layout.html")
-	//fp := filepath.Join("templates", filepath.Clean(r.URL.Path))
-
+	lp := filepath.Join("themes", appConfig.Website.Theme, "index.html")
 	tmpl, _ := template.ParseFiles(lp)
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, struct {
+		Config modules.WebsiteConfig
+	}{appConfig.Website})
 }
 
 // templ.Execute(file, struct {

@@ -6,15 +6,15 @@
     <title></title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="assets/favicon.ico" />
-    <link rel="stylesheet" href="css/font.css">
-    <link rel="stylesheet" href="css/normalize.min.css">
-    <link rel="stylesheet" href="css/skeleton.min.css">
+    <link rel="icon" type="image/png" href="common/assets/favicon.ico" />
+    <link rel="stylesheet" href="theme/css/font.css">
+    <link rel="stylesheet" href="theme/css/normalize.min.css">
+    <link rel="stylesheet" href="theme/css/skeleton.min.css">
     <!-- <link rel="stylesheet" href="css/charts.min.css"> -->
-    <link rel="stylesheet" href="css/all.min.css">
-    <link rel="stylesheet" href="css/core.css">
-    <link rel="stylesheet" href="css/magma.css">
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="theme/css/all.min.css">
+    <link rel="stylesheet" href="common/css/core.css">
+    <link rel="stylesheet" href="theme/css/magma.css">
+    <link rel="stylesheet" href="common/css/custom.css">
 </head>
 
 <body>
@@ -46,9 +46,18 @@
         <div id="footer" class="row"></div>
     </div>
 
-    <script src="js/skycons.min.js"></script>
-    <script src="js/magma.js"></script>
-    <script src="js/custom.js"></script>
+    <script>
+        window.config = {
+            localization: {{ .Config.Localization }},
+            language: {{ .Config.Language }},
+            useMetric: {{ .Config.UseMetric }}
+        };
+    </script>
+
+    <script src="theme/js/skycons.min.js"></script>
+    <script src="common/js/core.js"></script>
+    <script src="theme/js/magma.js"></script>
+    <script src="common/js/custom.js"></script>
 </body>
 
 </html>
