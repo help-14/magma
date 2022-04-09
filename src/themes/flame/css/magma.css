@@ -68,16 +68,25 @@ body {
   font-weight: bold;
 }
 
-.group-items .icon {
+.group-items .icon-container {
   margin-top: 0px !important;
   margin-left: 0.5em !important;
   margin-right: 0.5em !important;
+  text-align: center;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+}
+
+.group-items .icon {
+  vertical-align: middle;
 }
 
 .group-items a:hover {
   background-color: rgba(0, 0, 0, 0.3) !important;
   cursor: pointer;
 }
+
 @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
   .group-items a:hover {
     -webkit-backdrop-filter: blur(10px);

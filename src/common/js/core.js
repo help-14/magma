@@ -1,4 +1,3 @@
-
 function loadCSS() {
     for (let c = 0; c < document.styleSheets.length; c++) {
         var declaration = document.styleSheets[c].cssRules[0];
@@ -15,3 +14,4 @@ function loadCSS() {
         }
     }
 }
+loadCSS();

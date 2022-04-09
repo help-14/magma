@@ -21,7 +21,7 @@ data:
             icon: fa-solid fa-server
             url: https://www.truenas.com
           - name: Kerberos
-            icon: fa-solid fa-camera-web
+            icon: fa-solid fa-video
             url: https://kerberos.io
           - name: jDownloader
             icon: fa-solid fa-cloud-arrow-down
@@ -61,8 +61,8 @@ data:
             icon: fa-solid fa-bag-shopping
             url: https://shopee.vn
           - name: Lazada
-            icon: fa-solid fa-heart-half-stroke
-            url: https://www.lazada.com
+            icon: fa-brands fa-amazon
+            url: https://www.amazon.com
       - title: Tools
         bookmarks:
           - name: Maps

@@ -1,9 +1,12 @@
 website:
   theme: "flame"
-  title: "Help-14 Dashboard"
+  title: "Magma Dashboard"
   description: ""
-  language: "vi"
-  localization: "vi-vn"
+  language: "en"
+  localization: "en-US"
   useMetric: true
-
+openweathermap:
+  apiKey:
+  lon:
+  lat:
 addons:

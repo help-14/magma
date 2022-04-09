@@ -105,3 +105,4 @@ dist
 
 src/temp
 src/build
+src/common/*.yaml
