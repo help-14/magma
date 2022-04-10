@@ -2,7 +2,7 @@
 
 ## Changing background, color pallete
 
-In order to change those default values, edit `/public/css/core.css`.
+In order to change those default values, edit `/common/css/core.css`.
 
 ```
 :root {

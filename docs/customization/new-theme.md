@@ -2,14 +2,45 @@
 
 ## Preparing
 
-There are two choice here:
-- If you are a developer, you know what you are doing then considering public your theme to Magma repo for everybody to use. Fork magma repo, create a folder in `/private/themes/` and add your theme there. Test your theme carefully before create a `Pull Request`.
-- You are an user with some coding knowleague or you want to test your theme before submit it, then create `index.html` in `/public` and start from there.
+If you are a developer, you know what you are doing then considering public your theme to Magma repo for everybody to use. Fork magma repo, create a folder in `/src/themes/` and add your theme there. Test your theme carefully before create a `Pull Request`.
+
+If you are not a developer, you can start from `src/themes/custom` and use it as a starter kit.
 
 ## Your first theme
 
-Your `index.html` will be almost exactly what you want your dashboard look like, so design your layout first.
+Your `index.html` will be a [Go template](https://pkg.go.dev/text/template) file. Just like a normal html but with Go actions in `{{}}` to render the data. Currently those data will be pass to you in runtime:
 
-In current version your data and config will be injected on page loaded using Javascript, so you need to custom it too. 
+|Name|Type|Description|
+|-|-|-|
+|Config|WebsiteConfig|Configuration defined in `/common/config.yaml` |
+|Language|Language|Current language loaded from `/languages/en.yaml`|
+|Contents|GroupData[]|Array of content defined in `/common/data.yaml`|
 
-In future release there will be a markup like `{{bookmarks}}` and your data will be injected by compile task into there. 
+```
+type WebsiteConfig struct {
+	Title        string `yaml:"title"`
+	Description  string `yaml:"description"`
+	Language     string `yaml:"language"`
+	Localization string `yaml:"localization"`
+	UseMetric    bool   `yaml:"useMetric"`
+	Theme        string `yaml:"theme"`
+}
+```
+
+```
+type GroupData struct {
+	Title   string       `yaml:"title"`
+	Columns []ColumnData `yaml:"columns"`
+}
+
+type ColumnData struct {
+	Title     string         `yaml:"title"`
+	Bookmarks []BookmarkData `yaml:"bookmarks"`
+}
+
+type BookmarkData struct {
+	Name string `yaml:"name"`
+	Icon string `yaml:"icon"`
+	Url  string `yaml:"url"`
+}
+```
