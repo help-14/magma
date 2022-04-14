@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="{{.Config.Language}}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Config.Title}}</title>
+    <meta name="description" content="{{.Config.Description}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="common/assets/favicon.ico" />
+    <link rel="stylesheet" href="common/css/core.css">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="common/css/custom.css">
+</head>
+
+<body>
+    <div class="container mx-auto w-full">
+        <div class="columns-3xs gap-8">
+            {{range .Contents}}
+            <div class="row group-title">
+                <h4 class="strong">{{.Title}}</h4>
+            </div>
+            <div class="row">
+                {{range .Columns}}
+                <div class="flex bg-stone-700"></div>
+                <h6 class="accent">{{.Title}}</h6>
+                {{range .Bookmarks}}
+                <div>
+                    <a href="{{.Url}}">
+                        <div class="icon-container">
+                            <i class="{{.Icon}} fa-xl icon"></i>
+                        </div>
+                        <h6>{{.Name}}</h6>
+                    </a>
+                </div>
+                {{end}}
+            </div>
+            {{end}}
+        </div>
+        {{end}}
+    </div>
+    </div>
+    <script src="common/js/core.js"></script>
+    <script src="common/js/custom.js"></script>
+</body>
+
+</html>
