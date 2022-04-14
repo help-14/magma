@@ -13,6 +13,7 @@ import (
 	"github.com/help-14/magma/modules"
 )
 
+var pwd string
 var appConfig modules.Config
 var websiteData = struct {
 	Config   modules.WebsiteConfig
@@ -21,6 +22,7 @@ var websiteData = struct {
 }{}
 
 func main() {
+	pwd, _ = os.Getwd()
 	prepareSampleFiles()
 	appConfig = modules.LoadConfig()
 
@@ -71,20 +73,20 @@ func serveWeather(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveTemplate(w http.ResponseWriter, r *http.Request) {
-	lp := filepath.Join("themes", appConfig.Website.Theme, "index.html")
+	lp := filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html")
 	tmpl, _ := template.ParseFiles(lp)
 	tmpl.Execute(w, websiteData)
 }
 
 func prepareSampleFiles() {
-	files, err := ioutil.ReadDir("./sample/")
+	files, err := ioutil.ReadDir(filepath.Join(pwd, "sample"))
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 	for _, file := range files {
-		samplePath := filepath.Join("sample", file.Name())
-		commonPath := filepath.Join("common", file.Name())
+		samplePath := filepath.Join(pwd, "sample", file.Name())
+		commonPath := filepath.Join(pwd, "common", file.Name())
 		if _, err := os.Stat(commonPath); errors.Is(err, os.ErrNotExist) {
 			modules.CopyFile(samplePath, commonPath)
 		}

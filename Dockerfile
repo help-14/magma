@@ -1,15 +1,12 @@
 ## Build
 
-FROM golang:1.16-alpine AS build
+FROM golang:1.18-alpine AS build
 
 RUN mkdir /app
 WORKDIR /app
+COPY ./src /app
 
-COPY ./src/main.go /app/
-COPY ./src/go.mod /app/
-COPY ./src/go.sum /app/
-COPY ./src/modules /app/
-
+RUN go mod download
 RUN go build -o /bin
 
 ## Deploy
@@ -19,9 +16,14 @@ MAINTAINER Help-14 [mail@help14.com]
 LABEL maintainer="mail@help14.com"
 
 RUN mkdir /app
-WORKDIR /app
 
-COPY --from=build /bin /app
+COPY --from=build /bin/magma /app/
+COPY ./src/common /app/common
+COPY ./src/languages /app/languages
+COPY ./src/sample /app/sample
+COPY ./src/themes /app/themes
 
 EXPOSE 7001
-ENTRYPOINT magma
+
+WORKDIR /app
+ENTRYPOINT ./magma
