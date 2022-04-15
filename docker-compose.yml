@@ -1,0 +1,10 @@
+services:
+  magma:
+    name: magma
+    image: help14/magma
+    restart: always
+    volumes:
+      - ./common:/app/common
+      #- ./themes/custom:/app/themes/custom
+    expose:
+      - 7001
