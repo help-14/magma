@@ -3,6 +3,7 @@ package modules
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
@@ -41,7 +42,7 @@ func LoadConfig() Config {
 		Addons: []string{},
 	}
 
-	yamlFile, err := ioutil.ReadFile("./common/config.yaml")
+	yamlFile, err := ioutil.ReadFile(filepath.Join("data", "config.yaml"))
 	if err != nil {
 		fmt.Printf("Error reading YAML file: %s\n", err)
 		return defaultConfig

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -24,14 +25,19 @@ type ColumnData struct {
 
 type BookmarkData struct {
 	Name string `yaml:"name"`
-	Icon string `yaml:"icon"`
 	Url  string `yaml:"url"`
+
+	Icon string `yaml:"icon"`
+}
+
+func (b *BookmarkData) IsSVG() bool {
+	return strings.Contains(b.Icon, ".svg")
 }
 
 func LoadContent() ContentData {
 	emptyData := ContentData{}
 
-	yamlFile, err := ioutil.ReadFile(filepath.Join("common", "data.yaml"))
+	yamlFile, err := ioutil.ReadFile(filepath.Join("data", "data.yaml"))
 	if err != nil {
 		fmt.Printf("Error reading YAML file: %s\n", err)
 		return emptyData

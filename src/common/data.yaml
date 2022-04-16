@@ -7,7 +7,7 @@ data:
             icon: fa-solid fa-wifi
             url: https://openwrt.org
           - name: Proxmox
-            icon: fa-solid fa-rectangle-xmark
+            icon: https://iconape.com/wp-content/files/pk/18549/svg/cib-proxmox.svg
             url: https://www.proxmox.com/en/
           - name: Home Assistant
             icon: fa-solid fa-house
@@ -29,7 +29,7 @@ data:
       - title: Monitoring
         bookmarks:
           - name: Grafana
-            icon: fa-solid fa-server
+            icon: https://iconape.com/wp-content/files/sn/17615/svg/cib-grafana.svg
             url: https://grafana.com
           - name: InfluxDb
             icon: fa-solid fa-database

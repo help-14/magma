@@ -82,6 +82,13 @@ body {
   vertical-align: middle;
 }
 
+.group-items .svg-icon {
+  vertical-align: middle;
+  fill: var(--foreground) !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+
 .group-items a:hover {
   background-color: rgba(0, 0, 0, 0.3) !important;
   cursor: pointer;

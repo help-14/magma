@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -20,14 +19,16 @@ var websiteData = struct {
 	Language modules.Language
 	Contents []modules.GroupData
 }{}
+var webTemplate *template.Template
 
 func main() {
 	pwd, _ = os.Getwd()
 
 	dataPath := filepath.Join(pwd, "data")
 	if _, err := os.Stat(filepath.Join(dataPath, "data.yaml")); os.IsNotExist(err) {
-		fmt.Println("Copy files to data folder")
-		modules.CopyDirectory(filepath.Join(pwd, "common"), dataPath)
+		log.Println("Copy files to data folder")
+		os.MkdirAll(dataPath, os.ModePerm)
+		modules.CopyDir(filepath.Join(pwd, "common"), dataPath)
 	}
 
 	appConfig = modules.LoadConfig()
@@ -35,7 +36,10 @@ func main() {
 	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
 	websiteData.Contents = modules.LoadContent().Data
 
-	commonfs := http.FileServer(http.Dir(filepath.Join(dataPath, "common")))
+	tmpl, _ := template.ParseFiles(filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html"))
+	webTemplate = tmpl
+
+	commonfs := http.FileServer(http.Dir(dataPath))
 	http.Handle("/common/", http.StripPrefix("/common/", commonfs))
 
 	languagefs := http.FileServer(http.Dir(filepath.Join(pwd, "languages")))
@@ -77,7 +81,5 @@ func serveWeather(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveTemplate(w http.ResponseWriter, r *http.Request) {
-	lp := filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html")
-	tmpl, _ := template.ParseFiles(lp)
-	tmpl.Execute(w, websiteData)
+	webTemplate.Execute(w, websiteData)
 }

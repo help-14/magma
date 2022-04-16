@@ -17,6 +17,19 @@
     <link rel="stylesheet" href="/common/css/core.css">
     <link rel="stylesheet" href="/theme/css/magma.css">
     <link rel="stylesheet" href="/common/css/custom.css">
+
+    <script>
+        customElements.define("svg-file", class extends HTMLElement {
+            async connectedCallback(
+                src = this.getAttribute("src"),
+                shadowRoot = this.shadowRoot || this.attachShadow({mode:"open"})
+            ) {
+                shadowRoot.innerHTML = await (await fetch(src)).text()
+                shadowRoot.append(...this.querySelectorAll("[shadowRoot]"))
+                this.hasAttribute("replaceWith") && this.replaceWith(...shadowRoot.childNodes)
+            }
+        })
+    </script>
 </head>
 
 <body>
@@ -53,7 +66,11 @@
                         {{range .Bookmarks}}
                             <a href="{{.Url}}">
                                 <div class="icon-container">
+                                {{if .IsSVG}}
+                                    <svg-file src="{{.Icon}}" class="svg-icon"></svg-file>
+                                {{else}}
                                     <i class="{{.Icon}} fa-xl icon"></i>
+                                {{end}}
                                 </div>
                                 <h6>{{.Name}}</h6>
                             </a>
@@ -145,6 +162,7 @@
             document.querySelector("#humidity").innerText = Math.floor(weather.main.humidity) + "%";
             document.querySelector("#weather-info").style.visibility = "visible";
         })();
+    });
     </script>
     <script src="/common/js/custom.js"></script>
 </body>
