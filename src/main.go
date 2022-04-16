@@ -1,12 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -24,15 +24,18 @@ var websiteData = struct {
 func main() {
 	pwd, _ = os.Getwd()
 
-	exec.Command("mkdir", "-p", "./data").Run()
-	exec.Command("cp", "--recursive", "./common/*", "./data/").Run()
+	dataPath := filepath.Join(pwd, "data")
+	if _, err := os.Stat(filepath.Join(dataPath, "data.yaml")); os.IsNotExist(err) {
+		fmt.Println("Copy files to data folder")
+		modules.CopyDirectory(filepath.Join(pwd, "common"), dataPath)
+	}
 
 	appConfig = modules.LoadConfig()
 	websiteData.Config = appConfig.Website
 	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
 	websiteData.Contents = modules.LoadContent().Data
 
-	commonfs := http.FileServer(http.Dir(filepath.Join(pwd, "data")))
+	commonfs := http.FileServer(http.Dir(filepath.Join(dataPath, "common")))
 	http.Handle("/common/", http.StripPrefix("/common/", commonfs))
 
 	languagefs := http.FileServer(http.Dir(filepath.Join(pwd, "languages")))
