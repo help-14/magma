@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -22,9 +23,11 @@ var websiteData = struct {
 
 func main() {
 	pwd, _ = os.Getwd()
-	modules.CopyDirectory("./common", "./data")
-	appConfig = modules.LoadConfig()
 
+	exec.Command("mkdir", "-p", "./data").Run()
+	exec.Command("cp", "--recursive", "./common/*", "./data/").Run()
+
+	appConfig = modules.LoadConfig()
 	websiteData.Config = appConfig.Website
 	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
 	websiteData.Contents = modules.LoadContent().Data

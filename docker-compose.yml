@@ -1,7 +1,7 @@
 services:
   magma:
     container_name: magma
-    image: help14/magma
+    image: magma
     restart: unless-stopped
     volumes:
       - ./data/:/app/data
