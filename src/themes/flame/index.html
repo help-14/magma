@@ -153,6 +153,7 @@
             // Set weather icon to canvas
             var skycons = new Skycons({ "color": window.cssRoot["--accentColor"] });
             skycons.add("weather-icon", icon);
+            skycons.play();
             // Set weather info
             if (window.config.useMetric) {
                 document.querySelector("#temp").innerText = Math.floor(weather.main.temp - 273.15) + "°C";

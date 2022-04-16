@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/help-14/magma/modules"
 )
 
@@ -22,17 +23,11 @@ var websiteData = struct {
 var webTemplate *template.Template
 
 func main() {
-	pwd, _ = os.Getwd()
-
-	dataPath := filepath.Join(pwd, "data")
-	if _, err := os.Stat(filepath.Join(dataPath, "data.yaml")); os.IsNotExist(err) {
-		log.Println("Copy files to data folder")
-		os.MkdirAll(dataPath, os.ModePerm)
-		modules.CopyDir(filepath.Join(pwd, "common"), dataPath)
-	}
+	prepare()
 	loadData()
+	go watchChanges()
 
-	commonfs := http.FileServer(http.Dir(dataPath))
+	commonfs := http.FileServer(http.Dir(filepath.Join(pwd, "data")))
 	http.Handle("/common/", http.StripPrefix("/common/", commonfs))
 
 	languagefs := http.FileServer(http.Dir(filepath.Join(pwd, "languages")))
@@ -51,6 +46,17 @@ func main() {
 	}
 }
 
+func prepare() {
+	pwd, _ = os.Getwd()
+
+	dataPath := filepath.Join(pwd, "data")
+	if _, err := os.Stat(filepath.Join(dataPath, "data.yaml")); os.IsNotExist(err) {
+		log.Println("Copy files to data folder")
+		os.MkdirAll(dataPath, os.ModePerm)
+		modules.CopyDir(filepath.Join(pwd, "common"), dataPath)
+	}
+}
+
 func loadData() {
 	appConfig = modules.LoadConfig()
 	websiteData.Config = appConfig.Website
@@ -59,6 +65,40 @@ func loadData() {
 
 	tmpl, _ := template.ParseFiles(filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html"))
 	webTemplate = tmpl
+}
+
+func watchChanges() {
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer watcher.Close()
+
+	done := make(chan bool)
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				log.Println("Modified file:", event.Name)
+				loadData()
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Println("error:", err)
+			}
+		}
+	}()
+
+	err = watcher.Add(filepath.Join(pwd, "data", "data.yaml"))
+	err = watcher.Add(filepath.Join(pwd, "data", "config.yaml"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	<-done
 }
 
 func serveTemplate(w http.ResponseWriter, r *http.Request) {
