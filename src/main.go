@@ -30,14 +30,7 @@ func main() {
 		os.MkdirAll(dataPath, os.ModePerm)
 		modules.CopyDir(filepath.Join(pwd, "common"), dataPath)
 	}
-
-	appConfig = modules.LoadConfig()
-	websiteData.Config = appConfig.Website
-	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
-	websiteData.Contents = modules.LoadContent().Data
-
-	tmpl, _ := template.ParseFiles(filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html"))
-	webTemplate = tmpl
+	loadData()
 
 	commonfs := http.FileServer(http.Dir(dataPath))
 	http.Handle("/common/", http.StripPrefix("/common/", commonfs))
@@ -56,6 +49,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func loadData() {
+	appConfig = modules.LoadConfig()
+	websiteData.Config = appConfig.Website
+	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
+	websiteData.Contents = modules.LoadContent().Data
+
+	tmpl, _ := template.ParseFiles(filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html"))
+	webTemplate = tmpl
+}
+
+func serveTemplate(w http.ResponseWriter, r *http.Request) {
+	webTemplate.Execute(w, websiteData)
 }
 
 var weatherTimeOut int64
@@ -78,8 +85,4 @@ func serveWeather(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(weatherCache)
-}
-
-func serveTemplate(w http.ResponseWriter, r *http.Request) {
-	webTemplate.Execute(w, websiteData)
 }
