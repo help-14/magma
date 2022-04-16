@@ -2,9 +2,8 @@ services:
   magma:
     container_name: magma
     image: help14/magma
-    restart: always
+    restart: unless-stopped
     volumes:
-      - ./common:/app/common
-      #- ./themes/custom:/app/themes/custom
+      - ./data/:/app/data
     ports:
       - '7001:7001'

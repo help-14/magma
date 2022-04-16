@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -30,7 +29,7 @@ func main() {
 	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
 	websiteData.Contents = modules.LoadContent().Data
 
-	commonfs := http.FileServer(http.Dir(filepath.Join(pwd, "common")))
+	commonfs := http.FileServer(http.Dir(filepath.Join(pwd, "data")))
 	http.Handle("/common/", http.StripPrefix("/common/", commonfs))
 
 	languagefs := http.FileServer(http.Dir(filepath.Join(pwd, "languages")))
@@ -78,16 +77,7 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 }
 
 func prepareSampleFiles() {
-	files, err := ioutil.ReadDir(filepath.Join(pwd, "sample"))
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	for _, file := range files {
-		samplePath := filepath.Join(pwd, "sample", file.Name())
-		commonPath := filepath.Join(pwd, "common", file.Name())
-		if _, err := os.Stat(commonPath); errors.Is(err, os.ErrNotExist) {
-			modules.CopyFile(samplePath, commonPath)
-		}
-	}
+	commonPath := filepath.Join(pwd, "common")
+	dataPath := filepath.Join(pwd, "data")
+	modules.CopyDirectory(commonPath, dataPath)
 }

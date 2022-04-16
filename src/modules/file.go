@@ -4,9 +4,10 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 )
 
-func CopyFile(src string, dst string) {
+func CopyFile(src, dst string) {
 	fin, err := os.Open(src)
 	if err != nil {
 		log.Fatal(err)
@@ -24,4 +25,9 @@ func CopyFile(src string, dst string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func CopyDirectory(oldDir, newDir string) {
+	cmd := exec.Command("cp", "--recursive", oldDir, newDir)
+	cmd.Run()
 }

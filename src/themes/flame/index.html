@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="icon" type="image/png" href="/common/assets/favicon.ico" />
-    
+
     <link rel="stylesheet" href="/theme/css/font.css">
     <link rel="stylesheet" href="/theme/css/normalize.min.css">
     <link rel="stylesheet" href="/theme/css/skeleton.min.css">
@@ -103,6 +103,7 @@
         (async function loadWeather() {
             // Get info from api
             const weather = await (await fetch("./weather")).json();
+            if(!weather) return;
             // Parse weather id
             let icon = null;
             let isDay = Date.now().hour >= 6 && Date.now().hour < 18;
