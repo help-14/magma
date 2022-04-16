@@ -30,14 +30,13 @@ func main() {
 	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
 	websiteData.Contents = modules.LoadContent().Data
 
-	commonfs := http.FileServer(http.Dir("./common"))
+	commonfs := http.FileServer(http.Dir(filepath.Join(pwd, "common")))
 	http.Handle("/common/", http.StripPrefix("/common/", commonfs))
 
-	languagefs := http.FileServer(http.Dir("./languages"))
+	languagefs := http.FileServer(http.Dir(filepath.Join(pwd, "languages")))
 	http.Handle("/languages/", http.StripPrefix("/languages/", languagefs))
 
-	themePath := "/themes/" + appConfig.Website.Theme + "/"
-	themefs := http.FileServer(http.Dir("." + themePath))
+	themefs := http.FileServer(http.Dir(filepath.Join(pwd, "themes", appConfig.Website.Theme)))
 	http.Handle("/theme/", http.StripPrefix("/theme/", themefs))
 
 	http.HandleFunc("/weather", serveWeather)
