@@ -20,7 +20,6 @@ RUN mkdir /app
 COPY --from=build /bin/magma /app/
 COPY ./src/common /app/common
 COPY ./src/languages /app/languages
-COPY ./src/sample /app/sample
 COPY ./src/themes /app/themes
 
 EXPOSE 7001
