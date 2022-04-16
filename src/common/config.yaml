@@ -1,0 +1,12 @@
+website:
+  theme: "flame"
+  title: "Magma Dashboard"
+  description: ""
+  language: "en"
+  localization: "en-US"
+  useMetric: true
+openweathermap:
+  apiKey:
+  lon:
+  lat:
+addons:

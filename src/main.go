@@ -22,7 +22,7 @@ var websiteData = struct {
 
 func main() {
 	pwd, _ = os.Getwd()
-	prepareSampleFiles()
+	modules.CopyDirectory("./common", "./data")
 	appConfig = modules.LoadConfig()
 
 	websiteData.Config = appConfig.Website
@@ -74,10 +74,4 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 	lp := filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html")
 	tmpl, _ := template.ParseFiles(lp)
 	tmpl.Execute(w, websiteData)
-}
-
-func prepareSampleFiles() {
-	commonPath := filepath.Join(pwd, "common")
-	dataPath := filepath.Join(pwd, "data")
-	modules.CopyDirectory(commonPath, dataPath)
 }
