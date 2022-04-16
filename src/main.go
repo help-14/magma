@@ -21,6 +21,7 @@ var websiteData = struct {
 	Contents []modules.GroupData
 }{}
 var webTemplate *template.Template
+var themefs http.Handler
 
 func main() {
 	prepare()
@@ -33,7 +34,6 @@ func main() {
 	languagefs := http.FileServer(http.Dir(filepath.Join(pwd, "languages")))
 	http.Handle("/languages/", http.StripPrefix("/languages/", languagefs))
 
-	themefs := http.FileServer(http.Dir(filepath.Join(pwd, "themes", appConfig.Website.Theme)))
 	http.Handle("/theme/", http.StripPrefix("/theme/", themefs))
 
 	http.HandleFunc("/weather", serveWeather)
@@ -63,6 +63,7 @@ func loadData() {
 	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
 	websiteData.Contents = modules.LoadContent().Data
 
+	themefs = http.FileServer(http.Dir(filepath.Join(pwd, "themes", appConfig.Website.Theme)))
 	tmpl, _ := template.ParseFiles(filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html"))
 	webTemplate = tmpl
 }
