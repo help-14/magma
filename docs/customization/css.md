@@ -2,7 +2,7 @@
 
 ## Changing background, color pallete
 
-In order to change those default values, edit `/common/css/core.css`.
+In order to change those default values, edit `/data/css/core.css`.
 
 ```
 :root {
@@ -13,12 +13,12 @@ In order to change those default values, edit `/common/css/core.css`.
 }
 ```
 
-| Key | Required | Meaning |
-|-|-|-|
-| --bgColor | Yes | Background color of `<body>`, also use as overlay color of background image. |
-| --bgImage | Yes | An image place on top of `<body>` background color, with opacite 60%, scale 1.1, margin-top: -5% |
-| --accentColor | Yes | Accent color use in highlight place like weather icon, group title, ... |
-| --foreground | Yes | Default text color. |
+| Key           | Required | Meaning                                                                                          |
+| ------------- | -------- | ------------------------------------------------------------------------------------------------ |
+| --bgColor     | Yes      | Background color of `<body>`, also use as overlay color of background image.                     |
+| --bgImage     | Yes      | An image place on top of `<body>` background color, with opacite 60%, scale 1.1, margin-top: -5% |
+| --accentColor | Yes      | Accent color use in highlight place like weather icon, group title, ...                          |
+| --foreground  | Yes      | Default text color.                                                                              |
 
 ## Custom CSS styles
 

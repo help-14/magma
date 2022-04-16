@@ -20,7 +20,15 @@ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 Create [docker-compose.yml](https://github.com/help-14/magma/blob/main/docker-compose.yml) or download it from Github:
 
 ```
-version "3.0"
+services:
+  magma:
+    container_name: magma
+    image: help14/magma
+    restart: unless-stopped
+    volumes:
+      - ./data/:/app/data
+    ports:
+      - '7001:7001'
 ```
 
 Start the container:
