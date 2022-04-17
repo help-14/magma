@@ -2,8 +2,10 @@ package modules
 
 import (
 	"fmt"
+	"index/suffixarray"
 	"io/ioutil"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -34,6 +36,10 @@ func (b *BookmarkData) IsSVG() bool {
 	return strings.Contains(b.Icon, ".svg")
 }
 
+func (b *BookmarkData) IsImage() bool {
+	return contains(b.Icon, ".jpg", ".jpeg", ".png", ".gif", ".apng", ".bmp", ".ico", ".webp")
+}
+
 func LoadContent() ContentData {
 	emptyData := ContentData{}
 
@@ -50,4 +56,27 @@ func LoadContent() ContentData {
 		return emptyData
 	}
 	return data
+}
+
+func contains(str string, subStrs ...string) bool {
+	if len(subStrs) == 0 {
+		return true
+	}
+	r := regexp.MustCompile(strings.Join(subStrs, "|"))
+	index := suffixarray.New([]byte(str))
+	res := index.FindAllIndex(r, -1)
+	exists := make(map[string]int)
+	for _, v := range subStrs {
+		exists[v] = 1
+	}
+	for _, pair := range res {
+		s := str[pair[0]:pair[1]]
+		exists[s] = exists[s] + 1
+	}
+	for _, v := range exists {
+		if v == 1 {
+			return false
+		}
+	}
+	return true
 }

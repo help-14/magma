@@ -66,7 +66,9 @@
                         {{range .Bookmarks}}
                             <a href="{{.Url}}">
                                 <div class="icon-container">
-                                {{if .IsSVG}}
+                                {{if .IsImage}}
+                                    <img src="{{.Icon}}" class="icon">
+                                {{else if .IsSVG}}
                                     <svg-file src="{{.Icon}}" class="svg-icon"></svg-file>
                                 {{else}}
                                     <i class="{{.Icon}} fa-xl icon"></i>
