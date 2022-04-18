@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="/theme/css/font.css">
     <link rel="stylesheet" href="/theme/css/normalize.min.css">
     <link rel="stylesheet" href="/theme/css/skeleton.min.css">
-    
-    <link rel="stylesheet" href="/theme/css/all.min.css">
+
+    <link rel="stylesheet" href="/common/css/all.min.css">
     <link rel="stylesheet" href="/common/css/core.css">
     <link rel="stylesheet" href="/theme/css/magma.css">
     <link rel="stylesheet" href="/common/css/custom.css">
@@ -22,7 +22,7 @@
         customElements.define("svg-file", class extends HTMLElement {
             async connectedCallback(
                 src = this.getAttribute("src"),
-                shadowRoot = this.shadowRoot || this.attachShadow({mode:"open"})
+                shadowRoot = this.shadowRoot || this.attachShadow({ mode: "open" })
             ) {
                 shadowRoot.innerHTML = await (await fetch(src)).text()
                 shadowRoot.append(...this.querySelectorAll("[shadowRoot]"))
@@ -57,30 +57,32 @@
         </div>
         <div class="row">
             <div id="content" class="column twelve">
-            {{range .Contents}}
-                <div class="row group-title"><h4 class="strong">{{.Title}}</h4></div>
+                {{range .Contents}}
+                <div class="row group-title">
+                    <h4 class="strong">{{.Title}}</h4>
+                </div>
                 <div class="row">
-                {{range .Columns}}
+                    {{range .Columns}}
                     <div class="three columns group-items">
                         <h6 class="accent">{{.Title}}</h6>
                         {{range .Bookmarks}}
-                            <a href="{{.Url}}">
-                                <div class="icon-container">
+                        <a href="{{.Url}}">
+                            <div class="icon-container">
                                 {{if .IsImage}}
-                                    <img src="{{.Icon}}" class="icon">
+                                <img src="{{.Icon}}" class="icon">
                                 {{else if .IsSVG}}
-                                    <svg-file src="{{.Icon}}" class="svg-icon"></svg-file>
+                                <svg-file src="{{.Icon}}" class="svg-icon"></svg-file>
                                 {{else}}
-                                    <i class="{{.Icon}} fa-xl icon"></i>
+                                <i class="{{.Icon}} fa-xl icon"></i>
                                 {{end}}
-                                </div>
-                                <h6>{{.Name}}</h6>
-                            </a>
+                            </div>
+                            <h6>{{.Name}}</h6>
+                        </a>
                         {{end}}
                     </div>
-                {{end}}
+                    {{end}}
                 </div>
-            {{end}}
+                {{end}}
             </div>
         </div>
         <div id="footer" class="row"></div>
@@ -90,9 +92,9 @@
     <script src="common/js/core.js"></script>
     <script>
         window.config = {
-            localization: {{.Config.Localization}},
-            language: {{.Config.Language}},
-            useMetric: {{.Config.UseMetric}}
+            localization: {{.Config.Localization }},
+        language: {{.Config.Language }},
+        useMetric: {{.Config.UseMetric }}
         };
 
         (function setTimer() {
@@ -106,23 +108,27 @@
             const greeting = document.querySelector("#greeting");
             const hour = new Date().getHours();
             if (hour >= 5 && hour < 12) {
-                greeting.innerText = {{.Language.Greeting.Morning}};
-            }
+                greeting.innerText = {{.Language.Greeting.Morning }
+            };
+        }
             else if (hour >= 12 && hour < 17) {
-                greeting.innerText = {{.Language.Greeting.Afternoon}};
+            greeting.innerText = {{.Language.Greeting.Afternoon }
+        };
             }
             else if (hour >= 17 && hour < 20) {
-                greeting.innerText = {{.Language.Greeting.Evening}};
+            greeting.innerText = {{.Language.Greeting.Evening }
+        };
             }
             else {
-                greeting.innerText = {{.Language.Greeting.Night}};
+            greeting.innerText = {{.Language.Greeting.Night }
+        };
             }
-        })();
+        }) ();
 
         (async function loadWeather() {
             // Get info from api
             const weather = await (await fetch("./weather")).json();
-            if(!weather) return;
+            if (!weather) return;
             // Parse weather id
             let icon = null;
             let isDay = Date.now().hour >= 6 && Date.now().hour < 18;

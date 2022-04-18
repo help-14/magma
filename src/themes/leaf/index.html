@@ -6,41 +6,56 @@
     <title>{{.Config.Title}}</title>
     <meta name="description" content="{{.Config.Description}}" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="common/assets/favicon.ico" />
-    <link rel="stylesheet" href="common/css/core.css">
+    <link rel="icon" type="image/png" href="/common/assets/favicon.ico" />
+    <link rel="stylesheet" href="/common/css/core.css">
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="common/css/custom.css">
+    <link rel="stylesheet" href="/common/css/all.min.css">
+    <link rel="stylesheet" href="/common/css/custom.css">
 </head>
 
 <body>
-    <div class="container mx-auto w-full">
-        <div class="columns-3xs gap-8">
-            {{range .Contents}}
-            <div class="row group-title">
+    <div class="w-full h-full relative ">
+        <div class="absolute inset-0">
+            <div class="grid grid-flow-row auto-rows-max">
+                {{range .Contents}}
                 <h4 class="strong">{{.Title}}</h4>
-            </div>
-            <div class="row">
-                {{range .Columns}}
-                <div class="flex bg-stone-700"></div>
-                <h6 class="accent">{{.Title}}</h6>
-                {{range .Bookmarks}}
-                <div>
-                    <a href="{{.Url}}">
-                        <div class="icon-container">
-                            <i class="{{.Icon}} fa-xl icon"></i>
+                <div class="grid grid-cols-4 gap-4">
+                    {{range .Columns}}
+                    <div>
+                        <h6 class="accent">{{.Title}}</h6>
+                        <div class="grid grid-flow-row auto-rows-max">
+                            {{range .Bookmarks}}
+                            <div>
+                                <button
+                                    class="hover:bg-gray-600 rounded-lg p-3 border-0 border-transparent content-center items-center"
+                                    onclick="window.open('{{.Url}}')">
+                                    <div class="flex">
+                                        <div class="flex-none" style="width: 32px; height: 32px;">
+                                            {{if .IsImage}}
+                                            <img src="{{.Icon}}" class="icon">
+                                            {{else if .IsSVG}}
+                                            <svg-file src="{{.Icon}}" class="svg-icon"></svg-file>
+                                            {{else}}
+                                            <i class="{{.Icon}} fa-xl icon"></i>
+                                            {{end}}
+                                        </div>
+                                        <div class="grow ml-3">
+                                            <h6>{{.Name}}</h6>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            {{end}}
                         </div>
-                        <h6>{{.Name}}</h6>
-                    </a>
+                    </div>
+                    {{end}}
                 </div>
                 {{end}}
             </div>
-            {{end}}
         </div>
-        {{end}}
     </div>
-    </div>
-    <script src="common/js/core.js"></script>
-    <script src="common/js/custom.js"></script>
+    <script src="/common/js/core.js"></script>
+    <script src="/common/js/custom.js"></script>
 </body>
 
 </html>
