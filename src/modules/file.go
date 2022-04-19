@@ -65,7 +65,7 @@ func CopyDir(source string, dest string, override bool) (err error) {
 			}
 		} else {
 			// perform copy
-			if Exists(destinationfilepointer) && override {
+			if !Exists(destinationfilepointer) || (Exists(destinationfilepointer) && override) {
 				err = CopyFile(sourcefilepointer, destinationfilepointer)
 				if err != nil {
 					fmt.Println(err)
