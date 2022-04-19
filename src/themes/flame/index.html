@@ -93,8 +93,8 @@
     <script>
         window.config = {
             localization: {{.Config.Localization}},
-        language: {{.Config.Language}},
-        useMetric: {{.Config.UseMetric}}
+            language: {{.Config.Language}},
+            useMetric: {{.Config.UseMetric}}
         };
 
         (function setTimer() {
@@ -121,7 +121,7 @@
             }
         }) ();
 
-        (async function loadWeather() {
+        async function loadWeather() {
             // Get info from api
             const weather = await (await fetch("./weather")).json();
             if (!weather) return;
@@ -166,6 +166,11 @@
             }
             document.querySelector("#humidity").innerText = Math.floor(weather.main.humidity) + "%";
             document.querySelector("#weather-info").style.visibility = "visible";
+        }
+
+        (function weatherTick() {
+            loadWeather();
+            setTimeout(weatherTick, 3600000);
         })();
     </script>
     <script src="/common/js/custom.js"></script>
