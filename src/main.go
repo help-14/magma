@@ -50,11 +50,8 @@ func prepare() {
 	pwd, _ = os.Getwd()
 
 	dataPath := filepath.Join(pwd, "data")
-	if _, err := os.Stat(filepath.Join(dataPath, "data.yaml")); os.IsNotExist(err) {
-		log.Println("Copy files to data folder")
-		os.MkdirAll(dataPath, os.ModePerm)
-		modules.CopyDir(filepath.Join(pwd, "common"), dataPath)
-	}
+	os.MkdirAll(dataPath, os.ModePerm)
+	modules.CopyDir(filepath.Join(pwd, "common"), dataPath, false)
 }
 
 func loadData() {
