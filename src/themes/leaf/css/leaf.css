@@ -1,0 +1,8 @@
+body {
+    background-color: var(--bgColor);
+    color: var(--foreground);
+}
+
+.accent {
+    color: var(--accentColor)
+}

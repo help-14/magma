@@ -91,11 +91,9 @@ func watchChanges() {
 		}
 	}()
 
-	err = watcher.Add(filepath.Join(pwd, "data", "data.yaml"))
-	err = watcher.Add(filepath.Join(pwd, "data", "config.yaml"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	watcher.Add(filepath.Join(pwd, "data", "data.yaml"))
+	watcher.Add(filepath.Join(pwd, "data", "config.yaml"))
+	watcher.Add(filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html"))
 	<-done
 }
 
