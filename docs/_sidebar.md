@@ -1,6 +1,5 @@
 <!-- docs/_sidebar.md -->
 
-* [Home](/)
 * [Get Started](getting-started.md)
 * [Configuration](config.md)
 * Customization
