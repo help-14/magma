@@ -3,6 +3,7 @@ package modules
 import (
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 )
 
@@ -74,4 +75,26 @@ func CopyDir(source string, dest string, override bool) (err error) {
 		}
 	}
 	return
+}
+
+func DownloadFile(url string, filePath string) bool {
+	out, err := os.Create(filePath)
+	if err != nil {
+		return false
+	}
+	defer out.Close()
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	w, err := io.Copy(out, resp.Body)
+	if err != nil {
+		return false
+	}
+
+	fmt.Printf("Downloaded %d bytes from "+url+"\n", w)
+	return true
 }

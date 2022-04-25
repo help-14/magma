@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"time"
 
@@ -51,6 +52,7 @@ func prepare() {
 
 	dataPath := filepath.Join(pwd, "data")
 	os.MkdirAll(dataPath, os.ModePerm)
+	os.MkdirAll(filepath.Join(dataPath, "icon"), os.ModePerm)
 	modules.CopyDir(filepath.Join(pwd, "common"), dataPath, false)
 }
 
@@ -60,6 +62,20 @@ func loadData() {
 	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
 	websiteData.Contents = modules.LoadContent().Data
 
+	// Download icon to local
+	for group := 0; group < len(websiteData.Contents); group++ {
+		for col := 0; col < len(websiteData.Contents[group].Columns); col++ {
+			for bookmark := 0; bookmark < len(websiteData.Contents[group].Columns[col].Bookmarks); bookmark++ {
+				iconPath := websiteData.Contents[group].Columns[col].Bookmarks[bookmark].Icon
+				fileName := path.Base(iconPath)
+				if modules.DownloadFile(iconPath, filepath.Join(pwd, "data", "icon", fileName)) {
+					websiteData.Contents[group].Columns[col].Bookmarks[bookmark].Icon = "/common/icon/" + fileName
+				}
+			}
+		}
+	}
+
+	// Load template engine
 	themefs = http.FileServer(http.Dir(filepath.Join(pwd, "themes", appConfig.Website.Theme)))
 	tmpl, _ := template.ParseFiles(filepath.Join(pwd, "themes", appConfig.Website.Theme, "index.html"))
 	webTemplate = tmpl
