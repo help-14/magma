@@ -52,7 +52,11 @@ func prepare() {
 
 	dataPath := filepath.Join(pwd, "data")
 	os.MkdirAll(dataPath, os.ModePerm)
-	os.MkdirAll(filepath.Join(dataPath, "icon"), os.ModePerm)
+
+	iconPath := filepath.Join(dataPath, "icon")
+	os.RemoveAll(iconPath)
+	os.MkdirAll(iconPath, os.ModePerm)
+
 	modules.CopyDir(filepath.Join(pwd, "common"), dataPath, false)
 }
 
@@ -66,10 +70,13 @@ func loadData() {
 	for group := 0; group < len(websiteData.Contents); group++ {
 		for col := 0; col < len(websiteData.Contents[group].Columns); col++ {
 			for bookmark := 0; bookmark < len(websiteData.Contents[group].Columns[col].Bookmarks); bookmark++ {
-				iconPath := websiteData.Contents[group].Columns[col].Bookmarks[bookmark].Icon
-				fileName := path.Base(iconPath)
-				if modules.DownloadFile(iconPath, filepath.Join(pwd, "data", "icon", fileName)) {
-					websiteData.Contents[group].Columns[col].Bookmarks[bookmark].Icon = "/common/icon/" + fileName
+				bookmarkData := websiteData.Contents[group].Columns[col].Bookmarks[bookmark]
+				if bookmarkData.IsImage() || bookmarkData.IsSVG() {
+					iconPath := bookmarkData.Icon
+					fileName := path.Base(iconPath)
+					if modules.DownloadFile(iconPath, filepath.Join(pwd, "data", "icon", fileName)) {
+						websiteData.Contents[group].Columns[col].Bookmarks[bookmark].Icon = "/common/icon/" + fileName
+					}
 				}
 			}
 		}
