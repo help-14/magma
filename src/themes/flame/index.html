@@ -71,7 +71,18 @@
                                 {{if .IsImage}}
                                 <img src="{{.Icon}}" class="icon">
                                 {{else if .IsSVG}}
-                                <svg-file src="{{.Icon}}" class="svg-icon"></svg-file>
+                                <svg-file src="{{.Icon}}" class="svg-icon">
+                                    <style>
+                                        path:nth-child(2n+2) {
+                                            fill: var(--foreground); /* shadowDOM style does NOT style global DOM */
+                                        }
+                                        svg {
+                                            fill: var(--foreground);
+                                            width: 32px;
+                                            height: 32px;
+                                        }
+                                    </style>
+                                </svg-file>
                                 {{else}}
                                 <i class="{{.Icon}} fa-xl icon"></i>
                                 {{end}}
