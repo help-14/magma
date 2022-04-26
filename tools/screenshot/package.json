@@ -1,0 +1,14 @@
+{
+  "name": "screenshot",
+  "version": "1.0.0",
+  "description": "Take screenshot of all themes",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Help-14",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^13.6.0"
+  }
+}

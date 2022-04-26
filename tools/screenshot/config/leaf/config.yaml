@@ -1,0 +1,12 @@
+website:
+  theme: "leaf"
+  title: "Magma Dashboard"
+  description: ""
+  language: "en"
+  localization: "en-US"
+  useMetric: true
+openweathermap:
+  apiKey: demo
+  lon: 0
+  lat: 0
+addons:

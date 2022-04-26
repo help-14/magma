@@ -1,0 +1,70 @@
+data:
+  - title: Applications
+    columns:
+      - title: Servers
+        bookmarks:
+          - name: OpenWRT
+            icon: fa-solid fa-wifi
+            url: http://192.168.2.1
+          - name: Proxmox
+            icon: https://iconape.com/wp-content/files/pk/18549/svg/cib-proxmox.svg
+            url: http://192.168.2.200
+          - name: Home Assistant
+            icon: fa-solid fa-house
+            url: http://huawei.lan:8123/
+          - name: Docker
+            icon: fa-brands fa-docker
+            url: http://docker.lan/#!/2/docker/containers
+      - title: Nas
+        bookmarks:
+          - name: TrueNas
+            icon: fa-solid fa-server
+            url: http://nas.lan/
+          - name: Kerberos
+            icon: fa-solid fa-video
+            url: http://huawei.lan:8200/
+          - name: jDownloader
+            icon: fa-solid fa-cloud-arrow-down
+            url: http://nas.lan:9800/
+      - title: Monitoring
+        bookmarks:
+          - name: Grafana
+            icon: https://iconape.com/wp-content/files/sn/17615/svg/cib-grafana.svg
+            url: https://help14.grafana.net/
+          - name: InfluxDb
+            icon: fa-solid fa-database
+            url: http://20.205.154.71:8086/
+      - title: Tools
+        bookmarks:
+          - name: Bitwarden
+            icon: fa-solid fa-shield-halved
+            url: https://vault.help14.com/
+  - title: Bookmarks
+    columns:
+      - title: Social Media
+        bookmarks:
+          - name: Facebook
+            icon: fa-brands fa-facebook
+            url: https://www.facebook.com
+          - name: Reddit
+            icon: fa-brands fa-reddit
+            url: https://www.reddit.com
+          - name: Youtube
+            icon: fa-brands fa-youtube
+            url: https://www.youtube.com
+      - title: Shopping
+        bookmarks:
+          - name: Shopee
+            icon: fa-solid fa-bag-shopping
+            url: https://shopee.vn
+          - name: Lazada
+            icon: fa-solid fa-heart
+            url: https://www.lazada.vn/
+          - name: Shipping
+            icon: fa-solid fa-truck
+            url: http://nhaphang.com/i/#
+      - title: Tools
+        bookmarks:
+          - name: Maps
+            icon: fa-solid fa-map
+            url: https://www.google.com/maps

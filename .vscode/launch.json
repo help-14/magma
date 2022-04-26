@@ -24,6 +24,17 @@
                 "./docs",
             ],
             "outputCapture": "std",
+        },
+        {
+            "request": "launch",
+            "name": "Take Screenshot",
+            "type": "pwa-node",
+            "cwd": "${workspaceFolder}/tools/screenshot",
+            "runtimeExecutable": "node",
+            "runtimeArgs": [
+                "app.js",
+            ],
+            "outputCapture": "std",
         }
     ]
 }
