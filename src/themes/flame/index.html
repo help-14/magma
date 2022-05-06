@@ -127,7 +127,8 @@
             if (!weather) return;
             // Parse weather id
             let icon = null;
-            let isDay = Date.now().hour >= 6 && Date.now().hour < 18;
+            let hour = new Date().getHours();
+            let isDay = hour >= 6 && hour < 18;
             const weatherCode = weather.weather[0].id;
             if ([200, 201, 202, 210, 211, 212, 221, 230, 231, 232].includes(weatherCode)) {
                 icon = Skycons.RAIN; //Thunderstorm
