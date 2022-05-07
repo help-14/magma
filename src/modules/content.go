@@ -18,11 +18,13 @@ type ContentData struct {
 type GroupData struct {
 	Title   string       `yaml:"title"`
 	Columns []ColumnData `yaml:"columns"`
+	Icon    string       `yaml:"icon"`
 }
 
 type ColumnData struct {
 	Title     string         `yaml:"title"`
 	Bookmarks []BookmarkData `yaml:"bookmarks"`
+	Icon      string         `yaml:"icon"`
 }
 
 type BookmarkData struct {
@@ -30,14 +32,6 @@ type BookmarkData struct {
 	Url  string `yaml:"url"`
 
 	Icon string `yaml:"icon"`
-}
-
-func (b *BookmarkData) IsSVG() bool {
-	return strings.Contains(b.Icon, ".svg")
-}
-
-func (b *BookmarkData) IsImage() bool {
-	return contains(b.Icon, ".jpg", ".jpeg", ".png", ".gif", ".apng", ".bmp", ".ico", ".webp")
 }
 
 func LoadContent() ContentData {
@@ -79,4 +73,28 @@ func contains(str string, subStrs ...string) bool {
 		}
 	}
 	return true
+}
+
+func (b *BookmarkData) IsSVG() bool {
+	return strings.Contains(b.Icon, ".svg")
+}
+
+func (b *BookmarkData) IsImage() bool {
+	return contains(b.Icon, ".jpg", ".jpeg", ".png", ".gif", ".apng", ".bmp", ".ico", ".webp")
+}
+
+func (b *GroupData) IsSVG() bool {
+	return strings.Contains(b.Icon, ".svg")
+}
+
+func (b *GroupData) IsImage() bool {
+	return contains(b.Icon, ".jpg", ".jpeg", ".png", ".gif", ".apng", ".bmp", ".ico", ".webp")
+}
+
+func (b *ColumnData) IsSVG() bool {
+	return strings.Contains(b.Icon, ".svg")
+}
+
+func (b *ColumnData) IsImage() bool {
+	return contains(b.Icon, ".jpg", ".jpeg", ".png", ".gif", ".apng", ".bmp", ".ico", ".webp")
 }

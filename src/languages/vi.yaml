@@ -3,3 +3,16 @@ greeting:
     afternoon: Chiều làm việc hiệu quả!
     evening: Chiều tối vui vẻ!
     night: Chúc ngủ ngon!
+weather:
+    thunderstorm: dông bão
+    drizzle: mưa phùn
+    rain: mưa lớn
+    snow: tuyết
+    clear-day: trời quang
+    clear-night: đêm trời quang
+    cloudy: nhiều mây
+    partly-cloudy-day: ngày có mây
+    partly-cloudy-night: đêm có mây
+    sleet: mưa đá
+    windy: gió todd
+    foggy: sương mù

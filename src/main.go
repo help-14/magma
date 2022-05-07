@@ -84,7 +84,6 @@ func loadData() {
 
 	// Load template engine
 	themeDir := filepath.Join(pwd, "themes", appConfig.Website.Theme)
-	log.Println(themeDir)
 	themefs = http.FileServer(http.Dir(themeDir))
 	tmpl, _ := template.ParseFiles(filepath.Join(themeDir, "index.html"))
 	webTemplate = tmpl

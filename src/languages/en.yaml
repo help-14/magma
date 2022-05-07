@@ -3,3 +3,16 @@ greeting:
     afternoon: Good afternoon!
     evening: Good evening!
     night: Good night!
+weather:
+    thunderstorm: Thunderstorm
+    drizzle: Drizzle
+    rain: Rain
+    snow: Snow
+    clear-day: Clear day
+    clear-night: Clear night
+    cloudy: Cloudy
+    partly-cloudy-day: Partly cloudy day
+    partly-cloudy-night: Partly cloudy night
+    sleet: Sleet
+    windy: Windy
+    foggy: Foggy

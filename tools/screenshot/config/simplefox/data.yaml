@@ -1,0 +1,57 @@
+data:
+  - title: Applications
+    columns:
+      - bookmarks:
+          - name: OpenWRT
+            icon: fa-solid fa-wifi
+            url: http://192.168.2.1
+          - name: Proxmox
+            icon: https://iconape.com/wp-content/files/pk/18549/svg/cib-proxmox.svg
+            url: http://192.168.2.200
+          - name: Home Assistant
+            icon: fa-solid fa-house
+            url: http://huawei.lan:8123/
+          - name: Docker
+            icon: fa-brands fa-docker
+            url: http://docker.lan/#!/2/docker/containers
+          - name: OpenWRT
+            icon: fa-solid fa-wifi
+            url: http://192.168.2.1
+          - name: Proxmox
+            icon: https://iconape.com/wp-content/files/pk/18549/svg/cib-proxmox.svg
+            url: http://192.168.2.200
+          - name: Home Assistant
+            icon: fa-solid fa-house
+            url: http://huawei.lan:8123/
+          - name: Docker
+            icon: fa-brands fa-docker
+            url: http://docker.lan/#!/2/docker/containers
+  - title: Bookmarks
+    columns:
+      - title: Social Media
+        icon: fa-solid fa-user-group
+        bookmarks:
+          - name: Facebook
+            icon: fa-brands fa-facebook
+            url: https://www.facebook.com
+          - name: Reddit
+            icon: fa-brands fa-reddit
+            url: https://www.reddit.com
+          - name: Voz
+            icon: https://files.help14.com/voz.svg
+            url: https://voz.vn
+          - name: Youtube
+            icon: fa-brands fa-youtube
+            url: https://www.youtube.com
+      - title: Shopping
+        icon: fa-solid fa-cart-shopping
+        bookmarks:
+          - name: Shopee
+            icon: fa-solid fa-bag-shopping
+            url: https://shopee.vn
+          - name: Lazada
+            icon: fa-solid fa-heart
+            url: https://www.lazada.vn/
+          - name: Shipping
+            icon: fa-solid fa-truck
+            url: http://nhaphang.com/i/#
