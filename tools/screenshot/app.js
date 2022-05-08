@@ -16,14 +16,14 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 (async () => {
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         defaultViewport: {
             width: 1920,
             height: 1080
         }
     });
 
-    const themes = getDirectories("./config");
+    const themes = ["simplefox"]//getDirectories("./config");
     for (const theme of themes) {
         replaceFiles(`./config/${theme}`, '../../src/data');
         exec('cd ../../src/ && go run main.go');
@@ -32,6 +32,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
         const page = await browser.newPage();
         await page.goto('http://localhost:7001');
         await page.waitForNetworkIdle();
+        await sleep(1000);
         await page.screenshot({ path: `../../docs/screenshots/${theme}.png` });
         await page.close();
 
