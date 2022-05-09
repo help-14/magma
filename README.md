@@ -16,6 +16,8 @@ Personal dashboard that is highly customizable, lightweight and responsive.
 * Go to `data/data.yaml` to edit your bookmarks
 * See your dashboard at [localhost:7001](http://localhost:7001)
 
+[![Magma on Docker Hub](https://dockeri.co/image/help14/magma)](https://hub.docker.com/r/help14/magma)
+
 ## Customization
 Go to our [website](https://magma.help14.com) and read the document to  learn more.
 
