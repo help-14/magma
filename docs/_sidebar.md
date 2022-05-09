@@ -4,5 +4,6 @@
 * [Configuration](config.md)
 * Customization
   * [Themes](customization/themes.md)
+  * [Languages](customization/languages.md)
   * [Colors, Background, CSS](customization/css.md)
   * [Create new theme](customization/new-theme.md)
