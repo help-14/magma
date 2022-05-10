@@ -25,7 +25,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
     const themes = ["simplefox"]//getDirectories("./config");
     for (const theme of themes) {
-        replaceFiles(`./config/${theme}`, '../../src/data');
+        replaceFiles(`../../sample/${theme}`, '../../src/data');
         exec('cd ../../src/ && go run main.go');
         await sleep(500);
 
