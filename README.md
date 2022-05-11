@@ -5,8 +5,8 @@ Personal dashboard that is highly customizable, lightweight and responsive.
 
 ## Features
 * Lightweight (8-16Mb), fast, build from Go
-* Support multiple languages
-* Support multiple themes
+* Support multiple [languages](https://magma.help14.com/#/customization/languages)
+* Support multiple [themes](https://magma.help14.com/#/customization/themes)
 * Addons support (WIP)
 
 ## How to use
