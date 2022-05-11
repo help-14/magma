@@ -2,6 +2,7 @@
 
 * [Get Started](getting-started.md)
 * [Configuration](config.md)
+* [Data](data.md)
 * Customization
   * [Themes](customization/themes.md)
   * [Languages](customization/languages.md)
