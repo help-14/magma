@@ -107,3 +107,4 @@ src/temp
 src/build
 src/data
 data
+.DS_Store

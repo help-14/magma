@@ -65,7 +65,7 @@ body {
   margin-left: 0.5em !important;
   display: inline-block;
   vertical-align: bottom !important;
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .group-items .icon-container {
