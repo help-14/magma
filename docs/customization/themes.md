@@ -1,3 +1,5 @@
+# Available themes
+
 ## flame
 
 ![Flame theme](../screenshots/flame.png)
