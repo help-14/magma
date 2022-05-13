@@ -1,6 +1,7 @@
 <!-- docs/_sidebar.md -->
 
-* [Get Started](getting-started.md)
+* [Features](features.md)
+* [Installation](getting-started.md)
 * [Configuration](config.md)
 * [Data](data.md)
 * Customization
