@@ -8,13 +8,17 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
+	docker "github.com/help-14/magma/addons/docker"
+	healthcheckserver "github.com/help-14/magma/addons/health-check-server"
 	"github.com/help-14/magma/modules"
 )
 
 var pwd string
+var themeDir string
 var appConfig modules.Config
 var websiteData = struct {
 	Config   modules.WebsiteConfig
@@ -22,7 +26,6 @@ var websiteData = struct {
 	Contents []modules.GroupData
 }{}
 var webTemplate *template.Template
-var themefs http.Handler
 
 func main() {
 	prepare()
@@ -35,10 +38,13 @@ func main() {
 	languagefs := http.FileServer(http.Dir(filepath.Join(pwd, "languages")))
 	http.Handle("/languages/", http.StripPrefix("/languages/", languagefs))
 
-	http.Handle("/theme/", http.StripPrefix("/theme/", themefs))
+	th := themeHandler{}
+	http.Handle("/theme/", th)
 
 	http.HandleFunc("/weather", serveWeather)
 	http.HandleFunc("/", serveTemplate)
+
+	//loadAddons()
 
 	log.Println("Listening on http://localhost:7001 ...")
 	err := http.ListenAndServe(":7001", nil)
@@ -83,10 +89,20 @@ func loadData() {
 	}
 
 	// Load template engine
-	themeDir := filepath.Join(pwd, "themes", appConfig.Website.Theme)
-	themefs = http.FileServer(http.Dir(themeDir))
+	themeDir = filepath.Join(pwd, "themes", appConfig.Website.Theme)
 	tmpl, _ := template.ParseFiles(filepath.Join(themeDir, "index.html"))
 	webTemplate = tmpl
+}
+
+func loadAddons() {
+	for i := 0; i < len(appConfig.Addons); i++ {
+		switch addonName := appConfig.Addons[i]; addonName {
+		case "docker":
+			docker.Setup()
+		case "health-check-server":
+			healthcheckserver.Setup()
+		}
+	}
 }
 
 func watchChanges() {
@@ -123,6 +139,14 @@ func watchChanges() {
 
 func serveTemplate(w http.ResponseWriter, r *http.Request) {
 	webTemplate.Execute(w, websiteData)
+}
+
+type themeHandler struct {
+	format string
+}
+
+func (th themeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, strings.Replace(r.URL.Path, "/theme", themeDir, 1))
 }
 
 var weatherTimeOut int64
