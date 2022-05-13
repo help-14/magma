@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const { readdirSync, copyFileSync } = require('fs');
+const { readdirSync, copyFileSync, mkdirSync, existsSync } = require('fs');
 const { exec } = require('child_process');
 
 const getDirectories = source =>
@@ -9,12 +9,22 @@ const getDirectories = source =>
 
 const replaceFiles = (source, destination) =>
     readdirSync(source, { withFileTypes: true })
-        .filter(dirent => !dirent.isDirectory())
-        .forEach(file => copyFileSync(`${source}/${file.name}`, `${destination}/${file.name}`));
+        .forEach(path => {
+            const srcPath = `${source}/${path.name}`
+            const desPath = `${destination}/${path.name}`
+            if (path.isDirectory()) {
+                if (!existsSync(desPath)) mkdirSync(desPath, { recursive: true });
+                replaceFiles(srcPath, desPath);
+            }
+            else
+                copyFileSync(srcPath, desPath)
+        });
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 (async () => {
+    exec('cd ../../src/ && go run main.go');
+
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: {
@@ -23,22 +33,19 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
         }
     });
 
-    const themes = ["simplefox"]//getDirectories("./config");
+    const themes = getDirectories("../../sample");
     for (const theme of themes) {
         replaceFiles(`../../sample/${theme}`, '../../src/data');
-        exec('cd ../../src/ && go run main.go');
         await sleep(500);
 
         const page = await browser.newPage();
         await page.goto('http://localhost:7001');
         await page.waitForNetworkIdle();
-        await sleep(1000);
+        await sleep(500);
         await page.screenshot({ path: `../../docs/screenshots/${theme}.png` });
         await page.close();
 
-        exec('pkill -f go');
-        exec('pkill -f main');
-        await sleep(500);
+        await sleep(1000);
     }
 
     browser.close();

@@ -64,17 +64,17 @@
                     <div class="grid gap-4 grid-cols-2">
                         {{range (index .Contents 1).Columns}}
                         <div class="box rounded-lg drop-shadow-xl gap-2 p-5 grid grid-flow-row auto-rows-max justify-center">
-                            <div class="icon-container-small mb-4">
-                                <center>
-                                    {{if .IsImage}}
-                                    <img src="{{.Icon}}" class="icon">
-                                    {{else if .IsSVG}}
-                                    <svg-file src="{{.Icon}}" class="svg-icon"></svg-file>
-                                    {{else}}
-                                    <i class="{{.Icon}} fa-xl icon"></i>
-                                    {{end}}
-                                </center>
-                            </div>
+                            <center>
+                                <div class="icon-container-small mb-4 w-100">
+                                        {{if .IsImage}}
+                                        <img src="{{.Icon}}" class="icon">
+                                        {{else if .IsSVG}}
+                                        <svg-file src="{{.Icon}}" class="svg-icon"></svg-file>
+                                        {{else}}
+                                        <i class="{{.Icon}} fa-xl icon"></i>
+                                        {{end}}
+                                </div>
+                            </center>
                             {{range .Bookmarks}}
                             <a href="{{.Url}}" class="text-center">{{.Name}}</a>
                             {{end}}
