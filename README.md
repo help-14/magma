@@ -23,3 +23,8 @@ Go to our [website](https://magma.help14.com) and read the document to  learn mo
 
 ## Contribution
 Contributions welcome and needed!
+
+## Thanks to
+- pawelmalak for flame
+- migueravila for simplefox
+- u/Goldtom for flame css theme
