@@ -29,6 +29,13 @@ services:
       - ./data/:/app/data
     ports:
       - '7001:7001'
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: --interval 30
 ```
 
 Start the container:
@@ -41,11 +48,4 @@ Go to your dashboard `http://localhost:7001` to check if everything go smoothly.
 
 ## Update Magma automatically
 
-To get our regular update, you should install watchtower too.
-
-```
-docker run --detach \
-    --name watchtower \
-    --volume /var/run/docker.sock:/var/run/docker.sock \
-    containrrr/watchtower
-```
+To get our regular update, you should install watchtower too. We added it to docker compose, but if you already had or don't want to then remove it.
