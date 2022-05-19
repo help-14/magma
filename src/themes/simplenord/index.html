@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="{{.Config.Language}}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Config.Title}}</title>
+    <meta name="description" content="{{.Config.Description}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/common/assets/favicon.ico" />
+    <link rel="stylesheet" href="/common/css/all.min.css">
+    <link rel="stylesheet" href="/common/css/core.css">
+    <link rel="stylesheet" href="/theme/css/style.min.css" />
+    <link rel="stylesheet" href="/common/css/custom.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="box">
+            <div class="box__image">
+                <img id="cover-art" alt="Abstract art" />
+            </div>
+            <div class="box__content">
+                <h1 id="greeting" class="box__title"></h1>
+                <div id="links" class="box__links">
+                {{range .Contents}}
+                    {{range .Columns}}
+                    <ul class="links">
+                        <li class="links__item">
+                            <span class="links__heading">{{.Title}}</span>
+                        </li>
+                        {{range .Bookmarks}}
+                        <li class="links__item">
+                            <a class="links__link" href="{{.Url}}">{{.Name}}</a>
+                        </li>
+                        {{end}}
+                    </ul>
+                    {{end}}
+                {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/common/js/core.js"></script>
+    <script>
+        window.config = {
+            localization: {{.Config.Localization}},
+            language: {{.Config.Language}},
+            useMetric: {{.Config.UseMetric}}
+        };
+        (function setTimer() {
+            const greeting = document.querySelector("#greeting");
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 12) {
+                greeting.innerText = {{.Language.Greeting.Morning}};
+            }
+            else if (hour >= 12 && hour < 17) {
+                greeting.innerText = {{.Language.Greeting.Afternoon}};
+            }
+            else if (hour >= 17 && hour < 20) {
+                greeting.innerText = {{.Language.Greeting.Evening}};
+            }
+            else {
+                greeting.innerText = {{.Language.Greeting.Night}};
+            }
+        }) ();
+    </script>
+    <script src="/common/js/custom.js"></script>
+</body>
+
+</html>

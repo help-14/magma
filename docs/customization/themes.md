@@ -6,7 +6,11 @@
 
 ## simplefox
 
-![Simplefox theme](../screenshots/simplefox.png)
+![Simple fox theme](../screenshots/simplefox.png)
+
+## simplenord
+
+![Simple nord theme](../screenshots/simplenord.png)
 
 ## leaf
 
