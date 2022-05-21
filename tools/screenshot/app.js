@@ -36,16 +36,14 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const themes = getDirectories("../../sample");
     for (const theme of themes) {
         replaceFiles(`../../sample/${theme}`, '../../src/data');
-        await sleep(500);
+        await sleep(2000);
 
         const page = await browser.newPage();
         await page.goto('http://localhost:7001');
         await page.waitForNetworkIdle();
-        await sleep(500);
+        await sleep(1000);
         await page.screenshot({ path: `../../docs/screenshots/${theme}.png` });
         await page.close();
-
-        await sleep(1000);
     }
 
     browser.close();
