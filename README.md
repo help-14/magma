@@ -1,4 +1,4 @@
-# Magma Dashboard
+# Magma dashboard 🌋
 
 Personal dashboard that is highly customizable, lightweight and responsive.
 
