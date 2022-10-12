@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net"
 	"os"
 	"path"
 	"path/filepath"
@@ -19,6 +20,7 @@ import (
 
 var pwd string
 var themeDir string
+var clientAddress string
 var appConfig modules.Config
 var websiteData = struct {
 	Config   modules.WebsiteConfig
@@ -66,13 +68,37 @@ func prepare() {
 	modules.CopyDir(filepath.Join(pwd, "common"), dataPath, false)
 }
 
+func RemoveIndex(s []modules.BookmarkData, index int) {
+	copy(s[index:], s[index+1:])
+	s[len(s)-1] = modules.BookmarkData{"", "", "", false}
+	s = s[:len(s)-1]
+}
+
+func pruneData() {
+	// Remove local ressources access
+	for group := 0; group < len(websiteData.Contents); group++ {
+		for col := 0; col < len(websiteData.Contents[group].Columns); col++ {
+			bookmarks := websiteData.Contents[group].Columns[col].Bookmarks
+			for bookmark := 0; bookmark < len(websiteData.Contents[group].Columns[col].Bookmarks); bookmark++ {
+				bookmarkData := websiteData.Contents[group].Columns[col].Bookmarks[bookmark]
+				if bookmarkData.IsLocal {
+					RemoveIndex(bookmarks, bookmark)
+					bookmark--
+				}
+			}
+			websiteData.Contents[group].Columns[col].Bookmarks = bookmarks
+		}
+	}
+	loadTemplate()
+}
+
 func loadData() {
 	appConfig = modules.LoadConfig()
 	websiteData.Config = appConfig.Website
 	websiteData.Language = modules.LoadLanguage(appConfig.Website.Language)
 	websiteData.Contents = modules.LoadContent().Data
 
-	// Download icon to local
+	// Download icon to local and remove local ressources access
 	for group := 0; group < len(websiteData.Contents); group++ {
 		for col := 0; col < len(websiteData.Contents[group].Columns); col++ {
 			for bookmark := 0; bookmark < len(websiteData.Contents[group].Columns[col].Bookmarks); bookmark++ {
@@ -87,8 +113,10 @@ func loadData() {
 			}
 		}
 	}
+	loadTemplate()
+}
 
-	// Load template engine
+func loadTemplate() {
 	themeDir = filepath.Join(pwd, "themes", appConfig.Website.Theme)
 	tmpl, _ := template.ParseFiles(filepath.Join(themeDir, "index.html"))
 	webTemplate = tmpl
@@ -137,7 +165,23 @@ func watchChanges() {
 	<-done
 }
 
+func ClientIsLocal(r *http.Request) bool {
+    IPAddress := net.ParseIP(r.Header.Get("X-Real-Ip"))
+    if IPAddress == nil {
+        IPAddress = net.ParseIP(r.Header.Get("X-Forwarded-For"))
+    }
+    if IPAddress == nil {
+	    IPAddress = net.ParseIP(strings.Split(r.RemoteAddr, ":")[0])
+    }
+    return IPAddress.IsPrivate()
+}
+
 func serveTemplate(w http.ResponseWriter, r *http.Request) {
+	if ! ClientIsLocal(r) {
+		pruneData()
+	} else {
+		loadData()
+	}
 	webTemplate.Execute(w, websiteData)
 }
 
