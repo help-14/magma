@@ -26,8 +26,9 @@ Your bookmark data is in `/data/data.yaml`. You can take a look at sample file f
 
 ## BookmarkData
 
-| Field | Type   | Meaning                                                |
-| ----- | ------ | ------------------------------------------------------ |
-| name  | string | Bookmark name                                          |
-| icon  | string | Bookmark icon, can be fontawesome class or direct link |
-| url   | string | Bookmark url                                           |
+| Field   | Type    | Meaning                                                                                |
+| ------- | ------- | -------------------------------------------------------------------------------------- |
+| name    | string  | Bookmark name                                                                          |
+| icon    | string  | Bookmark icon, can be fontawesome class or direct link                                 |
+| url     | string  | Bookmark url                                                                           |
+| isLocal | boolean | Is this bookmark a local url that is not meant to be expose when accessed by internet. |
