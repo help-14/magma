@@ -3,10 +3,16 @@ package modules
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
+
+func SetupLanguage() {
+	languagefs := http.FileServer(http.Dir(filepath.Join(CurrentPath(), "languages")))
+	http.Handle("/languages/", http.StripPrefix("/languages/", languagefs))
+}
 
 type Language struct {
 	Greeting LanguageGreeting `yaml:"greeting"`

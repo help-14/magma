@@ -28,10 +28,11 @@ type ColumnData struct {
 }
 
 type BookmarkData struct {
-	Name string `yaml:"name"`
-	Url  string `yaml:"url"`
-	Icon string `yaml:"icon"`
-	IsLocal bool `yaml:"isLocal"`
+	Name     string `yaml:"name"`
+	Url      string `yaml:"url"`
+	UrlLocal string `yaml:"urlLocal"`
+	Icon     string `yaml:"icon"`
+	IsLocal  bool   `yaml:"isLocal"`
 }
 
 func LoadContent() ContentData {

@@ -7,6 +7,15 @@ import (
 	"os"
 )
 
+var pwd string
+
+func CurrentPath() string {
+	if len(pwd) <= 0 {
+		pwd, _ = os.Getwd()
+	}
+	return pwd
+}
+
 func Exists(path string) bool {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return true
