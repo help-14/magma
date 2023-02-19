@@ -90,8 +90,8 @@
     <script src="/common/js/core.js"></script>
     <script>
         window.config = {
-            localization: {{.Config.Localization}},
-            language: {{.Config.Language}},
+            localization: '{{.Config.Localization}}',
+            language: '{{.Config.Language}}',
             useMetric: {{.Config.UseMetric}}
         };
 
@@ -109,16 +109,16 @@
             const greeting = document.querySelector("#greeting");
             const hour = new Date().getHours();
             if (hour >= 5 && hour < 12) {
-                greeting.innerText = {{.Language.Greeting.Morning}};
+                greeting.innerText = '{{.Language.Greeting.Morning}}'
             }
             else if (hour >= 12 && hour < 17) {
-                greeting.innerText = {{.Language.Greeting.Afternoon}};
+                greeting.innerText = '{{.Language.Greeting.Afternoon}}'
             }
             else if (hour >= 17 && hour < 20) {
-                greeting.innerText = {{.Language.Greeting.Evening}};
+                greeting.innerText = '{{.Language.Greeting.Evening}}'
             }
             else {
-                greeting.innerText = {{.Language.Greeting.Night}};
+                greeting.innerText = '{{.Language.Greeting.Night}}'
             }
         }) ();
 
