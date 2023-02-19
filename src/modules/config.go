@@ -2,8 +2,6 @@ package modules
 
 import (
 	"fmt"
-	"io"
-	"os"
 	"path/filepath"
 
 	"gopkg.in/yaml.v2"
@@ -46,13 +44,7 @@ func LoadConfig() {
 	}
 	AppConfig = defaultConfig
 
-	file, err := os.Open(filepath.Join("data", "config.yaml"))
-	if err != nil {
-		fmt.Printf("failed reading file: %s", err)
-		return
-	}
-	defer file.Close()
-	yamlFile, err := io.ReadAll(file)
+	yamlFile, err := ReadFile(filepath.Join("data", "config.yaml"))
 	if err != nil {
 		fmt.Printf("Error reading YAML file: %s\n", err)
 		return

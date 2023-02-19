@@ -2,9 +2,7 @@ package modules
 
 import (
 	"fmt"
-	"io"
 	"net/http"
-	"os"
 	"path/filepath"
 
 	"gopkg.in/yaml.v2"
@@ -43,13 +41,7 @@ type LanguageWeather struct {
 }
 
 func LoadLanguage(language string) Language {
-	file, err := os.Open(filepath.Join("languages", language+".yaml"))
-	if err != nil {
-		fmt.Printf("failed reading file: %s", err)
-		return LoadLanguage("en")
-	}
-	defer file.Close()
-	yamlFile, err := io.ReadAll(file)
+	yamlFile, err := ReadFile(filepath.Join("languages", language+".yaml"))
 	if err != nil {
 		fmt.Printf("Error reading YAML file: %s\n", err)
 		return LoadLanguage("en")
