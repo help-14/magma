@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"path"
@@ -11,17 +12,17 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-func SetupTemplate() {
+func SetupTemplate(mux *http.ServeMux) {
 	loadData()
 	go watchChanges()
 
-	commonfs := http.FileServer(http.Dir(filepath.Join(pwd, "data")))
-	http.Handle("/common/", http.StripPrefix("/common/", commonfs))
+	commonfs := http.FileServer(http.Dir(filepath.Join(CurrentPath(), "data")))
+	mux.Handle("/common/", http.StripPrefix("/common/", commonfs))
 
 	th := themeHandler{}
-	http.Handle("/theme/", th)
+	mux.Handle("/theme/", th)
 
-	http.HandleFunc("/", serveTemplate)
+	mux.HandleFunc("/", serveTemplate)
 }
 
 var websiteData = struct {
@@ -39,6 +40,7 @@ func loadData() {
 	websiteData.Config = AppConfig.Website
 	websiteData.Language = LoadLanguage(AppConfig.Website.Language)
 	websiteData.Contents = LoadContent().Data
+	loadTemplate()
 
 	// Download icon to local and remove local ressources access
 	for groupIndex := 0; groupIndex < len(websiteData.Contents); groupIndex++ {
@@ -58,19 +60,17 @@ func loadData() {
 				//download icon
 				if bookmarkData.IsImage() || bookmarkData.IsSVG() {
 					fileName := path.Base(iconPath)
-					if DownloadFile(iconPath, filepath.Join(pwd, "data", "icon", fileName)) {
+					if DownloadFile(iconPath, filepath.Join(CurrentPath(), "data", "icon", fileName)) {
 						iconPath = "/common/icon/" + fileName
 					}
 				}
 
 				//add to private array
-				if bookmarkData.IsLocal || len(bookmarkData.UrlLocal) > 0 {
-					url := bookmarkData.Url
-					if len(bookmarkData.UrlLocal) > 0 {
-						url = bookmarkData.UrlLocal
-					}
-					columnDataPrivate = append(columnDataPrivate, BookmarkData{bookmarkData.Name, url, bookmarkData.UrlLocal, iconPath, true})
+				url := bookmarkData.Url
+				if len(bookmarkData.UrlLocal) > 0 {
+					url = bookmarkData.UrlLocal
 				}
+				columnDataPrivate = append(columnDataPrivate, BookmarkData{bookmarkData.Name, url, bookmarkData.UrlLocal, iconPath, true})
 
 				//add to public array
 				if !bookmarkData.IsLocal && len(bookmarkData.Url) > 0 {
@@ -93,8 +93,6 @@ func loadData() {
 			privateContent = append(privateContent, GroupData{group.Title, groupDataPrivate, group.Icon})
 		}
 	}
-
-	loadTemplate()
 }
 
 var themeDir string
@@ -104,17 +102,20 @@ type themeHandler struct {
 }
 
 func (th themeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, strings.Replace(r.URL.Path, "/theme", themeDir, 1))
+	newPath := strings.Replace(r.URL.Path, "/theme", themeDir, 1)
+	fmt.Println(newPath)
+	http.ServeFile(w, r, newPath)
 }
 
 func loadTemplate() {
-	themeDir = filepath.Join(pwd, "themes", AppConfig.Website.Theme)
+	themeDir = filepath.Join(CurrentPath(), "themes", AppConfig.Website.Theme)
 	tmpl, _ := template.ParseFiles(filepath.Join(themeDir, "index.html"))
 	webTemplate = tmpl
 }
 
 func serveTemplate(w http.ResponseWriter, r *http.Request) {
-	if ClientIsLocal(r) {
+	websiteData.IsLocal = ClientIsLocal(r)
+	if websiteData.IsLocal {
 		websiteData.Contents = privateContent
 	} else {
 		websiteData.Contents = publicContent
@@ -126,6 +127,7 @@ func watchChanges() {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 	defer watcher.Close()
 

@@ -3,7 +3,8 @@ package modules
 import (
 	"fmt"
 	"index/suffixarray"
-	"io/ioutil"
+	"io"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -38,7 +39,13 @@ type BookmarkData struct {
 func LoadContent() ContentData {
 	emptyData := ContentData{}
 
-	yamlFile, err := ioutil.ReadFile(filepath.Join("data", "data.yaml"))
+	file, err := os.Open(filepath.Join("data", "data.yaml"))
+	if err != nil {
+		fmt.Printf("failed reading file: %s", err)
+		return emptyData
+	}
+	defer file.Close()
+	yamlFile, err := io.ReadAll(file)
 	if err != nil {
 		fmt.Printf("Error reading YAML file: %s\n", err)
 		return emptyData

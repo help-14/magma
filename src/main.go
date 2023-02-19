@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,17 +15,27 @@ import (
 
 func main() {
 	prepare()
+	mux := http.NewServeMux()
 
-	modules.SetupLanguage()
-	modules.SetupTemplate()
-	modules.SetupWeather()
+	modules.SetupLanguage(mux)
+	modules.SetupTemplate(mux)
+	modules.SetupWeather(mux)
 	//loadAddons()
 
-	log.Println("Listening on http://localhost:7001 ...")
-	err := http.ListenAndServe(":7001", nil)
-	if err != nil {
-		log.Fatal(err)
+	server := http.Server{
+		Addr:    fmt.Sprintf(":%d", 7001),
+		Handler: mux,
 	}
+	log.Println("Listening on http://localhost:7001 ...")
+	if err := server.ListenAndServe(); err != nil {
+		if !errors.Is(err, http.ErrServerClosed) {
+			fmt.Printf("error running http server: %s\n", err)
+		}
+	}
+	// err := http.ListenAndServe(":7001", nil)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func prepare() {

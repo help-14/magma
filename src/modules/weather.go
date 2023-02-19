@@ -1,14 +1,14 @@
 package modules
 
 import (
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"time"
 )
 
-func SetupWeather() {
-	http.HandleFunc("/weather", serveWeather)
+func SetupWeather(mux *http.ServeMux) {
+	mux.HandleFunc("/weather", serveWeather)
 }
 
 func serveWeather(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +33,7 @@ func GetWeather(apiKey string, latitude string, longitude string) []byte {
 				log.Fatalln(err)
 				return nil
 			}
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := io.ReadAll(resp.Body)
 			if err != nil {
 				log.Fatalln(err)
 				return nil
