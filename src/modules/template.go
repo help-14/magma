@@ -70,7 +70,9 @@ func loadData() {
 				if len(bookmarkData.UrlLocal) > 0 {
 					url = bookmarkData.UrlLocal
 				}
-				columnDataPrivate = append(columnDataPrivate, BookmarkData{bookmarkData.Name, url, bookmarkData.UrlLocal, iconPath, true})
+				if len(url) > 0 {
+					columnDataPrivate = append(columnDataPrivate, BookmarkData{bookmarkData.Name, url, bookmarkData.UrlLocal, iconPath, true})
+				}
 
 				//add to public array
 				if !bookmarkData.IsLocal && len(bookmarkData.Url) > 0 {
