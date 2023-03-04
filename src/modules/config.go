@@ -2,7 +2,6 @@ package modules
 
 import (
 	"fmt"
-	"io/ioutil"
 	"path/filepath"
 
 	"gopkg.in/yaml.v2"
@@ -29,7 +28,9 @@ type OpenWeatherMapConfig struct {
 	Latitude  string `yaml:"lat"`
 }
 
-func LoadConfig() Config {
+var AppConfig Config
+
+func LoadConfig() {
 	defaultConfig := Config{
 		Website: WebsiteConfig{
 			Title:        "Magma Dashboard",
@@ -41,20 +42,21 @@ func LoadConfig() Config {
 		},
 		Addons: []string{},
 	}
+	AppConfig = defaultConfig
 
-	yamlFile, err := ioutil.ReadFile(filepath.Join("data", "config.yaml"))
+	yamlFile, err := ReadFile(filepath.Join("data", "config.yaml"))
 	if err != nil {
 		fmt.Printf("Error reading YAML file: %s\n", err)
-		return defaultConfig
+		return
 	}
 
 	var yamlConfig Config
 	err = yaml.Unmarshal(yamlFile, &yamlConfig)
 	if err != nil {
 		fmt.Printf("Error parsing YAML file: %s\n", err)
-		return defaultConfig
+		return
 	}
 
 	fmt.Println("Loaded config:", yamlConfig)
-	return yamlConfig
+	AppConfig = yamlConfig
 }

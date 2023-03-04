@@ -3,7 +3,6 @@ package modules
 import (
 	"fmt"
 	"index/suffixarray"
-	"io/ioutil"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -28,16 +27,17 @@ type ColumnData struct {
 }
 
 type BookmarkData struct {
-	Name string `yaml:"name"`
-	Url  string `yaml:"url"`
-	Icon string `yaml:"icon"`
-	IsLocal bool `yaml:"isLocal"`
+	Name     string `yaml:"name"`
+	Url      string `yaml:"url"`
+	UrlLocal string `yaml:"urlLocal"`
+	Icon     string `yaml:"icon"`
+	IsLocal  bool   `yaml:"isLocal"`
 }
 
 func LoadContent() ContentData {
 	emptyData := ContentData{}
 
-	yamlFile, err := ioutil.ReadFile(filepath.Join("data", "data.yaml"))
+	yamlFile, err := ReadFile(filepath.Join("data", "data.yaml"))
 	if err != nil {
 		fmt.Printf("Error reading YAML file: %s\n", err)
 		return emptyData

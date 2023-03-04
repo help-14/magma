@@ -7,6 +7,15 @@ import (
 	"os"
 )
 
+var pwd string
+
+func CurrentPath() string {
+	if len(pwd) <= 0 {
+		pwd, _ = os.Getwd()
+	}
+	return pwd
+}
+
 func Exists(path string) bool {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return true
@@ -14,12 +23,20 @@ func Exists(path string) bool {
 	return false
 }
 
+func ReadFile(path string) ([]byte, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return io.ReadAll(file)
+}
+
 func CopyFile(source string, dest string) (err error) {
 	sourcefile, err := os.Open(source)
 	if err != nil {
 		return err
 	}
-
 	defer sourcefile.Close()
 
 	destfile, err := os.Create(dest)
@@ -33,7 +50,7 @@ func CopyFile(source string, dest string) (err error) {
 	if err == nil {
 		sourceinfo, err := os.Stat(source)
 		if err != nil {
-			err = os.Chmod(dest, sourceinfo.Mode())
+			_ = os.Chmod(dest, sourceinfo.Mode())
 		}
 
 	}

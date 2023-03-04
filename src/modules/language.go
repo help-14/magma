@@ -2,11 +2,16 @@ package modules
 
 import (
 	"fmt"
-	"io/ioutil"
+	"net/http"
 	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
+
+func SetupLanguage(mux *http.ServeMux) {
+	languagefs := http.FileServer(http.Dir(filepath.Join(CurrentPath(), "languages")))
+	mux.Handle("/languages/", http.StripPrefix("/languages/", languagefs))
+}
 
 type Language struct {
 	Greeting LanguageGreeting `yaml:"greeting"`
@@ -36,7 +41,7 @@ type LanguageWeather struct {
 }
 
 func LoadLanguage(language string) Language {
-	yamlFile, err := ioutil.ReadFile(filepath.Join("languages", language+".yaml"))
+	yamlFile, err := ReadFile(filepath.Join("languages", language+".yaml"))
 	if err != nil {
 		fmt.Printf("Error reading YAML file: %s\n", err)
 		return LoadLanguage("en")
