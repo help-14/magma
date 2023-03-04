@@ -1,9 +1,8 @@
 name: docker build
 
 on:
-  push:
-    branches:
-      - "release"
+  release:
+    types: [created]
 
 jobs:
   docker:
