@@ -35,3 +35,7 @@ Contributions welcome and needed!
 - migueravila for [simplefox](https://github.com/migueravila/SimpleFox)
 - u/Goldtom for [flame css theme](https://www.reddit.com/r/selfhosted/comments/rbb4kk/flame_dashboard_custom_css_tweaks/)
 - ramatov-zulfikor for [simplenord](https://github.com/ramatov-zulfikor/startpage)
+
+## Cloudflare Pages
+
+If you don't want to selfhost and have maximum speed, checkout this version: [CF-Magma](https://github.com/help-14/cf-magma)
