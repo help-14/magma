@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bgColor: #282828;
+  --bgImage: url("./bg.jpg");
+  --accentColor: #fabd2f;
+  --foreground: #ebdbb2;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -99,6 +106,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings:
@@ -138,4 +146,10 @@
 
 ::-webkit-scrollbar-corner {
   display: none;
+}
+
+body {
+  background-color: var(--bgColor);
+  color: var(--foreground);
+  z-index: -999;
 }
