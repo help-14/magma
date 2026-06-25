@@ -4,26 +4,26 @@ dashboard:
     - id: timer-main
       type: timer
       title: Timer
-      x: 4
+      x: -5
       y: 1
-      w: 4
-      h: 1
+      w: 7
+      h: 2
       config: {}
     - id: weather-main
       type: weather
       title: Weather
-      x: 8
+      x: 2
       y: 1
-      w: 1
-      h: 1
+      w: 3
+      h: 2
       config:
         locationRef: default
     - id: search-main
       type: search
       title: Search
-      x: 4
-      y: 2
-      w: 5
+      x: -5
+      y: 3
+      w: 10
       h: 1
       config:
         provider: google
@@ -31,10 +31,10 @@ dashboard:
     - id: apps-stack
       type: stack-horizontal
       title: Applications
-      x: 4
-      y: 3
-      w: 5
-      h: 1
+      x: -5
+      y: 4
+      w: 10
+      h: 2
       config:
         gap: 12
       children:
@@ -62,14 +62,14 @@ dashboard:
           config:
             icon: material-symbols:house
             url: https://
-            iconColor: ""
+            iconColor: ''
     - id: media-stack
       type: stack-horizontal
       title: Media
-      x: 4
-      y: 4
-      w: 5
-      h: 1
+      x: -5
+      y: 6
+      w: 10
+      h: 2
       config:
         gap: 12
       children:
@@ -100,20 +100,20 @@ dashboard:
     - id: docker-status-mqrjvli3-7g80
       type: docker-status
       title: Docker
-      x: 4
-      y: 5
-      w: 3
-      h: 2
+      x: -5
+      y: 8
+      w: 6
+      h: 4
       config:
         dockerHost: http://10.10.10.90:2375
         columns: 2
     - id: calendar-mqs8wzat-ass1
       type: calendar
       title: Calendar
-      x: 7
-      y: 5
-      w: 2
-      h: 2
+      x: 1
+      y: 8
+      w: 4
+      h: 4
       config: {}
 locations:
   default:
@@ -126,7 +126,7 @@ network:
   localPingUrl: 10.0.0.1
   localPingTimeout: 300
 theme:
-  accentColor: "#fabd2f"
+  accentColor: '#fabd2f'
 integrations:
   weather:
     provider: openweather

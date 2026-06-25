@@ -60,8 +60,6 @@
         <span class="text-magma-muted text-xs font-bold uppercase">X</span>
         <Input
           type="number"
-          min="1"
-          max={grid.columns}
           value={widget.x}
           oninput={(event) => onUpdateNumber('x', event.currentTarget.value)}
         />
@@ -71,7 +69,6 @@
         <Input
           type="number"
           min="1"
-          max={gridRows}
           value={widget.y}
           oninput={(event) => onUpdateNumber('y', event.currentTarget.value)}
         />

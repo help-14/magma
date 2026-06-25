@@ -2,6 +2,8 @@
  * @typedef {Object} Grid
  * @property {number} columns
  * @property {number} rows
+ * @property {number} [cellWidth]
+ * @property {number} [cellHeight]
  */
 
 /**

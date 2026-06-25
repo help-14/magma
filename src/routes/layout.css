@@ -126,9 +126,11 @@
 	* {
 		@apply border-border outline-ring/50;
 	}
+
 	body {
 		@apply bg-background text-foreground;
 	}
+
 	html {
 		@apply font-sans;
 	}
@@ -183,11 +185,24 @@ button {
 
 .dashboard-grid.grid-active {
 	background:
-		linear-gradient(to right, rgb(246 236 210 / 18%) 1px, transparent 1px),
-		linear-gradient(to bottom, rgb(246 236 210 / 18%) 1px, transparent 1px),
+		linear-gradient(to right, rgb(246 236 210 / 8%) 1px, transparent 1px),
+		linear-gradient(to bottom, rgb(246 236 210 / 8%) 1px, transparent 1px),
 		rgb(20 18 16 / 18%);
 	background-size: var(--cell-size-x) var(--cell-size-y);
 	backdrop-filter: blur(2px);
+}
+
+.dashboard-grid.grid-active::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to right,
+			transparent calc(50% - 1px),
+			rgb(250 189 47 / 28%) calc(50% - 1px),
+			rgb(250 189 47 / 28%) calc(50% + 1px),
+			transparent calc(50% + 1px));
+	pointer-events: none;
+	z-index: 0;
 }
 
 .button-widget::before {

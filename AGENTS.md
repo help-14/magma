@@ -31,7 +31,7 @@ Magma is a SvelteKit dashboard app migrated from the legacy Cloudflare/SolidJS M
 
 ## Config Files
 
-- `config/system.yaml` stores app-level settings such as dashboard grid size.
+- `config/system.yaml` stores app-level settings such as background image, `cellWidth`, and `cellHeight`.
 - `config/dashboard.yaml` stores widgets, locations, search, network, theme, and integration references.
 - `config/override.css` stores custom CSS. Do not put CSS override text in YAML.
 - Keep secrets out of YAML; store credential values in environment variables and reference env var names.
@@ -39,12 +39,15 @@ Magma is a SvelteKit dashboard app migrated from the legacy Cloudflare/SolidJS M
 
 ## Dashboard Editor
 
-- The dashboard grid fills the full viewport.
-- Grid defaults to `12 x 12`, configured in `config/system.yaml`.
-- Grid lines show in edit mode.
-- Drag bars and resize handles show in edit mode.
+- The grid canvas spans the full viewport width and is centered horizontally (x=0 at page center).
+- Widget positions use a centered coordinate system: negative x = left of center, positive x = right of center.
+- The grid is unbounded — no fixed column/row limits. Widgets can be placed anywhere and only overlap is enforced.
+- Cell sizes are fixed pixels (`cellWidth` × `cellHeight`), configured in `config/system.yaml` under `dashboardGrid`.
+  Default: `cellWidth: 100, cellHeight: 100`. Adjustable in Settings → System settings sidebar.
+- The grid background (edit mode) shows repeating vertical/horizontal lines at `cellSize` intervals, with a highlighted yellow center line at x=0.
+- Grid lines show in edit mode. Drag bars and resize handles show in edit mode.
 - Widgets only move by dragging the top drag bar.
-- Add Widget opens a floating bottom palette, not a modal drawer/backdrop.
+- Add Widget opens a floating bottom palette, not a modal drawer/backdrop. Dropping a widget scans ±20 cells from the drop point to find the nearest free position.
 - Do not autosave after drag/drop/resize. Save only when pressing Done to exit edit mode.
 - In edit mode, clicking a widget or stack child opens the property panel instead of navigating.
 

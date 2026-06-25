@@ -117,7 +117,9 @@ export function defaultSystemConfig() {
 		system: {
 			dashboardGrid: {
 				columns: 12,
-				rows: 6
+				rows: 6,
+				cellWidth: 20,
+				cellHeight: 20
 			}
 		},
 		theme: {
@@ -127,11 +129,17 @@ export function defaultSystemConfig() {
 }
 
 export function mergeDashboardWithSystem(config, systemConfig) {
+	const systemGrid = systemConfig.system?.dashboardGrid || {}
 	return {
 		...config,
 		dashboard: {
 			...config?.dashboard,
-			grid: structuredClone(systemConfig.system.dashboardGrid)
+			grid: {
+				columns: systemGrid.columns ?? 12,
+				rows: systemGrid.rows ?? 8,
+				cellWidth: systemGrid.cellWidth,
+				cellHeight: systemGrid.cellHeight
+			}
 		},
 		theme: {
 			...config?.theme,
@@ -145,14 +153,19 @@ export function validateSystemConfig(config) {
 		throw new Error('System config must be an object.')
 	}
 	const grid = config.system?.dashboardGrid
-	if (!grid || typeof grid !== 'object') {
-		throw new Error('system.dashboardGrid is required.')
-	}
-	if (!Number.isInteger(grid.columns) || grid.columns < 1) {
-		throw new Error('system.dashboardGrid.columns must be a positive integer.')
-	}
-	if (!Number.isInteger(grid.rows) || grid.rows < 1) {
-		throw new Error('system.dashboardGrid.rows must be a positive integer.')
+	if (grid && typeof grid === 'object') {
+		if (grid.columns !== undefined && (!Number.isInteger(grid.columns) || grid.columns < 1)) {
+			throw new Error('system.dashboardGrid.columns must be a positive integer.')
+		}
+		if (grid.rows !== undefined && (!Number.isInteger(grid.rows) || grid.rows < 1)) {
+			throw new Error('system.dashboardGrid.rows must be a positive integer.')
+		}
+		if (grid.cellWidth !== undefined && (!Number.isInteger(grid.cellWidth) || grid.cellWidth < 1)) {
+			throw new Error('system.dashboardGrid.cellWidth must be a positive integer.')
+		}
+		if (grid.cellHeight !== undefined && (!Number.isInteger(grid.cellHeight) || grid.cellHeight < 1)) {
+			throw new Error('system.dashboardGrid.cellHeight must be a positive integer.')
+		}
 	}
 	const backgroundImage = config.theme?.backgroundImage
 	if (backgroundImage !== undefined && typeof backgroundImage !== 'string') {
@@ -211,11 +224,9 @@ function validateWidget(widget, grid, topLevel, seen) {
 				throw new Error(`Widget ${widget.id} needs integer ${key}.`)
 			}
 		}
-		if (widget.x < 1 || widget.y < 1 || widget.w < 1 || widget.h < 1) {
+		const halfCols = Math.floor(grid.columns / 2)
+		if (widget.y < 1 || widget.w < 1 || widget.h < 1) {
 			throw new Error(`Widget ${widget.id} has invalid position or size.`)
-		}
-		if (widget.x + widget.w - 1 > grid.columns) {
-			throw new Error(`Widget ${widget.id} exceeds the dashboard grid width.`)
 		}
 	}
 

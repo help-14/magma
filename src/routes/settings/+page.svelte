@@ -17,10 +17,12 @@
 
   let activeTab = $state('system')
   let systemYaml = $state(data.systemYaml)
-  let systemColumns = $state(
-    data.systemConfig.system?.dashboardGrid?.columns || 12
+  let cellWidth = $state(
+    data.systemConfig.system?.dashboardGrid?.cellWidth || 100
   )
-  let systemRows = $state(data.systemConfig.system?.dashboardGrid?.rows || 12)
+  let cellHeight = $state(
+    data.systemConfig.system?.dashboardGrid?.cellHeight || 100
+  )
   let dashboardYaml = $state(data.yaml)
   let backgroundImage = $state(data.config.theme?.backgroundImage || '/bg.jpg')
   let customCss = $state(data.customCss || '')
@@ -95,21 +97,27 @@
   }
 
   function updateSystemGridField(key, value) {
-    const numberValue = Number.parseInt(value || '1', 10)
-    if (key === 'columns') systemColumns = numberValue
-    if (key === 'rows') systemRows = numberValue
+    const numberValue = Number.parseInt(value || '100', 10)
+    if (key === 'cellWidth') cellWidth = numberValue
+    if (key === 'cellHeight') cellHeight = numberValue
 
     const lines = systemYaml.split('\n')
     const fieldIndex = lines.findIndex((line) =>
       new RegExp(`^\\s+${key}:`).test(line)
     )
-    const nextLine = `    ${key}: ${Number.isFinite(numberValue) ? numberValue : 1}`
+    const nextLine = `    ${key}: ${Number.isFinite(numberValue) ? numberValue : 100}`
     if (fieldIndex === -1) {
       const gridIndex = lines.findIndex((line) =>
         /^\s+dashboardGrid:\s*$/.test(line)
       )
       if (gridIndex === -1) {
-        systemYaml = `version: 1\nsystem:\n  dashboardGrid:\n${nextLine}\n`
+        const systemIndex = lines.findIndex((line) => /^system:\s*$/.test(line))
+        if (systemIndex === -1) {
+          systemYaml = `version: 1\nsystem:\n  dashboardGrid:\n${nextLine}\n`
+        } else {
+          lines.splice(systemIndex + 1, 0, '  dashboardGrid:\n' + nextLine)
+          systemYaml = lines.join('\n')
+        }
       } else {
         lines.splice(gridIndex + 1, 0, nextLine)
         systemYaml = lines.join('\n')
@@ -191,10 +199,10 @@
 
       if (result.systemYaml) systemYaml = result.systemYaml
       if (result.systemConfig) {
-        systemColumns =
-          result.systemConfig.system?.dashboardGrid?.columns || systemColumns
-        systemRows =
-          result.systemConfig.system?.dashboardGrid?.rows || systemRows
+        cellWidth =
+          result.systemConfig.system?.dashboardGrid?.cellWidth || cellWidth
+        cellHeight =
+          result.systemConfig.system?.dashboardGrid?.cellHeight || cellHeight
         backgroundImage =
           result.systemConfig.theme?.backgroundImage || backgroundImage
       }
@@ -273,28 +281,34 @@
             <div class="grid grid-cols-2 gap-3">
               <Label class="grid gap-2 mt-4">
                 <span class="text-magma-accent text-xs font-bold uppercase"
-                  >Grid columns</span
+                  >Cell width (px)</span
                 >
                 <Input
                   type="number"
                   min="1"
-                  value={systemColumns}
+                  value={cellWidth}
                   class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
                   oninput={(event) =>
-                    updateSystemGridField('columns', event.currentTarget.value)}
+                    updateSystemGridField(
+                      'cellWidth',
+                      event.currentTarget.value
+                    )}
                 />
               </Label>
               <Label class="grid gap-2 mt-4">
                 <span class="text-magma-accent text-xs font-bold uppercase"
-                  >Grid rows</span
+                  >Cell height (px)</span
                 >
                 <Input
                   type="number"
                   min="1"
-                  value={systemRows}
+                  value={cellHeight}
                   class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
                   oninput={(event) =>
-                    updateSystemGridField('rows', event.currentTarget.value)}
+                    updateSystemGridField(
+                      'cellHeight',
+                      event.currentTarget.value
+                    )}
                 />
               </Label>
               <Label class="grid col-span-2 gap-2 mt-4">
