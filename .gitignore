@@ -6,6 +6,9 @@ dist
 .netlify
 .vinxi
 app.config.timestamp_*.js
+/.svelte-kit
+.wrangler
+.pnpm-store
 
 # Environment
 .env
@@ -27,3 +30,7 @@ gitignore
 # System Files
 .DS_Store
 Thumbs.db
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

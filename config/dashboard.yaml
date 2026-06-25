@@ -1,0 +1,138 @@
+version: 1
+dashboard:
+  widgets:
+    - id: timer-main
+      type: timer
+      title: Timer
+      x: 4
+      y: 1
+      w: 4
+      h: 1
+      config: {}
+    - id: weather-main
+      type: weather
+      title: Weather
+      x: 8
+      y: 1
+      w: 1
+      h: 1
+      config:
+        locationRef: default
+    - id: search-main
+      type: search
+      title: Search
+      x: 4
+      y: 2
+      w: 5
+      h: 1
+      config:
+        provider: google
+        placeholder: type something to search...
+    - id: apps-stack
+      type: stack-horizontal
+      title: Applications
+      x: 4
+      y: 3
+      w: 5
+      h: 1
+      config:
+        gap: 12
+      children:
+        - id: unifi
+          type: button
+          title: UniFi
+          config:
+            icon: simple-icons:ubiquiti
+            url: https://10.0.0.1/
+        - id: truenas
+          type: button
+          title: Truenas
+          config:
+            icon: simple-icons:truenas
+            url: http://truenas.local
+        - id: dockhand
+          type: button
+          title: Dockhand
+          config:
+            icon: simple-icons:docker
+            url: https://dockhand.nhan.pt
+        - id: button-mqs1vt7u-fs1k
+          type: button
+          title: Button
+          config:
+            icon: material-symbols:house
+            url: https://
+            iconColor: ""
+    - id: media-stack
+      type: stack-horizontal
+      title: Media
+      x: 4
+      y: 4
+      w: 5
+      h: 1
+      config:
+        gap: 12
+      children:
+        - id: photos
+          type: button
+          title: Photos
+          config:
+            icon: image
+            url: https://photos.nhan.pt
+        - id: jellyfin
+          type: button
+          title: Jellyfin
+          config:
+            icon: simple-icons:jellyfin
+            url: https://phim.nhan.pt
+        - id: radarr
+          type: button
+          title: Radarr
+          config:
+            icon: simple-icons:radarr
+            url: https://radarr.nhan.pt
+        - id: sonarr
+          type: button
+          title: Sonarr
+          config:
+            icon: simple-icons:sonarr
+            url: https://sonarr.nhan.pt
+    - id: docker-status-mqrjvli3-7g80
+      type: docker-status
+      title: Docker
+      x: 4
+      y: 5
+      w: 3
+      h: 2
+      config:
+        dockerHost: ""
+    - id: calendar-mqs8wzat-ass1
+      type: calendar
+      title: Calendar
+      x: 7
+      y: 5
+      w: 2
+      h: 2
+      config: {}
+locations:
+  default:
+    latitude: 21.042698
+    longitude: 105.808534
+search:
+  enabled: true
+  provider: google
+network:
+  localPingUrl: 10.0.0.1
+  localPingTimeout: 300
+theme:
+  accentColor: "#fabd2f"
+integrations:
+  weather:
+    provider: openweather
+    apiKeyEnv: WEATHER_API
+  honeygain:
+    authEnv: HONEYGAIN_AUTH
+  youtube:
+    enabled: true
+  docker:
+    enabled: false

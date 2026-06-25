@@ -1,0 +1,7 @@
+version: 1
+system:
+  dashboardGrid:
+    columns: 12
+    rows: 8
+theme:
+  backgroundImage: /bg.jpg

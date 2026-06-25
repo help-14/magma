@@ -1,6 +1,0 @@
-export * from './bookmark'
-export * from './coords'
-export * from './data'
-export * from './group'
-export * from './user'
-export * from './weather'
