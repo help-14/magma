@@ -1,5 +1,6 @@
 <script>
   import DashboardIcon from '../DashboardIcon.svelte';
+  /** @type {import('$lib/types/widget.js').ButtonWidgetProps} */
   let { widget, compact = false } = $props();
 </script>
 

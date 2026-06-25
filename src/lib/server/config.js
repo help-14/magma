@@ -1,11 +1,11 @@
 // @ts-nocheck
-import { readFile, rename, writeFile } from 'node:fs/promises';
-import path from 'node:path';
-import YAML from 'yaml';
+import { readFile, rename, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import YAML from 'yaml'
 
-const dashboardConfigPath = path.resolve('config/dashboard.yaml');
-const systemConfigPath = path.resolve('config/system.yaml');
-const overrideCssPath = path.resolve('config/override.css');
+const dashboardConfigPath = path.resolve('config/dashboard.yaml')
+const systemConfigPath = path.resolve('config/system.yaml')
+const overrideCssPath = path.resolve('config/override.css')
 const knownWidgetTypes = new Set([
 	'button',
 	'calendar',
@@ -18,97 +18,97 @@ const knownWidgetTypes = new Set([
 	'youtube-live',
 	'service-status',
 	'docker-status'
-]);
+])
 
 export async function readDashboardYaml() {
-	return readFile(dashboardConfigPath, 'utf8');
+	return readFile(dashboardConfigPath, 'utf8')
 }
 
 export async function readSystemYaml() {
 	try {
-		return await readFile(systemConfigPath, 'utf8');
+		return await readFile(systemConfigPath, 'utf8')
 	} catch (error) {
-		if (error.code === 'ENOENT') return stringifySystemConfig(defaultSystemConfig());
-		throw error;
+		if (error.code === 'ENOENT') return stringifySystemConfig(defaultSystemConfig())
+		throw error
 	}
 }
 
 export async function readDashboardConfig() {
-	const [dashboardYaml, systemConfig] = await Promise.all([readDashboardYaml(), readSystemConfig()]);
-	const config = mergeDashboardWithSystem(YAML.parse(dashboardYaml), systemConfig);
-	validateDashboardConfig(config);
-	return config;
+	const [dashboardYaml, systemConfig] = await Promise.all([readDashboardYaml(), readSystemConfig()])
+	const config = mergeDashboardWithSystem(YAML.parse(dashboardYaml), systemConfig)
+	validateDashboardConfig(config)
+	return config
 }
 
 export async function readSystemConfig() {
-	const yaml = await readSystemYaml();
-	const config = YAML.parse(yaml) || defaultSystemConfig();
-	validateSystemConfig(config);
-	return config;
+	const yaml = await readSystemYaml()
+	const config = YAML.parse(yaml) || defaultSystemConfig()
+	validateSystemConfig(config)
+	return config
 }
 
 export async function readOverrideCss() {
 	try {
-		return await readFile(overrideCssPath, 'utf8');
+		return await readFile(overrideCssPath, 'utf8')
 	} catch (error) {
-		if (error.code === 'ENOENT') return '';
-		throw error;
+		if (error.code === 'ENOENT') return ''
+		throw error
 	}
 }
 
 export async function writeOverrideCss(css) {
-	const tempPath = `${overrideCssPath}.tmp`;
-	await writeFile(tempPath, css || '', 'utf8');
-	await rename(tempPath, overrideCssPath);
-	return css || '';
+	const tempPath = `${overrideCssPath}.tmp`
+	await writeFile(tempPath, css || '', 'utf8')
+	await rename(tempPath, overrideCssPath)
+	return css || ''
 }
 
 export async function writeDashboardConfig(config) {
-	validateDashboardConfig(config);
-	const yaml = stringifyDashboardConfig(config);
-	const tempPath = `${dashboardConfigPath}.tmp`;
-	await writeFile(tempPath, yaml, 'utf8');
-	await rename(tempPath, dashboardConfigPath);
-	return config;
+	validateDashboardConfig(config)
+	const yaml = stringifyDashboardConfig(config)
+	const tempPath = `${dashboardConfigPath}.tmp`
+	await writeFile(tempPath, yaml, 'utf8')
+	await rename(tempPath, dashboardConfigPath)
+	return config
 }
 
 export function parseDashboardYaml(yaml) {
-	return YAML.parse(yaml);
+	return YAML.parse(yaml)
 }
 
 export function stringifyDashboardConfig(config) {
-	validateDashboardConfig(config);
-	const dashboardConfig = structuredClone(config);
+	validateDashboardConfig(config)
+	const dashboardConfig = structuredClone(config)
 	if (dashboardConfig.dashboard) {
-		delete dashboardConfig.dashboard.grid;
+		delete dashboardConfig.dashboard.grid
 	}
 	if (dashboardConfig.theme) {
-		delete dashboardConfig.theme.backgroundImage;
+		delete dashboardConfig.theme.backgroundImage
 		if (Object.keys(dashboardConfig.theme).length === 0) {
-			delete dashboardConfig.theme;
+			delete dashboardConfig.theme
 		}
 	}
-	return YAML.stringify(dashboardConfig, { lineWidth: 100 });
+	return YAML.stringify(dashboardConfig, { lineWidth: 100 })
 }
 
 export async function writeSystemConfig(config) {
-	validateSystemConfig(config);
-	const yaml = stringifySystemConfig(config);
-	const tempPath = `${systemConfigPath}.tmp`;
-	await writeFile(tempPath, yaml, 'utf8');
-	await rename(tempPath, systemConfigPath);
-	return config;
+	validateSystemConfig(config)
+	const yaml = stringifySystemConfig(config)
+	const tempPath = `${systemConfigPath}.tmp`
+	await writeFile(tempPath, yaml, 'utf8')
+	await rename(tempPath, systemConfigPath)
+	return config
 }
 
 export function parseSystemYaml(yaml) {
-	const config = YAML.parse(yaml);
-	validateSystemConfig(config);
-	return config;
+	const config = YAML.parse(yaml)
+	validateSystemConfig(config)
+	return config
 }
 
 export function stringifySystemConfig(config) {
-	validateSystemConfig(config);
-	return YAML.stringify(config, { lineWidth: 100 });
+	validateSystemConfig(config)
+	return YAML.stringify(config, { lineWidth: 100 })
 }
 
 export function defaultSystemConfig() {
@@ -123,7 +123,7 @@ export function defaultSystemConfig() {
 		theme: {
 			backgroundImage: '/bg.jpg'
 		}
-	};
+	}
 }
 
 export function mergeDashboardWithSystem(config, systemConfig) {
@@ -137,97 +137,97 @@ export function mergeDashboardWithSystem(config, systemConfig) {
 			...config?.theme,
 			backgroundImage: systemConfig.theme?.backgroundImage || config?.theme?.backgroundImage || '/bg.jpg'
 		}
-	};
+	}
 }
 
 export function validateSystemConfig(config) {
 	if (!config || typeof config !== 'object') {
-		throw new Error('System config must be an object.');
+		throw new Error('System config must be an object.')
 	}
-	const grid = config.system?.dashboardGrid;
+	const grid = config.system?.dashboardGrid
 	if (!grid || typeof grid !== 'object') {
-		throw new Error('system.dashboardGrid is required.');
+		throw new Error('system.dashboardGrid is required.')
 	}
 	if (!Number.isInteger(grid.columns) || grid.columns < 1) {
-		throw new Error('system.dashboardGrid.columns must be a positive integer.');
+		throw new Error('system.dashboardGrid.columns must be a positive integer.')
 	}
 	if (!Number.isInteger(grid.rows) || grid.rows < 1) {
-		throw new Error('system.dashboardGrid.rows must be a positive integer.');
+		throw new Error('system.dashboardGrid.rows must be a positive integer.')
 	}
-	const backgroundImage = config.theme?.backgroundImage;
+	const backgroundImage = config.theme?.backgroundImage
 	if (backgroundImage !== undefined && typeof backgroundImage !== 'string') {
-		throw new Error('theme.backgroundImage must be a string.');
+		throw new Error('theme.backgroundImage must be a string.')
 	}
 }
 
 export function validateDashboardConfig(config) {
 	if (!config || typeof config !== 'object') {
-		throw new Error('Config must be an object.');
+		throw new Error('Config must be an object.')
 	}
 
-	const grid = config.dashboard?.grid;
-	const widgets = config.dashboard?.widgets;
+	const grid = config.dashboard?.grid
+	const widgets = config.dashboard?.widgets
 	if (!grid || typeof grid !== 'object') {
-		throw new Error('dashboard.grid is required.');
+		throw new Error('dashboard.grid is required.')
 	}
 	if (!Number.isInteger(grid.columns) || grid.columns < 1) {
-		throw new Error('dashboard.grid.columns must be a positive integer.');
+		throw new Error('dashboard.grid.columns must be a positive integer.')
 	}
 	if (!Number.isInteger(grid.rows) || grid.rows < 1) {
-		throw new Error('dashboard.grid.rows must be a positive integer.');
+		throw new Error('dashboard.grid.rows must be a positive integer.')
 	}
 	if (!Array.isArray(widgets)) {
-		throw new Error('dashboard.widgets must be an array.');
+		throw new Error('dashboard.widgets must be an array.')
 	}
 
-	const seen = new Set();
+	const seen = new Set()
 	for (const widget of widgets) {
-		validateWidget(widget, grid, true, seen);
+		validateWidget(widget, grid, true, seen)
 	}
-	validateTopLevelOverlaps(widgets);
+	validateTopLevelOverlaps(widgets)
 }
 
 function validateWidget(widget, grid, topLevel, seen) {
 	if (!widget || typeof widget !== 'object') {
-		throw new Error('Each widget must be an object.');
+		throw new Error('Each widget must be an object.')
 	}
 	if (!widget.id || typeof widget.id !== 'string') {
-		throw new Error('Each widget needs a string id.');
+		throw new Error('Each widget needs a string id.')
 	}
 	if (seen.has(widget.id)) {
-		throw new Error(`Duplicate widget id: ${widget.id}`);
+		throw new Error(`Duplicate widget id: ${widget.id}`)
 	}
-	seen.add(widget.id);
+	seen.add(widget.id)
 	if (!knownWidgetTypes.has(widget.type)) {
-		throw new Error(`Unknown widget type: ${widget.type}`);
+		throw new Error(`Unknown widget type: ${widget.type}`)
 	}
 	if (!widget.title || typeof widget.title !== 'string') {
-		throw new Error(`Widget ${widget.id} needs a title.`);
+		throw new Error(`Widget ${widget.id} needs a title.`)
 	}
 
 	if (topLevel) {
 		for (const key of ['x', 'y', 'w', 'h']) {
 			if (!Number.isInteger(widget[key])) {
-				throw new Error(`Widget ${widget.id} needs integer ${key}.`);
+				throw new Error(`Widget ${widget.id} needs integer ${key}.`)
 			}
 		}
 		if (widget.x < 1 || widget.y < 1 || widget.w < 1 || widget.h < 1) {
-			throw new Error(`Widget ${widget.id} has invalid position or size.`);
+			throw new Error(`Widget ${widget.id} has invalid position or size.`)
 		}
 		if (widget.x + widget.w - 1 > grid.columns) {
-			throw new Error(`Widget ${widget.id} exceeds the dashboard grid width.`);
+			throw new Error(`Widget ${widget.id} exceeds the dashboard grid width.`)
 		}
 	}
 
 	if (widget.children !== undefined) {
 		if (!['stack-horizontal', 'stack-vertical'].includes(widget.type)) {
-			throw new Error(`Only stack widgets can contain children: ${widget.id}`);
+			throw new Error(`Only stack widgets can contain children: ${widget.id}`)
 		}
 		if (!Array.isArray(widget.children)) {
-			throw new Error(`Widget ${widget.id} children must be an array.`);
+			throw new Error(`Widget ${widget.id} children must be an array.`)
 		}
 		for (const child of widget.children) {
-			validateWidget(child, grid, false, seen);
+			validateWidget(child, grid, false, seen)
 		}
 	}
 }
@@ -236,12 +236,12 @@ function validateTopLevelOverlaps(widgets) {
 	for (let index = 0; index < widgets.length; index += 1) {
 		for (let nextIndex = index + 1; nextIndex < widgets.length; nextIndex += 1) {
 			if (overlaps(widgets[index], widgets[nextIndex])) {
-				throw new Error(`Widgets overlap: ${widgets[index].id} and ${widgets[nextIndex].id}`);
+				throw new Error(`Widgets overlap: ${widgets[index].id} and ${widgets[nextIndex].id}`)
 			}
 		}
 	}
 }
 
 function overlaps(a, b) {
-	return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+	return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 }

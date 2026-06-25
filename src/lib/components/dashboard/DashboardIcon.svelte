@@ -15,6 +15,7 @@
 		Tv
 	} from '@lucide/svelte';
 
+	/** @type {import('$lib/types/widget.js').DashboardIconProps} */
 	let { name = '', size = 24, title = '', color = '' } = $props();
 
 	const localIcons = {

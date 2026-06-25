@@ -1,7 +1,8 @@
 <script>
   // @ts-nocheck
-  import { Trash2 } from '@lucide/svelte';
-  import WidgetRenderer from '../WidgetRenderer.svelte';
+  import { Trash2 } from '@lucide/svelte'
+  import WidgetRenderer from '../WidgetRenderer.svelte'
+  /** @type {import('$lib/types/widget.js').StackWidgetProps} */
   let {
     widget,
     locations = {},
@@ -11,12 +12,14 @@
     onSelectChild = () => {},
     onDeleteChild = () => {},
     onDropChild = () => {},
-    onDragOverChild = () => {},
-  } = $props();
+    onDragOverChild = () => {}
+  } = $props()
 </script>
 
 <div class="flex flex-col p-3 w-full min-w-0 min-h-0">
-  <div class="text-magma-accent text-sm font-extrabold mb-2.5">{widget.title}</div>
+  <div class="text-magma-accent text-sm font-extrabold mb-2">
+    {widget.title}
+  </div>
   <div
     class="flex flex-1 min-h-0"
     class:flex-col={widget.type === 'stack-vertical'}
@@ -29,10 +32,13 @@
     {#each widget.children || [] as child (child.id)}
       <div
         class:selected={selectedChildId === child.id}
-        class={"relative flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-white/6" + (selectedChildId === child.id ? " shadow-[0_0_0_2px_var(--magma-accent),0_18px_46px_rgb(0_0_0/26%)]" : "")}
+        class={'relative flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-white/6' +
+          (selectedChildId === child.id
+            ? ' shadow-[0_0_0_2px_var(--magma-accent),0_18px_46px_rgb(0_0_0/26%)]'
+            : '')}
         role="listitem"
         onclickcapture={(event) => {
-          if (editMode) onSelectChild(event, child);
+          if (editMode) onSelectChild(event, child)
         }}
       >
         <WidgetRenderer widget={child} {locations} compact {editMode} />
@@ -44,9 +50,9 @@
             aria-label={`Delete ${child.title}`}
             title="Delete widget"
             onclick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              onDeleteChild(event, child);
+              event.preventDefault()
+              event.stopPropagation()
+              onDeleteChild(event, child)
             }}
           >
             <Trash2 size={13} />

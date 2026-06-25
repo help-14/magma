@@ -5,6 +5,7 @@
 	import { searchIcons } from '$lib/remotes/icons.remote.js';
 	import DashboardIcon from './DashboardIcon.svelte';
 
+	/** @type {import('$lib/types/widget.js').IconPickerProps} */
 	let { value = '', onSelect = () => {} } = $props();
 
 	let searchText = $state(value || '');

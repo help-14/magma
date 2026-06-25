@@ -1,5 +1,6 @@
 <script>
   import { Settings } from '@lucide/svelte';
+  /** @type {import('$lib/types/widget.js').FallbackWidgetProps} */
   let { widget, compact = false } = $props();
 </script>
 

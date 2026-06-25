@@ -2,6 +2,7 @@
   // @ts-nocheck
   import { Button } from '$lib/components/ui/button/index.js'
 
+  /** @type {import('$lib/types/widget.js').WidgetPaletteProps} */
   let {
     templates = [],
     onClose = () => {},

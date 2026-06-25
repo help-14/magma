@@ -14,15 +14,26 @@
     RotateCw,
     ExternalLink
   } from '@lucide/svelte'
+  import { Button } from '$lib/components/ui/button/index.js'
+  import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
+  import {
+    ContextMenu,
+    ContextMenuTrigger,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuLabel,
+    ContextMenuSeparator
+  } from '$lib/components/ui/context-menu/index.js'
 
+  /** @type {import('$lib/types/widget.js').DockerStatusWidgetProps} */
   let { widget, compact = false } = $props()
   let containers = $state([])
   let loading = $state(true)
   let error = $state(null)
-  let contextMenu = $state(null)
 
   let dockerHost = $derived(widget.config?.dockerHost || '')
   let hideOffline = $derived(widget.config?.hideOffline ?? false)
+  let columns = $derived(widget.config?.columns ?? 4)
 
   let filtered = $derived(
     containers
@@ -83,25 +94,8 @@
     }
   }
 
-  function openContextMenu(event, c) {
-    event.preventDefault()
-    event.stopPropagation()
-    contextMenu = {
-      container: c,
-      x: event.clientX,
-      y: event.clientY
-    }
-  }
-
-  function closeContextMenu() {
-    contextMenu = null
-  }
-
-  async function operate(operation) {
-    if (!contextMenu) return
-    const { container } = contextMenu
+  async function operate(operation, container) {
     const id = container.Id
-    closeContextMenu()
 
     try {
       let ok = false
@@ -139,15 +133,15 @@
   }
 </script>
 
-<svelte:window onclick={closeContextMenu} />
-
-<div class="flex flex-col w-full min-w-0 min-h-0 h-full justify-center">
+<div class="flex flex-col w-full min-w-0 min-h-0 h-full">
+  <div class="text-magma-accent text-sm font-extrabold px-3 pt-2 pb-1 shrink-0">
+    {widget.title}
+  </div>
   {#if !dockerHost}
     <div
       class="flex flex-col justify-center items-center gap-2 p-4 text-magma-muted"
     >
       <Container size={28} class="text-magma-accent shrink-0" />
-      <strong>{widget.title}</strong>
       <span class="text-magma-muted text-center"
         >Configure Docker host in properties</span
       >
@@ -169,75 +163,97 @@
       <span class="text-xs opacity-60">{error}</span>
     </div>
   {:else}
-    <div class="flex flex-wrap gap-1.5 p-2 w-full h-full items-center">
-      {#each filtered as c}
-        <button
-          class="relative flex flex-col gap-0.5 px-2.5 py-1.5 rounded-lg bg-magma-accent/6 border border-magma-line/40 text-magma-text text-left text-xs leading-snug cursor-pointer transition-all duration-100 hover:bg-magma-accent/12 hover:border-magma-accent/30 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-magma-accent"
-          onclick={() => clickContainer(c)}
-          oncontextmenu={(e) => openContextMenu(e, c)}
-        >
-          <span
-            class="flex items-center gap-1.5 font-semibold truncate max-w-36"
+    <ScrollArea class="flex-1 min-h-0 w-full">
+      <div
+        class="grid gap-2 p-2 w-full items-stretch auto-rows-auto"
+        style="grid-template-columns: repeat({columns},minmax(0,1fr))"
+      >
+        {#each filtered as c}
+          <ContextMenu>
+            <ContextMenuTrigger>
+              {#if c.State === 'running'}
+                <Button
+                  variant="magma"
+                  size="sm"
+                  class="flex-col! items-start! gap-0.5 px-2.5 py-1.5 text-xs leading-snug h-auto min-h-0 w-full"
+                  onclick={() => clickContainer(c)}
+                >
+                  <span
+                    class="flex items-center gap-1.5 font-semibold truncate max-w-36"
+                  >
+                    <span
+                      class="inline-block size-1.5 rounded-full shrink-0 bg-green-500"
+                    ></span>
+                    {displayName(c)}
+                  </span>
+                  {#if containerUrl(c)}
+                    <span
+                      class="flex items-center gap-1 text-magma-accent text-xs"
+                    >
+                      <ExternalLink size={10} />
+                      {portSummary(c)}
+                    </span>
+                  {:else}
+                    <span class="text-magma-muted/60 text-xs">{shortId(c)}</span
+                    >
+                  {/if}
+                </Button>
+              {:else}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="!flex-col !items-start gap-0.5 px-2.5 py-1.5 text-xs leading-snug h-auto min-h-0 w-full"
+                  onclick={() => clickContainer(c)}
+                >
+                  <span
+                    class="flex items-center gap-1.5 font-semibold truncate max-w-36"
+                  >
+                    <span
+                      class="inline-block size-1.5 rounded-full shrink-0 bg-red-400"
+                    ></span>
+                    {displayName(c)}
+                  </span>
+                  {#if containerUrl(c)}
+                    <span
+                      class="flex items-center gap-1 text-magma-accent text-xs"
+                    >
+                      <ExternalLink size={10} />
+                      {portSummary(c)}
+                    </span>
+                  {:else}
+                    <span class="text-magma-muted/60 text-xs">{shortId(c)}</span
+                    >
+                  {/if}
+                </Button>
+              {/if}
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuLabel>{displayName(c)}</ContextMenuLabel>
+              <ContextMenuSeparator />
+              <ContextMenuItem
+                onselect={() => operate('start', c)}
+                disabled={c.State === 'running'}
+              >
+                <Play size={13} /> Start
+              </ContextMenuItem>
+              <ContextMenuItem
+                onselect={() => operate('stop', c)}
+                disabled={c.State !== 'running'}
+              >
+                <Square size={13} /> Stop
+              </ContextMenuItem>
+              <ContextMenuItem onselect={() => operate('restart', c)}>
+                <RotateCw size={13} /> Restart
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+        {/each}
+        {#if filtered.length === 0}
+          <span class="w-full text-center text-magma-muted text-xs py-4"
+            >No containers</span
           >
-            <span
-              class="inline-block size-1.5 rounded-full shrink-0"
-              class:bg-[#6bda6b]={c.State === 'running'}
-              class:bg-[#da6b6b]={c.State !== 'running'}
-            ></span>
-            {displayName(c)}
-          </span>
-          {#if containerUrl(c)}
-            <span class="flex items-center gap-1 text-magma-accent text-xs">
-              <ExternalLink size={10} />
-              {portSummary(c)}
-            </span>
-          {:else}
-            <span class="text-magma-muted/60 text-xs">{shortId(c)}</span>
-          {/if}
-        </button>
-      {/each}
-      {#if filtered.length === 0}
-        <span class="w-full text-center text-magma-muted text-xs py-4"
-          >No containers</span
-        >
-      {/if}
-    </div>
+        {/if}
+      </div>
+    </ScrollArea>
   {/if}
 </div>
-
-{#if contextMenu}
-  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-  <div
-    role="menu"
-    class="fixed z-50 min-w-32 py-1 rounded-lg bg-[rgb(30_26_22/96%)] border border-magma-line shadow-[0_12px_40px_rgb(0_0_0/45%)] backdrop-blur-lg text-xs"
-    style={`left: ${contextMenu.x}px; top: ${contextMenu.y}px`}
-    onclick={closeContextMenu}
-    oncontextmenu={(e) => e.preventDefault()}
-  >
-    <div
-      class="px-2.5 py-1.5 text-magma-muted text-xs font-bold truncate border-b border-magma-line/30"
-    >
-      {displayName(contextMenu.container)}
-    </div>
-    <button
-      class="flex items-center gap-2 w-full px-2.5 py-1.5 text-left bg-transparent border-0 text-magma-text cursor-pointer transition-colors hover:bg-magma-accent/10 disabled:opacity-30 disabled:cursor-default"
-      disabled={contextMenu.container.State === 'running'}
-      onclick={() => operate('start')}
-    >
-      <Play size={13} /> Start
-    </button>
-    <button
-      class="flex items-center gap-2 w-full px-2.5 py-1.5 text-left bg-transparent border-0 text-magma-text cursor-pointer transition-colors hover:bg-magma-accent/10 disabled:opacity-30 disabled:cursor-default"
-      disabled={contextMenu.container.State !== 'running'}
-      onclick={() => operate('stop')}
-    >
-      <Square size={13} /> Stop
-    </button>
-    <button
-      class="flex items-center gap-2 w-full px-2.5 py-1.5 text-left bg-transparent border-0 text-magma-text cursor-pointer transition-colors hover:bg-magma-accent/10"
-      onclick={() => operate('restart')}
-    >
-      <RotateCw size={13} /> Restart
-    </button>
-  </div>
-{/if}

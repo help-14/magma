@@ -1,5 +1,6 @@
 <script>
   import { useNow } from './clock.svelte.js'
+  /** @type {import('$lib/types/widget.js').TimerWidgetProps} */
   let { widget, compact = false } = $props()
   let now = useNow()
 

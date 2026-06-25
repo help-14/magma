@@ -9,6 +9,7 @@
   import WidgetStack from './widgets/WidgetStack.svelte';
   import WidgetFallback from './widgets/WidgetFallback.svelte';
 
+  /** @type {import('$lib/types/widget.js').WidgetRendererProps} */
   let { widget, ...rest } = $props();
 
   const map = {

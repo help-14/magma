@@ -45,6 +45,7 @@
   import cloudyDay from '$lib/assets/weather-icons/partly-cloudy-day.svg';
   import cloudyNight from '$lib/assets/weather-icons/partly-cloudy-night.svg';
 
+  /** @type {import('$lib/types/widget.js').WeatherWidgetProps} */
   let { widget, locations = {}, compact = false } = $props();
   let weather = $state(null);
   let tooltipOpen = $state(false);

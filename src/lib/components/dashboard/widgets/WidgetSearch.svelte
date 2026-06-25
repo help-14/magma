@@ -2,8 +2,23 @@
   // @ts-nocheck
   import { Search } from '@lucide/svelte'
   import { onMount } from 'svelte'
+
+  /** @type {import('$lib/types/widget.js').SearchWidgetProps} */
   let { widget, compact = false } = $props()
   let searchInput = $state()
+
+  const searchProviders = {
+    google: 'https://google.com/search?q=',
+    duckduckgo: 'https://duckduckgo.com/?q=',
+    bing: 'https://www.bing.com/search?q=',
+    youtube: 'https://www.youtube.com/results?search_query=',
+    wikipedia: 'https://en.wikipedia.org/w/index.php?search='
+  }
+
+  let provider = $derived(widget.config?.provider || 'google')
+  let providerUrl = $derived(
+    searchProviders[provider] || searchProviders.google
+  )
 
   onMount(() => {
     if (!compact) {
@@ -16,7 +31,7 @@
     const formData = new FormData(event.currentTarget)
     const query = String(formData.get('query') || '').trim()
     if (query) {
-      window.location.href = `https://google.com/search?q=${encodeURIComponent(query)}`
+      window.location.href = `${providerUrl}${encodeURIComponent(query)}`
     }
   }
 </script>

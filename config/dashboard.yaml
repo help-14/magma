@@ -105,7 +105,8 @@ dashboard:
       w: 3
       h: 2
       config:
-        dockerHost: ""
+        dockerHost: http://10.10.10.90:2375
+        columns: 2
     - id: calendar-mqs8wzat-ass1
       type: calendar
       title: Calendar

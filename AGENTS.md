@@ -5,15 +5,14 @@
 Magma is a SvelteKit dashboard app migrated from the legacy Cloudflare/SolidJS Magma app.
 
 - App root: `/Users/nhan/Documents/magma`
-- Legacy reference: `/Users/nhan/Downloads/cf-magma-main`
 - Package manager: `pnpm`
 - Framework: SvelteKit with Svelte 5 runes
 - Styling: Tailwind 4, local shadcn-svelte components, Geist, lucide icons
 
 ## UI Rules
 
-- Using latest tailwinds css and shadcn-svelte components.
-- Use installed shadcn-svelte components from `$lib/components/ui/*`.
+- Using latest tailwinds css and shadcn-svelte components and fuatures.
+- Use installed shadcn-svelte components from `$lib/components/ui/*` instead of custom one. If a component you need does not exist locally yet then install that component from shadcn-svelte.
 - Do not use arbitrary `-[]` values in Tailwind classes (e.g. `min-w-[130px]`, `rounded-[8px]`, `p-[18px]`, `duration-[120ms]`, `text-[#211b12]`). Use standard Tailwind size, time, and color classes instead. Only use `-[]` when there is no standard Tailwind class to achieve the same result.
 - Do not import UI primitives directly from the `shadcn-svelte` package in app code.
 - Keep the dashboard and settings pages visually aligned: blurred background image, warm dark translucent panels, yellow accent, and compact controls.

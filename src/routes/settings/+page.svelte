@@ -1,78 +1,78 @@
 <script>
   // @ts-nocheck
-  import { ArrowLeft, Save } from "@lucide/svelte";
-  import { toast } from "svelte-sonner";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import * as Tabs from "$lib/components/ui/tabs/index.js";
-  import CodeEditor from "$lib/components/settings/CodeEditor.svelte";
+  import { ArrowLeft, Save } from '@lucide/svelte'
+  import { toast } from 'svelte-sonner'
+  import { Button } from '$lib/components/ui/button/index.js'
+  import { Input } from '$lib/components/ui/input/index.js'
+  import { Label } from '$lib/components/ui/label/index.js'
+  import * as Tabs from '$lib/components/ui/tabs/index.js'
+  import CodeEditor from '$lib/components/settings/CodeEditor.svelte'
   import {
     saveCssOverride,
     saveDashboardSettings,
-    saveSystemSettings,
-  } from "$lib/remotes/settings.remote.js";
+    saveSystemSettings
+  } from '$lib/remotes/settings.remote.js'
 
-  let { data } = $props();
+  let { data } = $props()
 
-  let activeTab = $state("system");
-  let systemYaml = $state(data.systemYaml);
+  let activeTab = $state('system')
+  let systemYaml = $state(data.systemYaml)
   let systemColumns = $state(
-    data.systemConfig.system?.dashboardGrid?.columns || 12,
-  );
-  let systemRows = $state(data.systemConfig.system?.dashboardGrid?.rows || 12);
-  let dashboardYaml = $state(data.yaml);
-  let backgroundImage = $state(data.config.theme?.backgroundImage || "/bg.jpg");
-  let customCss = $state(data.customCss || "");
-  let saving = $state(false);
+    data.systemConfig.system?.dashboardGrid?.columns || 12
+  )
+  let systemRows = $state(data.systemConfig.system?.dashboardGrid?.rows || 12)
+  let dashboardYaml = $state(data.yaml)
+  let backgroundImage = $state(data.config.theme?.backgroundImage || '/bg.jpg')
+  let customCss = $state(data.customCss || '')
+  let saving = $state(false)
 
-  let highlightedSystemYaml = $derived(highlightYaml(systemYaml));
-  let highlightedDashboardYaml = $derived(highlightYaml(dashboardYaml));
-  let highlightedCss = $derived(highlightCss(customCss));
+  let highlightedSystemYaml = $derived(highlightYaml(systemYaml))
+  let highlightedDashboardYaml = $derived(highlightYaml(dashboardYaml))
+  let highlightedCss = $derived(highlightCss(customCss))
 
   const tabs = [
-    { id: "system", label: "System settings" },
-    { id: "dashboard", label: "Dashboard settings" },
-    { id: "css", label: "CSS override" },
-  ];
+    { id: 'system', label: 'System settings' },
+    { id: 'dashboard', label: 'Dashboard settings' },
+    { id: 'css', label: 'CSS override' }
+  ]
 
   function escapeHtml(value) {
     return value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;");
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
   }
 
   function highlightYaml(source) {
     return source
-      .split("\n")
+      .split('\n')
       .map((line) => {
-        const escaped = escapeHtml(line);
-        const commentIndex = escaped.indexOf("#");
+        const escaped = escapeHtml(line)
+        const commentIndex = escaped.indexOf('#')
         const content =
-          commentIndex >= 0 ? escaped.slice(0, commentIndex) : escaped;
-        const comment = commentIndex >= 0 ? escaped.slice(commentIndex) : "";
+          commentIndex >= 0 ? escaped.slice(0, commentIndex) : escaped
+        const comment = commentIndex >= 0 ? escaped.slice(commentIndex) : ''
         const highlighted = content
           .replace(
             /^(\s*-?\s*)([A-Za-z0-9_-]+)(:)/,
-            '$1<span class="syntax-key">$2</span>$3',
+            '$1<span class="syntax-key">$2</span>$3'
           )
           .replace(
             /(:\s*)(\/?[^#\s][^#]*?)$/g,
-            '$1<span class="syntax-value">$2</span>',
+            '$1<span class="syntax-value">$2</span>'
           )
           .replace(
             /\b(true|false|null)\b/g,
-            '<span class="syntax-literal">$1</span>',
+            '<span class="syntax-literal">$1</span>'
           )
           .replace(
             /\b(-?\d+(?:\.\d+)?)\b/g,
-            '<span class="syntax-number">$1</span>',
-          );
-        return `${highlighted}${comment ? `<span class="syntax-comment">${comment}</span>` : ""}`;
+            '<span class="syntax-number">$1</span>'
+          )
+        return `${highlighted}${comment ? `<span class="syntax-comment">${comment}</span>` : ''}`
       })
-      .join("\n");
+      .join('\n')
   }
 
   function highlightCss(source) {
@@ -80,142 +80,142 @@
       .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="syntax-comment">$1</span>')
       .replace(
         /([.#]?[A-Za-z_-][\w-]*)(\s*\{)/g,
-        '<span class="syntax-key">$1</span>$2',
+        '<span class="syntax-key">$1</span>$2'
       )
       .replace(/([A-Za-z-]+)(\s*:)/g, '<span class="syntax-value">$1</span>$2')
       .replace(
         /(#[0-9A-Fa-f]{3,8}|\b-?\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%)?\b)/g,
-        '<span class="syntax-number">$1</span>',
-      );
+        '<span class="syntax-number">$1</span>'
+      )
   }
 
   function updateBackgroundImage(value) {
-    backgroundImage = value;
-    updateSystemThemeField("backgroundImage", value || "/bg.jpg");
+    backgroundImage = value
+    updateSystemThemeField('backgroundImage', value || '/bg.jpg')
   }
 
   function updateSystemGridField(key, value) {
-    const numberValue = Number.parseInt(value || "1", 10);
-    if (key === "columns") systemColumns = numberValue;
-    if (key === "rows") systemRows = numberValue;
+    const numberValue = Number.parseInt(value || '1', 10)
+    if (key === 'columns') systemColumns = numberValue
+    if (key === 'rows') systemRows = numberValue
 
-    const lines = systemYaml.split("\n");
+    const lines = systemYaml.split('\n')
     const fieldIndex = lines.findIndex((line) =>
-      new RegExp(`^\\s+${key}:`).test(line),
-    );
-    const nextLine = `    ${key}: ${Number.isFinite(numberValue) ? numberValue : 1}`;
+      new RegExp(`^\\s+${key}:`).test(line)
+    )
+    const nextLine = `    ${key}: ${Number.isFinite(numberValue) ? numberValue : 1}`
     if (fieldIndex === -1) {
       const gridIndex = lines.findIndex((line) =>
-        /^\s+dashboardGrid:\s*$/.test(line),
-      );
+        /^\s+dashboardGrid:\s*$/.test(line)
+      )
       if (gridIndex === -1) {
-        systemYaml = `version: 1\nsystem:\n  dashboardGrid:\n${nextLine}\n`;
+        systemYaml = `version: 1\nsystem:\n  dashboardGrid:\n${nextLine}\n`
       } else {
-        lines.splice(gridIndex + 1, 0, nextLine);
-        systemYaml = lines.join("\n");
+        lines.splice(gridIndex + 1, 0, nextLine)
+        systemYaml = lines.join('\n')
       }
     } else {
-      lines.splice(fieldIndex, 1, nextLine);
-      systemYaml = lines.join("\n");
+      lines.splice(fieldIndex, 1, nextLine)
+      systemYaml = lines.join('\n')
     }
   }
 
   function updateThemeField(key, value) {
-    const lines = dashboardYaml.split("\n");
-    const themeIndex = lines.findIndex((line) => /^theme:\s*$/.test(line));
+    const lines = dashboardYaml.split('\n')
+    const themeIndex = lines.findIndex((line) => /^theme:\s*$/.test(line))
     if (themeIndex === -1) {
-      dashboardYaml = `${dashboardYaml.trimEnd()}\n\ntheme:\n${formatThemeField(key, value)}\n`;
-      return;
+      dashboardYaml = `${dashboardYaml.trimEnd()}\n\ntheme:\n${formatThemeField(key, value)}\n`
+      return
     }
 
     const nextSectionIndex = lines.findIndex(
-      (line, index) => index > themeIndex && /^\S/.test(line),
-    );
-    const endIndex = nextSectionIndex === -1 ? lines.length : nextSectionIndex;
+      (line, index) => index > themeIndex && /^\S/.test(line)
+    )
+    const endIndex = nextSectionIndex === -1 ? lines.length : nextSectionIndex
     const fieldIndex = lines.findIndex(
       (line, index) =>
         index > themeIndex &&
         index < endIndex &&
-        new RegExp(`^\\s+${key}:`).test(line),
-    );
+        new RegExp(`^\\s+${key}:`).test(line)
+    )
 
     if (fieldIndex === -1) {
-      lines.splice(themeIndex + 1, 0, formatThemeField(key, value));
+      lines.splice(themeIndex + 1, 0, formatThemeField(key, value))
     } else {
-      lines.splice(fieldIndex, 1, formatThemeField(key, value));
+      lines.splice(fieldIndex, 1, formatThemeField(key, value))
     }
-    dashboardYaml = lines.join("\n");
+    dashboardYaml = lines.join('\n')
   }
 
   function updateSystemThemeField(key, value) {
-    const lines = systemYaml.split("\n");
-    const themeIndex = lines.findIndex((line) => /^theme:\s*$/.test(line));
+    const lines = systemYaml.split('\n')
+    const themeIndex = lines.findIndex((line) => /^theme:\s*$/.test(line))
     if (themeIndex === -1) {
-      systemYaml = `${systemYaml.trimEnd()}\n\ntheme:\n${formatThemeField(key, value)}\n`;
-      return;
+      systemYaml = `${systemYaml.trimEnd()}\n\ntheme:\n${formatThemeField(key, value)}\n`
+      return
     }
 
     const nextSectionIndex = lines.findIndex(
-      (line, index) => index > themeIndex && /^\S/.test(line),
-    );
-    const endIndex = nextSectionIndex === -1 ? lines.length : nextSectionIndex;
+      (line, index) => index > themeIndex && /^\S/.test(line)
+    )
+    const endIndex = nextSectionIndex === -1 ? lines.length : nextSectionIndex
     const fieldIndex = lines.findIndex(
       (line, index) =>
         index > themeIndex &&
         index < endIndex &&
-        new RegExp(`^\\s+${key}:`).test(line),
-    );
+        new RegExp(`^\\s+${key}:`).test(line)
+    )
 
     if (fieldIndex === -1) {
-      lines.splice(themeIndex + 1, 0, formatThemeField(key, value));
+      lines.splice(themeIndex + 1, 0, formatThemeField(key, value))
     } else {
-      lines.splice(fieldIndex, 1, formatThemeField(key, value));
+      lines.splice(fieldIndex, 1, formatThemeField(key, value))
     }
-    systemYaml = lines.join("\n");
+    systemYaml = lines.join('\n')
   }
 
   function formatThemeField(key, value) {
-    return `  ${key}: ${value}`;
+    return `  ${key}: ${value}`
   }
 
   async function save() {
-    saving = true;
+    saving = true
 
     try {
-      let result;
-      if (activeTab === "system")
-        result = await saveSystemSettings({ systemYaml });
-      if (activeTab === "dashboard")
-        result = await saveDashboardSettings({ yaml: dashboardYaml });
-      if (activeTab === "css") result = await saveCssOverride({ customCss });
+      let result
+      if (activeTab === 'system')
+        result = await saveSystemSettings({ systemYaml })
+      if (activeTab === 'dashboard')
+        result = await saveDashboardSettings({ yaml: dashboardYaml })
+      if (activeTab === 'css') result = await saveCssOverride({ customCss })
 
-      if (result.systemYaml) systemYaml = result.systemYaml;
+      if (result.systemYaml) systemYaml = result.systemYaml
       if (result.systemConfig) {
         systemColumns =
-          result.systemConfig.system?.dashboardGrid?.columns || systemColumns;
+          result.systemConfig.system?.dashboardGrid?.columns || systemColumns
         systemRows =
-          result.systemConfig.system?.dashboardGrid?.rows || systemRows;
+          result.systemConfig.system?.dashboardGrid?.rows || systemRows
         backgroundImage =
-          result.systemConfig.theme?.backgroundImage || backgroundImage;
+          result.systemConfig.theme?.backgroundImage || backgroundImage
       }
       if (result.yaml) {
-        dashboardYaml = result.yaml;
+        dashboardYaml = result.yaml
         backgroundImage =
-          result.config?.theme?.backgroundImage || backgroundImage;
+          result.config?.theme?.backgroundImage || backgroundImage
       }
-      if (typeof result.customCss === "string") customCss = result.customCss;
-      toast.success("Saved settings");
+      if (typeof result.customCss === 'string') customCss = result.customCss
+      toast.success('Saved settings')
     } catch (saveError) {
-      toast.error(saveError.message);
+      toast.error(saveError.message)
     } finally {
-      saving = false;
+      saving = false
     }
   }
 </script>
 
 <main
   class="relative min-h-screen p-7 overflow-x-hidden max-sm:p-4.5"
-  style={`--magma-accent: ${data.config.theme?.accentColor || "#fabd2f"}; --magma-bg: url('${backgroundImage || "/bg.jpg"}');`}
+  style={`--magma-accent: ${data.config.theme?.accentColor || '#fabd2f'}; --magma-bg: url('${backgroundImage || '/bg.jpg'}');`}
 >
   <div class="background"></div>
   <div class="relative z-1 w-[min(1080px,100%)] mx-auto">
@@ -234,7 +234,7 @@
           class="text-magma-text!"
         >
           <Save size={18} />
-          {saving ? "Saving..." : "Save"}
+          {saving ? 'Saving...' : 'Save'}
         </Button>
       </nav>
     </header>
@@ -281,7 +281,7 @@
                   value={systemColumns}
                   class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
                   oninput={(event) =>
-                    updateSystemGridField("columns", event.currentTarget.value)}
+                    updateSystemGridField('columns', event.currentTarget.value)}
                 />
               </Label>
               <Label class="grid gap-2 mt-4">
@@ -294,7 +294,7 @@
                   value={systemRows}
                   class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
                   oninput={(event) =>
-                    updateSystemGridField("rows", event.currentTarget.value)}
+                    updateSystemGridField('rows', event.currentTarget.value)}
                 />
               </Label>
               <Label class="grid col-span-2 gap-2 mt-4">

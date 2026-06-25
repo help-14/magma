@@ -1,6 +1,7 @@
 <script>
   import { ChevronLeft, ChevronRight } from '@lucide/svelte'
 
+  /** @type {import('$lib/types/widget.js').CalendarWidgetProps} */
   let { widget, compact = false } = $props()
   let viewDate = $state(new Date())
   let today = $state(new Date())
