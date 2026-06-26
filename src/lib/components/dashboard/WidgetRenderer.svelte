@@ -6,6 +6,8 @@
   import WidgetButton from './widgets/WidgetButton.svelte';
   import WidgetCalendar from './widgets/WidgetCalendar.svelte';
   import WidgetDockerStatus from './widgets/WidgetDockerStatus.svelte';
+  import WidgetFetch from './widgets/WidgetFetch.svelte';
+  import WidgetDeepSeek from './widgets/WidgetDeepSeek.svelte';
   import WidgetStack from './widgets/WidgetStack.svelte';
   import WidgetFallback from './widgets/WidgetFallback.svelte';
 
@@ -20,6 +22,8 @@
     calendar: WidgetCalendar,
     'docker-status': WidgetDockerStatus,
     'service-status': WidgetDockerStatus,
+    'fetch': WidgetFetch,
+    'deepseek': WidgetDeepSeek,
     'stack-horizontal': WidgetStack,
     'stack-vertical': WidgetStack,
   };

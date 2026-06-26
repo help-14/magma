@@ -18,7 +18,9 @@ const knownWidgetTypes = new Set([
 	'weather',
 	'youtube-live',
 	'service-status',
-	'docker-status'
+	'docker-status',
+	'fetch',
+	'deepseek'
 ])
 
 export async function readDashboardYaml() {

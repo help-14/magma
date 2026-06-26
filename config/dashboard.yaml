@@ -107,6 +107,16 @@ dashboard:
       config:
         dockerHost: http://10.10.10.90:2375
         columns: 2
+    - id: deepseek-main
+      type: deepseek
+      title: DeepSeek
+      x: 5
+      y: 1
+      w: 3
+      h: 2
+      config:
+        authToken: qazLxtIssoVu2ZApzsghgOp9JKj81GwU6iZnk7MIJstIClSxhdcRhBkfA+uKba1Y
+        refreshInterval: 600
     - id: calendar-mqs8wzat-ass1
       type: calendar
       title: Calendar
@@ -115,6 +125,27 @@ dashboard:
       w: 4
       h: 4
       config: {}
+    - id: fetch-posts
+      type: fetch
+      title: Latest Posts
+      x: 5
+      y: 3
+      w: 3
+      h: 6
+      config:
+        url: https://jsonplaceholder.typicode.com/posts
+        method: GET
+        headers: "[]"
+        body: ""
+        formatScript: |-
+          const data = JSON.parse(responseText);
+          return `<ul style="list-style:none;padding:0;margin:0;font-size:13px;color:#ebdbb2;">
+            ${data.slice(0, 5).map(p => `<li style="padding:6px 0;border-bottom:1px solid #3c3836;">
+              <strong style="color:#fabd2f;">${p.title}</strong>
+              <p style="margin:2px 0 0;color:#a89984;">${p.body}</p>
+            </li>`).join('')}
+          </ul>`;
+        refreshInterval: 600
 locations:
   default:
     latitude: 21.042698

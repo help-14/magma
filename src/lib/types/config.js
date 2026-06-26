@@ -29,11 +29,27 @@
  */
 
 /**
+ * @typedef {Object} FetchConfig
+ * @property {string} [url]
+ * @property {string} [method]
+ * @property {string} [headers]
+ * @property {string} [body]
+ * @property {string} [formatScript]
+ * @property {number} [refreshInterval]
+ */
+
+/**
+ * @typedef {Object} DeepSeekConfig
+ * @property {string} [authToken]
+ * @property {number} [refreshInterval]
+ */
+
+/**
  * @typedef {Record<string, any>} WidgetConfig
  */
 
 /**
- * @typedef {'text'|'number'|'color'|'icon-picker'|'checkbox'|'select'} ConfigFieldType
+ * @typedef {'text'|'number'|'color'|'icon-picker'|'checkbox'|'select'|'textarea'|'password'} ConfigFieldType
  */
 
 /**
@@ -44,6 +60,7 @@
  * @property {string|number|boolean} default
  * @property {string} [placeholder]
  * @property {{ label: string, value: string }[]} [options]
+ * @property {number} [rows]
  */
 
 export { }

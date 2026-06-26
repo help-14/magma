@@ -74,7 +74,9 @@
       config: { gap: 12 },
       children: []
     },
-    { type: 'docker-status', title: 'Docker', w: 6, h: 4, config: {} }
+    { type: 'docker-status', title: 'Docker', w: 6, h: 4, config: {} },
+    { type: 'fetch', title: 'Fetch', w: 8, h: 8, config: {} },
+    { type: 'deepseek', title: 'DeepSeek', w: 3, h: 2, config: { refreshInterval: 600 } }
   ]
 
   let grid = $derived(config.dashboard.grid)

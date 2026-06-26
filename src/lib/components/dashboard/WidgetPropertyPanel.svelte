@@ -3,6 +3,7 @@
   import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import { Input } from '$lib/components/ui/input/index.js'
+  import { Textarea } from '$lib/components/ui/textarea/index.js'
   import { Label } from '$lib/components/ui/label/index.js'
   import IconPicker from './IconPicker.svelte'
   import { widgetConfigFields } from '$lib/types/widget-config-fields.js'
@@ -142,6 +143,19 @@
           >{field.label}</span
         >
       </Label>
+    {:else if field.type === 'password'}
+      <Label class="grid gap-1.5 mt-3">
+        <span class="text-magma-muted text-xs font-bold uppercase"
+          >{field.label}</span
+        >
+        <Input
+          type="password"
+          value={widget.config?.[field.key] ?? field.default}
+          placeholder={field.placeholder}
+          oninput={(event) =>
+            onUpdateConfig(field.key, event.currentTarget.value)}
+        />
+      </Label>
     {:else if field.type === 'select'}
       <Label class="grid gap-1.5 mt-3">
         <span class="text-magma-muted text-xs font-bold uppercase"
@@ -157,6 +171,15 @@
             <option value={option.value}>{option.label}</option>
           {/each}
         </select>
+      </Label>
+    {:else if field.type === 'textarea'}
+      <Label class="grid gap-1.5 mt-3">
+        <span class="text-magma-muted text-xs font-bold uppercase">{field.label}</span>
+        <Textarea
+          value={widget.config?.[field.key] ?? field.default}
+          rows={field.rows || 4}
+          oninput={(event) => onUpdateConfig(field.key, event.currentTarget.value)}
+        />
       </Label>
     {:else}
       <Label class="grid gap-1.5 mt-3">

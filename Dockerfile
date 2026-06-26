@@ -12,6 +12,7 @@ ENV CI=true
 RUN npm install -g pnpm
 WORKDIR /app
 COPY --from=builder /app/build ./build
+COPY --from=builder /app/config /config
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/pnpm-lock.yaml ./
 RUN pnpm install --prod --no-frozen-lockfile

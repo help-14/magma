@@ -1,5 +1,5 @@
 /**
- * @typedef {'button'|'search'|'timer'|'weather'|'calendar'|'stack-horizontal'|'stack-vertical'|'docker-status'|'service-status'} WidgetType
+ * @typedef {'button'|'search'|'timer'|'weather'|'calendar'|'stack-horizontal'|'stack-vertical'|'docker-status'|'service-status'|'fetch'|'deepseek'} WidgetType
  */
 
 /**
@@ -85,6 +85,12 @@
 
 /**
  * @typedef {BaseWidgetProps} CalendarWidgetProps
+ */
+
+/**
+ * @typedef {Object} DeepSeekWidgetProps
+ * @property {Omit<Widget, 'config'> & { config?: import('./config.js').DeepSeekConfig }} widget
+ * @property {boolean} [compact]
  */
 
 /**
