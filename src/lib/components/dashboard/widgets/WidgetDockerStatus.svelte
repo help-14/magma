@@ -7,6 +7,7 @@
     restartContainer
   } from '$lib/remotes/docker.remote.js'
   import { toast } from 'svelte-sonner'
+  import { m } from '$lib/paraglide/messages.js'
   import {
     Container,
     Play,
@@ -107,13 +108,13 @@
         ok = await restartContainer({ dockerHost, containerId: id })
       }
       if (ok) {
-        toast.success(`Container ${operation} successful`)
+        toast.success(m.docker_operation_success({ operation }))
         fetchContainers()
       } else {
-        toast.error(`Container ${operation} failed`)
+        toast.error(m.docker_operation_failed({ operation }))
       }
     } catch (e) {
-      toast.error(`Container ${operation} failed: ${e.message}`)
+      toast.error(m.docker_operation_failed({ operation }) + `: ${e.message}`)
     }
   }
 
@@ -143,7 +144,7 @@
     >
       <Container size={28} class="text-magma-accent shrink-0" />
       <span class="text-magma-muted text-center"
-        >Configure Docker host in properties</span
+        >{m.docker_configure_host()}</span
       >
     </div>
   {:else if loading}
@@ -159,7 +160,7 @@
       class="flex flex-col justify-center items-center gap-1 p-4 text-magma-muted text-xs"
     >
       <Container size={24} class="text-magma-accent shrink-0" />
-      <span>Connection error</span>
+      <span>{m.docker_connection_error()}</span>
       <span class="text-xs opacity-60">{error}</span>
     </div>
   {:else}
@@ -234,23 +235,23 @@
                 onselect={() => operate('start', c)}
                 disabled={c.State === 'running'}
               >
-                <Play size={13} /> Start
+                <Play size={13} /> {m.docker_start()}
               </ContextMenuItem>
               <ContextMenuItem
                 onselect={() => operate('stop', c)}
                 disabled={c.State !== 'running'}
               >
-                <Square size={13} /> Stop
+                <Square size={13} /> {m.docker_stop()}
               </ContextMenuItem>
               <ContextMenuItem onselect={() => operate('restart', c)}>
-                <RotateCw size={13} /> Restart
+                <RotateCw size={13} /> {m.docker_restart()}
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
         {/each}
         {#if filtered.length === 0}
           <span class="w-full text-center text-magma-muted text-xs py-4"
-            >No containers</span
+            >{m.docker_no_containers()}</span
           >
         {/if}
       </div>

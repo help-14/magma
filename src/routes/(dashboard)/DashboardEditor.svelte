@@ -2,8 +2,9 @@
   // @ts-nocheck
   import {
     GripHorizontal,
-    Maximize2,
+    ArrowDownRight,
     Pencil,
+    Save,
     Plus,
     Settings,
     Trash2
@@ -15,6 +16,8 @@
   import WidgetPalette from '$lib/components/dashboard/WidgetPalette.svelte'
   import WidgetPropertyPanel from '$lib/components/dashboard/WidgetPropertyPanel.svelte'
   import WidgetRenderer from '$lib/components/dashboard/WidgetRenderer.svelte'
+
+  import { m } from '$lib/paraglide/messages.js';
 
   let { initialConfig } = $props()
 
@@ -158,7 +161,7 @@
     const template = JSON.parse(raw)
     if (template.type === 'button') {
       gridActive = false
-      toast.error('Button widgets can only be dropped into a stack.')
+      toast.error(m.editor_only_in_stack())
       return
     }
 
@@ -204,10 +207,10 @@
       config.dashboard.widgets = [...widgets, widget]
       dirty = true
       gridActive = false
-      toast.info('Widget added. Press Done to save.')
+      toast.info(m.editor_widget_added())
     } else {
       gridActive = false
-      toast.error('The grid is full. Remove some widgets first.')
+      toast.error(m.editor_grid_full())
     }
   }
 
@@ -245,7 +248,7 @@
     if (templateRaw) {
       const template = JSON.parse(templateRaw)
       if (template.type !== 'button') {
-        toast.error('Only button widgets can be dropped into a stack.')
+        toast.error(m.editor_only_in_stack())
         return
       }
 
@@ -256,7 +259,7 @@
         config: structuredClone(template.config || {})
       }
       addChildToStack(stack.id, child)
-      toast.info('Button added to stack. Press Done to save.')
+      toast.info(m.editor_button_added_stack())
       return
     }
 
@@ -278,7 +281,7 @@
         )
       selected = { id: stack.id, childId: child.id }
       dirty = true
-      toast.info('Button moved into stack. Press Done to save.')
+      toast.info(m.editor_button_moved_stack())
     }
   }
 
@@ -383,14 +386,14 @@
       )
       selected = null
       dirty = true
-      toast.info('Widget deleted. Press Done to save.')
+      toast.info(m.editor_widget_deleted())
       return
     }
 
     config.dashboard.widgets = widgets.filter((item) => item.id !== widget.id)
     if (selected?.id === widget.id) selected = null
     dirty = true
-    toast.info('Widget deleted. Press Done to save.')
+    toast.info(m.editor_widget_deleted())
   }
 
   function getSelectedWidget() {
@@ -432,7 +435,7 @@
     if (!current) return
     const next = { ...current, ...patch }
     if (!canPlace(next, selected.id)) {
-      toast.error('Those properties do not fit the grid.')
+      toast.error(m.editor_properties_dont_fit())
       return
     }
 
@@ -482,7 +485,7 @@
       const data = await saveDashboardConfig({ config })
       config = data.config
       dirty = false
-      toast.success('Dashboard saved')
+      toast.success(m.editor_dashboard_saved())
       return true
     } catch (saveError) {
       toast.error(saveError.message)
@@ -495,7 +498,7 @@
   async function toggleEditMode() {
     if (!editMode) {
       editMode = true
-      toast.info('Edit mode enabled')
+      toast.info(m.editor_edit_mode())
       return
     }
 
@@ -528,17 +531,20 @@
       href="/settings"
       variant="magma"
       class="aspect-square"
-      title="Settings"
-      aria-label="Settings"><Settings size={20} /></Button
+      title={m.editor_settings()}
+      aria-label={m.editor_settings()}><Settings size={20} /></Button
     >
     <Button variant="magma" aria-pressed={editMode} onclick={toggleEditMode}>
-      <Pencil size={18} />
-      {editMode ? (saving ? 'Saving...' : 'Done') : 'Edit'}
+      {#if editMode}
+        <Save size={18} /> {m.editor_save()}
+      {:else}
+        <Pencil size={18} /> {m.editor_edit()}
+      {/if}
     </Button>
     {#if editMode}
-      <Button variant="magma" onclick={() => (drawerOpen = true)}
-        ><Plus size={18} /> Add Widget</Button
-      >
+      <Button variant="magma" onclick={() => (drawerOpen = true)}>
+        <Plus size={18} /> {m.editor_add_widget()}
+      </Button>
     {/if}
   </nav>
 
@@ -548,40 +554,47 @@
     class:grid-active={editMode}
     class="dashboard-grid relative z-1 w-screen -ml-6 border-0 rounded-none bg-transparent overflow-visible"
     role="application"
-    aria-label="Dashboard widget grid"
+    aria-label={m.editor_settings()}
     ondrop={onDrop}
     ondragover={onDragOver}
     style={`--columns: ${grid.columns}; --cell-size-x: ${cellSize}px; --cell-size-y: ${cellHeight}px; min-height: ${gridVisualHeight}px; background-position: ${pageCenter % cellSize}px 0;`}
   >
     {#if browser}
       {#each widgets as widget (widget.id)}
-        <article
+        <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions, a11y_no_static_element_interactions -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div
           class:dragging={draftWidget === widget.id}
           class:selected={selected?.id === widget.id && !selected?.childId}
           class="absolute p-1.5 animate-in fade-in duration-200"
           draggable={editMode && widget.type === 'button'}
           style={widgetStyle(widget)}
           onclick={(event) => selectWidget(event, widget)}
+          onkeydown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              selectWidget(event, widget)
+            }
+          }}
           ondragstart={(event) => dragWidget(event, widget)}
           ondragend={endTemplateDrag}
+          tabindex={editMode ? 0 : -1}
         >
           {#if editMode}
             <Button
-              class={`absolute top-1.5 left-1.5 right-1.5 z-3 flex items-center justify-center gap-1.5 h-7 border-0 rounded-t-lg bg-magma-accent/88 text-[#211b12] text-xs font-extrabold cursor-grab transition-opacity duration-100 focus-visible:opacity-100 active:cursor-grabbing ${editMode ? 'opacity-100' : 'opacity-0'}`}
-              type="button"
+              class={`absolute top-1.5 left-1.5 right-1.5 z-3 flex items-center justify-center gap-1.5 h-7 border-0 rounded-t-lg text-xs font-extrabold cursor-grab transition-opacity duration-100 focus-visible:opacity-100 active:cursor-grabbing ${editMode ? 'opacity-100' : 'opacity-0'}`}
               draggable={widget.type === 'button'}
               ondragstart={(event) => dragWidget(event, widget)}
               ondragend={endTemplateDrag}
               onpointerdown={(event) => startMove(event, widget)}
             >
               <GripHorizontal size={16} />
-              <span>{widget.title}</span>
             </Button>
             <Button
-              class={`absolute top-3 right-3 z-5 grid size-7 place-items-center border border-white/18 rounded-lg bg-[rgb(80_24_18/88%)] text-[#ffe1d8] cursor-pointer transition-all duration-100 hover:bg-[rgb(130_36_28/94%)] active:scale-96 focus-visible:opacity-100 ${editMode ? 'opacity-100' : 'opacity-0'}`}
-              type="button"
-              aria-label={`Delete ${widget.title}`}
-              title="Delete widget"
+              class={`absolute top-1.5 right-1.5 z-5 grid size-7 ${editMode ? 'opacity-100' : 'opacity-0'}`}
+              aria-label={m.editor_delete_widget()}
+              variant="ghost"
+              title={m.editor_delete_widget()}
               onclick={(event) => {
                 event.preventDefault()
                 event.stopPropagation()
@@ -610,14 +623,14 @@
           </div>
           {#if editMode}
             <Button
-              class={`absolute right-3 bottom-3 z-4 grid size-7 place-items-center border border-magma-line rounded-lg bg-[rgb(20_18_16/82%)] text-magma-text cursor-nwse-resize transition-opacity duration-100 focus-visible:opacity-100 ${editMode ? 'opacity-100' : 'opacity-0'}`}
-              type="button"
+              class={`absolute right-1 bottom-1 z-4 grid size-7 text-magma-text cursor-nwse-resize focus-visible:opacity-100 ${editMode ? 'opacity-100' : 'opacity-0'}`}
               onpointerdown={(event) => startResize(event, widget)}
+              variant="ghost"
             >
-              <Maximize2 size={14} />
+              <ArrowDownRight size={14} />
             </Button>
           {/if}
-        </article>
+        </div>
       {/each}
     {/if}
   </div>

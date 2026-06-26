@@ -1,5 +1,6 @@
 <script>
   // @ts-nocheck
+  import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import { Input } from '$lib/components/ui/input/index.js'
   import { Label } from '$lib/components/ui/label/index.js'
@@ -29,15 +30,15 @@
   <div class="flex items-start justify-between gap-3.5 mb-4">
     <div>
       <p class="text-magma-accent text-xs font-extrabold uppercase m-0 mb-1">
-        Properties
+        {m.properties_title()}
       </p>
       <h2 class="m-0 text-lg leading-tight">{widget.title}</h2>
     </div>
-    <Button variant="outline" type="button" onclick={onClose}>Close</Button>
+    <Button variant="outline" type="button" onclick={onClose}>{m.properties_close()}</Button>
   </div>
 
   <Label class="grid gap-1.5 mt-3">
-    <span class="text-magma-muted text-xs font-bold uppercase">Title</span>
+    <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_title_field()}</span>
     <Input
       value={widget.title}
       oninput={(event) => onUpdate({ title: event.currentTarget.value })}
@@ -45,19 +46,19 @@
   </Label>
 
   <Label class="grid gap-1.5 mt-3">
-    <span class="text-magma-muted text-xs font-bold uppercase">ID</span>
+    <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_id_field()}</span>
     <Input value={widget.id} readonly />
   </Label>
 
   <Label class="grid gap-1.5 mt-3">
-    <span class="text-magma-muted text-xs font-bold uppercase">Type</span>
+    <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_type_field()}</span>
     <Input value={widget.type} readonly />
   </Label>
 
   {#if !selected?.childId}
     <div class="grid grid-cols-4 gap-2">
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase">X</span>
+        <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_x()}</span>
         <Input
           type="number"
           value={widget.x}
@@ -65,7 +66,7 @@
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase">Y</span>
+        <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_y()}</span>
         <Input
           type="number"
           min="1"
@@ -74,7 +75,7 @@
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase">W</span>
+        <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_w()}</span>
         <Input
           type="number"
           min="1"
@@ -84,7 +85,7 @@
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase">H</span>
+        <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_h()}</span>
         <Input
           type="number"
           min="1"

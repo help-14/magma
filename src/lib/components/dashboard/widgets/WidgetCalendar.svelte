@@ -1,5 +1,6 @@
 <script>
   import { ChevronLeft, ChevronRight } from '@lucide/svelte'
+  import { m } from '$lib/paraglide/messages.js'
 
   /** @type {import('$lib/types/widget.js').CalendarWidgetProps} */
   let { widget, compact = false } = $props()
@@ -73,14 +74,14 @@
       <button
         class="grid size-7 place-items-center rounded-md bg-transparent text-magma-text/70 cursor-pointer border-0 transition-colors hover:bg-magma-accent/14 hover:text-magma-text"
         onclick={prevMonth}
-        aria-label="Previous month"
+        aria-label={m.calendar_prev_month()}
       >
         <ChevronLeft size={16} />
       </button>
       <button
         class="grid size-7 place-items-center rounded-md bg-transparent text-magma-text/70 cursor-pointer border-0 transition-colors hover:bg-magma-accent/14 hover:text-magma-text"
         onclick={nextMonth}
-        aria-label="Next month"
+        aria-label={m.calendar_next_month()}
       >
         <ChevronRight size={16} />
       </button>

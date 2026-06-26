@@ -1,4 +1,5 @@
 <script>
+  import { m } from '$lib/paraglide/messages.js';
   import { useNow } from './clock.svelte.js'
   /** @type {import('$lib/types/widget.js').TimerWidgetProps} */
   let { widget, compact = false } = $props()
@@ -6,10 +7,10 @@
 
   function greeting() {
     const hour = now.getHours()
-    if (hour >= 5 && hour < 12) return 'Chào buổi sáng!'
-    if (hour >= 12 && hour < 17) return 'Chiều làm việc hiệu quả!'
-    if (hour >= 17 && hour < 20) return 'Chiều tối vui vẻ!'
-    return 'Chúc ngủ ngon!'
+    if (hour >= 5 && hour < 12) return m.timer_morning()
+    if (hour >= 12 && hour < 17) return m.timer_afternoon()
+    if (hour >= 17 && hour < 20) return m.timer_evening()
+    return m.timer_night()
   }
 
   function formattedDate() {

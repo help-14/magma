@@ -1,6 +1,7 @@
 <script>
 	// @ts-nocheck
 	import { Search } from '@lucide/svelte';
+	import { m } from '$lib/paraglide/messages.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { searchIcons } from '$lib/remotes/icons.remote.js';
 	import DashboardIcon from './DashboardIcon.svelte';
@@ -73,11 +74,11 @@
 	{#if open}
 		<div class="absolute top-full mt-1.5 left-0 right-0 z-35 grid max-h-64 overflow-auto border border-magma-line rounded-lg bg-[rgb(20_18_16/96%)] shadow-[0_18px_48px_rgb(0_0_0/36%)] backdrop-blur-xl">
 			{#if loading}
-				<div class="flex items-center gap-2.5 w-full min-h-9 border-0 border-b border-b-[rgb(246_236_210/8%)] bg-transparent text-magma-muted p-2 px-2.5 cursor-default last:border-b-0">Searching...</div>
+				<div class="flex items-center gap-2.5 w-full min-h-9 border-0 border-b border-b-[rgb(246_236_210/8%)] bg-transparent text-magma-muted p-2 px-2.5 cursor-default last:border-b-0">{m.icon_picker_searching()}</div>
 			{:else if results.length === 0}
 				<button type="button" class="flex items-center gap-2.5 w-full min-h-9 border-0 border-b border-b-[rgb(246_236_210/8%)] bg-transparent text-magma-text p-2 px-2.5 text-left cursor-pointer last:border-b-0 hover:bg-magma-accent/16" onclick={() => choose(searchText)}>
 					<DashboardIcon name={searchText} size={18} />
-					<span class="overflow-hidden text-ellipsis whitespace-nowrap">Use "{searchText || 'icon'}"</span>
+					<span class="overflow-hidden text-ellipsis whitespace-nowrap">{m.icon_picker_use({ icon: searchText || 'icon' })}</span>
 				</button>
 			{:else}
 				{#each results as icon}

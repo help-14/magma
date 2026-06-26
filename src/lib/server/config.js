@@ -3,9 +3,10 @@ import { readFile, rename, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import YAML from 'yaml'
 
-const dashboardConfigPath = path.resolve('config/dashboard.yaml')
-const systemConfigPath = path.resolve('config/system.yaml')
-const overrideCssPath = path.resolve('config/override.css')
+const configDir = process.env.CONFIG_DIR || 'config'
+const dashboardConfigPath = path.resolve(configDir, 'dashboard.yaml')
+const systemConfigPath = path.resolve(configDir, 'system.yaml')
+const overrideCssPath = path.resolve(configDir, 'override.css')
 const knownWidgetTypes = new Set([
 	'button',
 	'calendar',
@@ -114,6 +115,7 @@ export function stringifySystemConfig(config) {
 export function defaultSystemConfig() {
 	return {
 		version: 1,
+		language: 'en',
 		system: {
 			dashboardGrid: {
 				columns: 12,
@@ -170,6 +172,9 @@ export function validateSystemConfig(config) {
 	const backgroundImage = config.theme?.backgroundImage
 	if (backgroundImage !== undefined && typeof backgroundImage !== 'string') {
 		throw new Error('theme.backgroundImage must be a string.')
+	}
+	if (config.language !== undefined && typeof config.language !== 'string') {
+		throw new Error('language must be a string.')
 	}
 }
 

@@ -2,6 +2,7 @@
   // @ts-nocheck
   import { ArrowLeft, Save } from '@lucide/svelte'
   import { toast } from 'svelte-sonner'
+  import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import { Input } from '$lib/components/ui/input/index.js'
   import { Label } from '$lib/components/ui/label/index.js'
@@ -27,16 +28,17 @@
   let backgroundImage = $state(data.config.theme?.backgroundImage || '/bg.jpg')
   let customCss = $state(data.customCss || '')
   let saving = $state(false)
+  let language = $state(data.systemConfig.language || 'en')
 
   let highlightedSystemYaml = $derived(highlightYaml(systemYaml))
   let highlightedDashboardYaml = $derived(highlightYaml(dashboardYaml))
   let highlightedCss = $derived(highlightCss(customCss))
 
-  const tabs = [
-    { id: 'system', label: 'System settings' },
-    { id: 'dashboard', label: 'Dashboard settings' },
-    { id: 'css', label: 'CSS override' }
-  ]
+  let tabs = $derived([
+    { id: 'system', label: m.settings_system() },
+    { id: 'dashboard', label: m.settings_dashboard() },
+    { id: 'css', label: m.settings_css() }
+  ])
 
   function escapeHtml(value) {
     return value
@@ -94,6 +96,17 @@
   function updateBackgroundImage(value) {
     backgroundImage = value
     updateSystemThemeField('backgroundImage', value || '/bg.jpg')
+  }
+
+  function updateSystemLanguage(value) {
+    const lines = systemYaml.split('\n')
+    const langIndex = lines.findIndex((line) => /^language:/.test(line))
+    if (langIndex === -1) {
+      lines.splice(1, 0, `language: ${value}`)
+    } else {
+      lines.splice(langIndex, 1, `language: ${value}`)
+    }
+    systemYaml = lines.join('\n')
   }
 
   function updateSystemGridField(key, value) {
@@ -213,6 +226,9 @@
       }
       if (typeof result.customCss === 'string') customCss = result.customCss
       toast.success('Saved settings')
+      if (activeTab === 'system' && result.systemConfig?.language !== data.language) {
+        window.location.reload()
+      }
     } catch (saveError) {
       toast.error(saveError.message)
     } finally {
@@ -232,7 +248,7 @@
     >
       <nav class="flex flex-row w-full">
         <Button href="/" variant="magma">
-          <ArrowLeft size={18} /> Dashboard
+          <ArrowLeft size={18} /> {m.settings_back()}
         </Button>
         <div class="grow"></div>
         <Button
@@ -242,7 +258,7 @@
           class="text-magma-text!"
         >
           <Save size={18} />
-          {saving ? 'Saving...' : 'Save'}
+          {saving ? m.settings_saving() : m.editor_save()}
         </Button>
       </nav>
     </header>
@@ -271,17 +287,13 @@
             class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted"
           >
             <h2 class="text-magma-text text-base m-0 mb-2.5">
-              System Settings
+              {m.settings_system()}
             </h2>
-            <p>The server reads and writes <code>config/system.yaml</code>.</p>
-            <p>
-              Use this for app-level behavior, including the dashboard box
-              system.
-            </p>
+            <p>{@html m.settings_system_desc()}</p>
             <div class="grid grid-cols-2 gap-3">
               <Label class="grid gap-2 mt-4">
                 <span class="text-magma-accent text-xs font-bold uppercase"
-                  >Cell width (px)</span
+                  >{m.settings_cell_width()}</span
                 >
                 <Input
                   type="number"
@@ -297,7 +309,7 @@
               </Label>
               <Label class="grid gap-2 mt-4">
                 <span class="text-magma-accent text-xs font-bold uppercase"
-                  >Cell height (px)</span
+                  >{m.settings_cell_height()}</span
                 >
                 <Input
                   type="number"
@@ -313,7 +325,7 @@
               </Label>
               <Label class="grid col-span-2 gap-2 mt-4">
                 <span class="text-magma-accent text-xs font-bold uppercase"
-                  >Background image URL</span
+                  >{m.settings_bg_image()}</span
                 >
                 <Input
                   value={backgroundImage}
@@ -322,6 +334,22 @@
                   oninput={(event) =>
                     updateBackgroundImage(event.currentTarget.value)}
                 />
+              </Label>
+              <Label class="grid col-span-2 gap-2 mt-4">
+                <span class="text-magma-accent text-xs font-bold uppercase"
+                  >{m.settings_language()}</span
+                >
+                <select
+                  class="flex h-9 w-full rounded-md border border-magma-line bg-magma-panel px-3 py-1 text-sm text-magma-text shadow-sm cursor-pointer outline-0"
+                  value={language}
+                  onchange={(event) => {
+                    language = event.currentTarget.value
+                    updateSystemLanguage(event.currentTarget.value)
+                  }}
+                >
+                  <option value="en">English</option>
+                  <option value="vi">Tiếng Việt</option>
+                </select>
               </Label>
             </div>
           </aside>
@@ -341,15 +369,9 @@
             class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted"
           >
             <h2 class="text-magma-text text-base m-0 mb-2.5">
-              Dashboard Settings
+              {m.settings_dashboard()}
             </h2>
-            <p>
-              The server reads and writes <code>config/dashboard.yaml</code>.
-            </p>
-            <p>
-              This file controls what the main page renders: widgets, services,
-              search, theme, and integrations.
-            </p>
+            <p>{@html m.settings_dashboard_desc()}</p>
           </aside>
         </section>
       </Tabs.Content>
@@ -367,12 +389,8 @@
           <aside
             class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted"
           >
-            <h2 class="text-magma-text text-base m-0 mb-2.5">CSS Override</h2>
-            <p>The server reads and writes <code>config/override.css</code>.</p>
-            <p>
-              This stylesheet is loaded after the built-in app CSS, so it can
-              override colors and component styles.
-            </p>
+            <h2 class="text-magma-text text-base m-0 mb-2.5">{m.settings_css()}</h2>
+            <p>{@html m.settings_css_desc()}</p>
           </aside>
         </section>
       </Tabs.Content>

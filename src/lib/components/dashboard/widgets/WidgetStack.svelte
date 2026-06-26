@@ -1,6 +1,7 @@
 <script>
   // @ts-nocheck
   import { Trash2 } from '@lucide/svelte'
+  import { m } from '$lib/paraglide/messages.js'
   import WidgetRenderer from '../WidgetRenderer.svelte'
   /** @type {import('$lib/types/widget.js').StackWidgetProps} */
   let {
@@ -47,8 +48,8 @@
             class="absolute top-1.5 right-1.5 z-5 grid size-7 place-items-center border border-white/18 rounded-lg bg-[rgb(80_24_18/88%)] text-[#ffe1d8] opacity-0 cursor-pointer transition-all duration-100 hover:bg-[rgb(130_36_28/94%)] active:scale-96 focus-visible:opacity-100"
             class:opacity-100={editMode}
             type="button"
-            aria-label={`Delete ${child.title}`}
-            title="Delete widget"
+            aria-label={m.widget_delete()}
+            title={m.widget_delete()}
             onclick={(event) => {
               event.preventDefault()
               event.stopPropagation()

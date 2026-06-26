@@ -1,5 +1,6 @@
 <script>
   // @ts-nocheck
+  import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
 
   /** @type {import('$lib/types/widget.js').WidgetPaletteProps} */
@@ -32,13 +33,14 @@
     dragOffset = { x: event.clientX - rect.left, y: event.clientY - rect.top }
     dragging = true
 
+    const dragH = rect.height
+
     function move(moveEvent) {
       let x = moveEvent.clientX - dragOffset.x
       let y = moveEvent.clientY - dragOffset.y
       const w = Math.min(760, window.innerWidth - 48)
-      const h = Math.min(520, window.innerHeight - 120)
       x = Math.max(0, Math.min(window.innerWidth - w, x))
-      y = Math.max(0, Math.min(window.innerHeight - h, y))
+      y = Math.max(0, Math.min(window.innerHeight - dragH, y))
       posX = x
       posY = y
     }
@@ -69,9 +71,9 @@
   >
     <div>
       <p class="text-magma-accent text-xs font-bold uppercase m-0 mb-1">
-        Add Widget
+        {m.palette_heading()}
       </p>
-      <h2 class="m-0 text-xl leading-none">Drag a widget onto the grid</h2>
+      <h2 class="m-0 text-xl leading-none">{m.palette_subtitle()}</h2>
     </div>
     <Button
       variant="ghost"

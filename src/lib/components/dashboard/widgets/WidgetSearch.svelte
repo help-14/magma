@@ -1,6 +1,7 @@
 <script>
   // @ts-nocheck
   import { Search } from '@lucide/svelte'
+  import { m } from '$lib/paraglide/messages.js'
   import { onMount } from 'svelte'
 
   /** @type {import('$lib/types/widget.js').SearchWidgetProps} */
@@ -44,7 +45,7 @@
   <input
     bind:this={searchInput}
     name="query"
-    placeholder={widget.config?.placeholder || 'Search...'}
+    placeholder={widget.config?.placeholder || m.search_placeholder()}
     autocomplete="off"
     class="w-full min-w-0 border-0 outline-0 bg-transparent text-magma-text"
   />

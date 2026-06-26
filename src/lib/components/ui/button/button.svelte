@@ -18,7 +18,7 @@
         ghost:
           'border-transparent bg-transparent text-magma-text hover:bg-magma-accent/12 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]',
         destructive:
-          'border-red-400/30 bg-red-400/10 text-red-400 backdrop-blur-md hover:border-red-400/50 hover:bg-red-400/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]',
+          'border-red-400/30 bg-red-400/10 text-magma-text backdrop-blur-md hover:border-red-400/50 bg-red-800 hover:bg-red-400 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]',
         link: 'border-transparent bg-transparent text-magma-accent underline-offset-4 hover:underline hover:text-magma-accent/80'
       },
       size: {

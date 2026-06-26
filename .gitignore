@@ -9,6 +9,7 @@ app.config.timestamp_*.js
 /.svelte-kit
 .wrangler
 .pnpm-store
+/build
 
 # Environment
 .env

@@ -7,11 +7,19 @@ import {
 } from '$lib/server/config.js';
 
 export async function load() {
+	const [dashboardConfig, systemConfig, systemYaml, yaml, customCss] = await Promise.all([
+		readDashboardConfig(),
+		readSystemConfig(),
+		readSystemYaml(),
+		readDashboardYaml(),
+		readOverrideCss()
+	]);
 	return {
-		config: await readDashboardConfig(),
-		customCss: await readOverrideCss(),
-		systemConfig: await readSystemConfig(),
-		systemYaml: await readSystemYaml(),
-		yaml: await readDashboardYaml()
+		config: dashboardConfig,
+		customCss,
+		systemConfig,
+		systemYaml,
+		yaml,
+		language: systemConfig.language || 'en'
 	};
 }

@@ -62,7 +62,7 @@ dashboard:
           config:
             icon: material-symbols:house
             url: https://
-            iconColor: ''
+            iconColor: ""
     - id: media-stack
       type: stack-horizontal
       title: Media
@@ -126,7 +126,7 @@ network:
   localPingUrl: 10.0.0.1
   localPingTimeout: 300
 theme:
-  accentColor: '#fabd2f'
+  accentColor: "#fabd2f"
 integrations:
   weather:
     provider: openweather
