@@ -1,8 +1,9 @@
 <script>
   // @ts-nocheck
-  import { RefreshCw } from '@lucide/svelte'
   import { fetchUrl } from '$lib/remotes/fetch.remote.js'
-  import { Button } from '$lib/components/ui/button/index.js'
+  import WidgetTitleBar from './WidgetTitleBar.svelte'
+  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import WidgetStateWrapper from './WidgetStateWrapper.svelte'
 
   /** @type {import('$lib/types/widget.js').BaseWidgetProps} */
   let { widget, compact = false } = $props()
@@ -10,7 +11,7 @@
   let state = $state('idle')
   let errorMsg = $state('')
   let htmlContent = $state('')
-  let iframeKey = $state(0)
+  let contentKey = $state(0)
 
   let refreshInterval = $derived(widget.config?.refreshInterval ?? 600)
   let url = $derived(widget.config?.url || '')
@@ -36,10 +37,10 @@
           'responseText',
           widget.config?.formatScript || 'return responseText'
         )
-        const html = fn(result.responseText)
-        htmlContent = html ?? ''
+        const html = fn(result.responseText) ?? ''
+        htmlContent = html
+        contentKey++
         state = 'content'
-        iframeKey++
       } catch (scriptErr) {
         state = 'error'
         errorMsg = 'Script error: ' + (scriptErr.message || String(scriptErr))
@@ -62,41 +63,24 @@
   })
 </script>
 
-<div class="relative flex flex-col w-full min-w-0 min-h-0 h-full">
-  <div class="text-magma-accent text-sm font-extrabold px-3 p-2 pb-1 shrink-0">
-    {widget.title}
-  </div>
-  {#if state === 'idle'}
-    <div
-      class="flex items-center justify-center h-full text-magma-muted text-xs p-4"
-    >
-      Configure URL in properties
-    </div>
-  {:else if state === 'loading'}
-    <div class="flex items-center justify-center h-full">
-      <RefreshCw class="animate-spin text-magma-muted" size={24} />
-    </div>
-  {:else if state === 'error'}
-    <div
-      class="flex items-center justify-center h-full text-red-400 text-xs p-4 text-center"
-    >
-      {errorMsg}
-    </div>
-  {:else if state === 'content'}
-    <iframe
-      key={iframeKey}
-      sandbox="allow-scripts"
-      srcdoc={htmlContent}
-      class="w-full h-full border-0 min-w-0 min-h-0 p-1"
-      title={widget.title}
-    ></iframe>
-  {/if}
-  <Button
-    onclick={doFetch}
-    variant="ghost"
-    class="absolute top-1 right-1 p-1 rounded text-sm aspect-square"
-    title="Refresh"
+<div class="relative flex flex-col w-full min-w-0 min-h-0 h-full p-1">
+  <WidgetTitleBar title={widget.title} />
+  <WidgetStateWrapper
+    {state}
+    {errorMsg}
+    idleMessage="Configure URL in properties"
   >
-    <RefreshCw class="size-3" />
-  </Button>
+    {#snippet children()}
+      {#key contentKey}
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div
+          class="w-full h-full min-w-0 min-h-0 overflow-y-auto p-2 [&_img]:max-w-full [&_table]:w-full"
+          onclickcapture={(e) => e.stopPropagation()}
+        >
+          {@html htmlContent}
+        </div>
+      {/key}
+    {/snippet}
+  </WidgetStateWrapper>
+  <WidgetRefreshButton onclick={doFetch} />
 </div>

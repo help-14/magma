@@ -1,6 +1,5 @@
 <script>
   // @ts-nocheck
-  import { RefreshCw } from '@lucide/svelte'
   import { Button } from '$lib/components/ui/button/index.js'
   import { Progress } from '$lib/components/ui/progress/index.js'
   import {
@@ -10,6 +9,9 @@
     Provider as TooltipProvider
   } from '$lib/components/ui/tooltip/index.js'
   import { deepseekSummary } from '$lib/remotes/deepseek.remote.js'
+  import WidgetTitleBar from './WidgetTitleBar.svelte'
+  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import WidgetStateWrapper from './WidgetStateWrapper.svelte'
 
   /** @type {import('$lib/types/widget.js').DeepSeekWidgetProps} */
   let { widget, compact = false } = $props()
@@ -80,54 +82,35 @@
   })
 </script>
 
-<div class="relative flex flex-col w-full min-w-0 min-h-0 h-full p-3">
-  <div class="text-magma-accent text-sm font-extrabold shrink-0 mb-2">
-    {widget.title}
-  </div>
-
-  {#if state === 'idle'}
-    <div
-      class="flex items-center justify-center h-full text-magma-muted text-xs p-4"
-    >
-      Configure Auth Token in properties
-    </div>
-  {:else if state === 'loading'}
-    <div class="flex items-center justify-center h-full">
-      <RefreshCw class="animate-spin text-magma-muted" size={24} />
-    </div>
-  {:else if state === 'error'}
-    <div
-      class="flex items-center justify-center h-full text-red-400 text-xs p-4 text-center"
-    >
-      {errorMsg}
-    </div>
-  {:else if state === 'content'}
-    <div class="flex flex-col gap-2 justify-center h-full">
-      <div class="text-lg font-bold tabular-nums">
-        {walletDisplay}
-      </div>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger class="flex items-center gap-2 w-full cursor-default">
-            <Progress value={progressValue} class="h-2 flex-1" />
-            <span class="text-xs text-magma-muted tabular-nums w-8 text-right"
-              >{progressValue}%</span
-            >
-          </TooltipTrigger>
-          <TooltipContent>
-            {tooltipText}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </div>
-  {/if}
-
-  <Button
-    onclick={doFetch}
-    variant="ghost"
-    class="absolute top-1 right-1 p-1 rounded text-sm aspect-square"
-    title="Refresh"
+<div class="relative flex flex-col w-full min-w-0 min-h-0 h-full">
+  <WidgetTitleBar title={widget.title} />
+  <WidgetStateWrapper
+    {state}
+    {errorMsg}
+    idleMessage="Configure Auth Token in properties"
   >
-    <RefreshCw class="size-3" />
-  </Button>
+    {#snippet children()}
+      <div class="flex flex-col gap-2 justify-center h-full p-3">
+        <div class="text-lg font-bold tabular-nums">
+          {walletDisplay}
+        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger
+              class="flex items-center gap-2 w-full cursor-default"
+            >
+              <Progress value={progressValue} class="h-2 flex-1" />
+              <span class="text-xs text-magma-muted tabular-nums w-8 text-right"
+                >{progressValue}%</span
+              >
+            </TooltipTrigger>
+            <TooltipContent>
+              {tooltipText}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    {/snippet}
+  </WidgetStateWrapper>
+  <WidgetRefreshButton onclick={doFetch} />
 </div>

@@ -24,7 +24,9 @@ const knownWidgetTypes = new Set([
   'website',
   'deepseek',
   'rss',
-  'stock'
+  'stock',
+  'server-status',
+  'github-repo'
 ])
 
 export async function readDashboardYaml() {

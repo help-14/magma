@@ -1,5 +1,5 @@
 /**
- * @typedef {'button'|'search'|'timer'|'weather'|'calendar'|'stack-horizontal'|'stack-vertical'|'docker-status'|'service-status'|'fetch'|'deepseek'|'website'|'youtube-live'|'stack'|'rss'|'stock'} WidgetType
+ * @typedef {'button'|'search'|'timer'|'weather'|'calendar'|'stack-horizontal'|'stack-vertical'|'docker-status'|'service-status'|'fetch'|'deepseek'|'website'|'youtube-live'|'stack'|'rss'|'stock'|'server-status'|'github-repo'} WidgetType
  */
 
 /**
@@ -108,6 +108,18 @@
 /**
  * @typedef {Object} RssWidgetProps
  * @property {Omit<Widget, 'config'> & { config?: import('./config.js').RssWidgetConfig }} widget
+ * @property {boolean} [compact]
+ */
+
+/**
+ * @typedef {Object} ServerStatusWidgetProps
+ * @property {Omit<Widget, 'config'> & { config?: import('./config.js').ServerStatusConfig }} widget
+ * @property {boolean} [compact]
+ */
+
+/**
+ * @typedef {Object} GithubRepoWidgetProps
+ * @property {Omit<Widget, 'config'> & { config?: import('./config.js').GithubRepoConfig }} widget
  * @property {boolean} [compact]
  */
 

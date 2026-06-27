@@ -65,7 +65,7 @@ dashboard:
           config:
             icon: material-symbols:house
             url: https://
-            iconColor: ""
+            iconColor: ''
     - id: media-stack
       type: stack
       title: Media
@@ -121,7 +121,7 @@ dashboard:
       w: 3
       h: 2
       config:
-        authToken: qazLxtIssoVu2ZApzsghgOp9JKj81GwU6iZnk7MIJstIClSxhdcRhBkfA+uKba1Y
+        authToken:
         refreshInterval: 600
     - id: calendar-mqs8wzat-ass1
       type: calendar
@@ -139,7 +139,8 @@ dashboard:
       w: 4
       h: 8
       config:
-        feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"},{"url":"https://feeds.feedburner.com/TheHackersNews","title":"Threat
+        feeds:
+          '[{"url":"https://hnrss.org/frontpage","title":"HN"},{"url":"https://feeds.feedburner.com/TheHackersNews","title":"Threat
           Intel"}]'
         style: vertical-list
         limit: 25
@@ -186,8 +187,8 @@ dashboard:
       config:
         url: https://jsonplaceholder.typicode.com/posts
         method: GET
-        headers: "[]"
-        body: ""
+        headers: '[]'
+        body: ''
         formatScript: |-
           const data = JSON.parse(responseText);
           return `<ul style="list-style:none;padding:0;margin:0;font-size:13px;color:#ebdbb2;">
@@ -197,6 +198,34 @@ dashboard:
             </li>`).join('')}
           </ul>`;
         refreshInterval: 600
+    - id: server-status-main
+      type: server-status
+      title: Server
+      x: -5
+      y: 15
+      w: 4
+      h: 6
+      config:
+        sshCmd: ''
+        showHostname: true
+        showUptime: true
+        showCpu: true
+        showRam: true
+        showDisk: true
+    - id: github-repo-main
+      type: github-repo
+      title: GitHub
+      x: 1
+      y: 19
+      w: 4
+      h: 4
+      config:
+        repo: help-14/magma
+        showStars: true
+        showForks: true
+        showPrs: true
+        showIssues: true
+        refreshInterval: 3600
 locations:
   default:
     latitude: 21.042698
@@ -208,7 +237,7 @@ network:
   localPingUrl: 10.0.0.1
   localPingTimeout: 300
 theme:
-  accentColor: "#fabd2f"
+  accentColor: '#fabd2f'
 integrations:
   weather:
     provider: openweather

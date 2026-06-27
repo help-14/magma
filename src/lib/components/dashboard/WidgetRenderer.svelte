@@ -13,6 +13,8 @@
   import WidgetStack from './widgets/WidgetStack.svelte';
   import WidgetRss from './widgets/WidgetRss.svelte';
   import WidgetStock from './widgets/WidgetStock.svelte';
+  import WidgetServerStatus from './widgets/WidgetServerStatus.svelte';
+  import WidgetGithubRepo from './widgets/WidgetGithubRepo.svelte';
   import WidgetFallback from './widgets/WidgetFallback.svelte';
 
   /** @type {import('$lib/types/widget.js').WidgetRendererProps} */
@@ -35,6 +37,8 @@
     'stack-vertical': WidgetStack,
     'rss': WidgetRss,
     'stock': WidgetStock,
+    'server-status': WidgetServerStatus,
+    'github-repo': WidgetGithubRepo,
   };
 
   let Cmp = $derived(map[widget.type] ?? WidgetFallback);

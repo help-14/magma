@@ -1,8 +1,11 @@
 <script>
   // @ts-nocheck
-  import { RefreshCw, ExternalLink, ChevronDown, ChevronUp } from '@lucide/svelte'
+  import { ExternalLink, ChevronDown, ChevronUp } from '@lucide/svelte'
   import { fetchRss } from '$lib/remotes/rss.remote.js'
   import { Button } from '$lib/components/ui/button/index.js'
+  import WidgetTitleBar from './WidgetTitleBar.svelte'
+  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import WidgetStateWrapper from './WidgetStateWrapper.svelte'
 
   /** @type {import('$lib/types/widget.js').RssWidgetProps} */
   let { widget, compact = false } = $props()
@@ -21,8 +24,12 @@
   let refreshInterval = $derived(widget.config?.refreshInterval ?? 600)
 
   let hasFeeds = $derived.by(() => {
-    try { const f = JSON.parse(feedsJson); return Array.isArray(f) && f.length > 0 }
-    catch { return false }
+    try {
+      const f = JSON.parse(feedsJson)
+      return Array.isArray(f) && f.length > 0
+    } catch {
+      return false
+    }
   })
 
   let displayedArticles = $derived(
@@ -82,90 +89,91 @@
   }
 </script>
 
-<div class="relative flex flex-col w-full min-w-0 min-h-0 h-full overflow-hidden">
-  <div class="flex items-center gap-2 text-magma-accent text-sm font-extrabold px-3 p-2 pb-1 shrink-0">
-    <span class="truncate">{widget.title}</span>
-    {#if feedErrors.length > 0}
-      <span
-        class="text-amber-400 text-xs shrink-0 cursor-help"
-        title={feedErrors.map(e => `${e.feedUrl}: ${e.message}`).join('\n')}
-      >
-        ⚠
-      </span>
-    {/if}
-  </div>
-
-  {#if state === 'idle'}
-    <div class="flex items-center justify-center h-full text-magma-muted text-xs p-4">
-      Configure feeds in properties
-    </div>
-  {:else if state === 'loading'}
-    <div class="flex items-center justify-center h-full">
-      <RefreshCw class="animate-spin text-magma-muted" size={24} />
-    </div>
-  {:else if state === 'error'}
-    <div class="flex items-center justify-center h-full text-red-400 text-xs p-4 text-center">
-      {errorMsg}
-    </div>
-  {:else if state === 'content'}
-    <div class="flex-1 overflow-y-auto min-h-0 px-1 pb-1 space-y-0.5">
-      {#each displayedArticles as article (article.link || article.title)}
-        <a
-          href={article.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="block px-2 py-1.5 rounded hover:bg-white/5 transition-colors group"
+<div
+  class="relative flex flex-col w-full min-w-0 min-h-0 h-full overflow-hidden"
+>
+  <WidgetTitleBar title={widget.title}>
+    {#snippet trailing()}
+      {#if feedErrors.length > 0}
+        <span
+          class="text-amber-400 text-xs shrink-0 cursor-help"
+          title={feedErrors.map((e) => `${e.feedUrl}: ${e.message}`).join('\n')}
         >
-          <div class="flex items-start gap-2">
-            <div class="flex-1 min-w-0">
-              <div
-                class="text-magma-text text-xs font-medium leading-tight {singleLineTitles ? 'truncate' : ''}"
-              >
-                {article.title}
-              </div>
-              {#if !compact && article.description}
-                <div class="text-magma-muted text-[10px] mt-0.5 line-clamp-2 leading-relaxed">
-                  {truncate(stripHtml(article.description), 120)}
-                </div>
-              {/if}
-              <div class="flex items-center gap-1.5 mt-0.5">
-                {#if article.feedTitle}
-                  <span class="text-[10px] text-magma-accent/70 truncate max-w-[100px]">{article.feedTitle}</span>
-                {/if}
-                {#if article.pubDate}
-                  <span class="text-[10px] text-magma-muted shrink-0">{timeAgo(article.pubDate)}</span>
-                {/if}
-              </div>
-            </div>
-            <ExternalLink class="size-3 text-magma-muted shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
-        </a>
-      {/each}
-    </div>
-    {#if articles.length > collapseAfter && collapseAfter > 0}
-      <div class="shrink-0 px-2 pb-1">
-        <Button
-          onclick={() => collapsed = !collapsed}
-          variant="ghost"
-          class="w-full text-xs text-magma-accent/70 h-6"
-        >
-          {collapsed ? 'Show more' : 'Show less'}
-          {#if collapsed}
-            <ChevronDown class="size-3 ml-1" />
-          {:else}
-            <ChevronUp class="size-3 ml-1" />
-          {/if}
-        </Button>
-      </div>
-    {/if}
-  {/if}
+          ⚠
+        </span>
+      {/if}
+    {/snippet}
+  </WidgetTitleBar>
 
-  <Button
-    onclick={doFetch}
-    variant="ghost"
-    class="absolute top-1 right-1 p-1 rounded text-sm aspect-square"
-    title="Refresh"
+  <WidgetStateWrapper
+    {state}
+    {errorMsg}
+    idleMessage="Configure feeds in properties"
   >
-    <RefreshCw class="size-3" />
-  </Button>
+    {#snippet children()}
+      <div class="flex-1 overflow-y-auto min-h-0 px-1 pb-1 space-y-0.5">
+        {#each displayedArticles as article (article.link || article.title)}
+          <a
+            href={article.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block px-2 py-1.5 rounded hover:bg-white/5 transition-colors group"
+          >
+            <div class="flex items-start gap-2">
+              <div class="flex-1 min-w-0">
+                <div
+                  class="text-magma-text text-xs font-medium leading-tight {singleLineTitles
+                    ? 'truncate'
+                    : ''}"
+                >
+                  {article.title}
+                </div>
+                {#if !compact && article.description}
+                  <div
+                    class="text-magma-muted text-[10px] mt-0.5 line-clamp-2 leading-relaxed"
+                  >
+                    {truncate(stripHtml(article.description), 120)}
+                  </div>
+                {/if}
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  {#if article.feedTitle}
+                    <span
+                      class="text-[10px] text-magma-accent/70 truncate max-w-[100px]"
+                      >{article.feedTitle}</span
+                    >
+                  {/if}
+                  {#if article.pubDate}
+                    <span class="text-[10px] text-magma-muted shrink-0"
+                      >{timeAgo(article.pubDate)}</span
+                    >
+                  {/if}
+                </div>
+              </div>
+              <ExternalLink
+                class="size-3 text-magma-muted shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+            </div>
+          </a>
+        {/each}
+      </div>
+      {#if articles.length > collapseAfter && collapseAfter > 0}
+        <div class="shrink-0 px-2 pb-1">
+          <Button
+            onclick={() => (collapsed = !collapsed)}
+            variant="ghost"
+            class="w-full text-xs text-magma-accent/70 h-6"
+          >
+            {collapsed ? 'Show more' : 'Show less'}
+            {#if collapsed}
+              <ChevronDown class="size-3 ml-1" />
+            {:else}
+              <ChevronUp class="size-3 ml-1" />
+            {/if}
+          </Button>
+        </div>
+      {/if}
+    {/snippet}
+  </WidgetStateWrapper>
+
+  <WidgetRefreshButton onclick={doFetch} />
 </div>

@@ -2,6 +2,7 @@
   // @ts-nocheck
   import { Trash2 } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
+  import { Button } from '$lib/components/ui/button/index.js'
   import WidgetRenderer from '../WidgetRenderer.svelte'
 
   /** @type {import('$lib/types/widget.js').StackWidgetProps} */
@@ -17,7 +18,10 @@
     onDragOverChild = () => {}
   } = $props()
 
-  let flow = $derived(widget.config?.flow || (widget.type === 'stack-vertical' ? 'vertical' : 'horizontal'))
+  let flow = $derived(
+    widget.config?.flow ||
+      (widget.type === 'stack-vertical' ? 'vertical' : 'horizontal')
+  )
   let cols = $derived(widget.config?.cols ?? 2)
   let rows = $derived(widget.config?.rows ?? 0)
   let gap = $derived(widget.config?.gap ?? 12)
@@ -56,10 +60,11 @@
       >
         <WidgetRenderer widget={child} {locations} compact {editMode} />
         {#if editMode}
-          <button
-            class="absolute top-1.5 right-1.5 z-5 grid size-7 place-items-center border border-white/18 rounded-lg bg-[rgb(80_24_18/88%)] text-[#ffe1d8] opacity-0 cursor-pointer transition-all duration-100 hover:bg-[rgb(130_36_28/94%)] active:scale-96 focus-visible:opacity-100"
-            class:opacity-100={editMode}
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={false}
+            class={`absolute top-1.5 right-1.5 z-5 size-7 border border-white/18 rounded-lg bg-[rgb(80_24_18/88%)] text-[#ffe1d8] cursor-pointer transition-all duration-100 hover:bg-[rgb(130_36_28/94%)] active:scale-96 focus-visible:opacity-100 ${editMode ? 'opacity-100' : 'opacity-0'}`}
             aria-label={m.widget_delete()}
             title={m.widget_delete()}
             onclick={(event) => {
@@ -69,7 +74,7 @@
             }}
           >
             <Trash2 size={13} />
-          </button>
+          </Button>
         {/if}
       </div>
     {/each}

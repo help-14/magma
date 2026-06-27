@@ -13,7 +13,8 @@
     Play,
     Square,
     RotateCw,
-    ExternalLink
+    ExternalLink,
+    RefreshCw
   } from '@lucide/svelte'
   import { Button } from '$lib/components/ui/button/index.js'
   import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
@@ -25,16 +26,20 @@
     ContextMenuLabel,
     ContextMenuSeparator
   } from '$lib/components/ui/context-menu/index.js'
+  import WidgetTitleBar from './WidgetTitleBar.svelte'
+  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
 
   /** @type {import('$lib/types/widget.js').DockerStatusWidgetProps} */
   let { widget, compact = false } = $props()
+
+  let state = $state('idle')
+  let errorMsg = $state('')
   let containers = $state([])
-  let loading = $state(true)
-  let error = $state(null)
 
   let dockerHost = $derived(widget.config?.dockerHost || '')
   let hideOffline = $derived(widget.config?.hideOffline ?? false)
   let columns = $derived(widget.config?.columns ?? 4)
+  let refreshInterval = $derived(widget.config?.refreshInterval ?? 30)
 
   let filtered = $derived(
     containers
@@ -48,27 +53,29 @@
       })
   )
 
-  async function fetchContainers() {
+  async function doFetch() {
     if (!dockerHost) {
-      loading = false
+      state = 'idle'
       containers = []
       return
     }
-    loading = true
-    error = null
+    state = 'loading'
+    errorMsg = ''
     try {
       containers = await listContainers({ dockerHost, all: true })
+      state = 'content'
     } catch (e) {
-      error = e.message
+      state = 'error'
+      errorMsg = e.message || String(e)
       containers = []
-    } finally {
-      loading = false
     }
   }
 
   $effect(() => {
     dockerHost
-    fetchContainers()
+    doFetch()
+    const id = setInterval(doFetch, refreshInterval * 1000)
+    return () => clearInterval(id)
   })
 
   function getHostname(url) {
@@ -109,7 +116,7 @@
       }
       if (ok) {
         toast.success(m.docker_operation_success({ operation }))
-        fetchContainers()
+        doFetch()
       } else {
         toast.error(m.docker_operation_failed({ operation }))
       }
@@ -135,10 +142,9 @@
 </script>
 
 <div class="flex flex-col w-full min-w-0 min-h-0 h-full">
-  <div class="text-magma-accent text-sm font-extrabold px-3 pt-2 pb-1 shrink-0">
-    {widget.title}
-  </div>
-  {#if !dockerHost}
+  <WidgetTitleBar title={widget.title} />
+
+  {#if state === 'idle'}
     <div
       class="flex flex-col justify-center items-center gap-2 p-4 text-magma-muted"
     >
@@ -147,29 +153,29 @@
         >{m.docker_configure_host()}</span
       >
     </div>
-  {:else if loading}
+  {:else if state === 'loading'}
     <div class="flex flex-wrap gap-2 p-3 w-full">
-      {#each Array(6) as _}
+      {#each Array(6) as _, i (i)}
         <div
           class="flex-1 min-w-24 h-14 rounded-lg bg-magma-accent/8 animate-pulse"
         ></div>
       {/each}
     </div>
-  {:else if error}
+  {:else if state === 'error'}
     <div
-      class="flex flex-col justify-center items-center gap-1 p-4 text-magma-muted text-xs"
+      class="flex flex-col justify-center h-full items-center gap-1 p-4 text-magma-muted text-xs"
     >
       <Container size={24} class="text-magma-accent shrink-0" />
       <span>{m.docker_connection_error()}</span>
-      <span class="text-xs opacity-60">{error}</span>
+      <span class="text-xs opacity-60">{errorMsg}</span>
     </div>
-  {:else}
+  {:else if state === 'content'}
     <ScrollArea class="flex-1 min-h-0 w-full">
       <div
         class="grid gap-2 p-2 w-full items-stretch auto-rows-auto"
         style="grid-template-columns: repeat({columns},minmax(0,1fr))"
       >
-        {#each filtered as c}
+        {#each filtered as c (c.Id)}
           <ContextMenu>
             <ContextMenuTrigger>
               {#if c.State === 'running'}
@@ -235,16 +241,19 @@
                 onselect={() => operate('start', c)}
                 disabled={c.State === 'running'}
               >
-                <Play size={13} /> {m.docker_start()}
+                <Play size={13} />
+                {m.docker_start()}
               </ContextMenuItem>
               <ContextMenuItem
                 onselect={() => operate('stop', c)}
                 disabled={c.State !== 'running'}
               >
-                <Square size={13} /> {m.docker_stop()}
+                <Square size={13} />
+                {m.docker_stop()}
               </ContextMenuItem>
               <ContextMenuItem onselect={() => operate('restart', c)}>
-                <RotateCw size={13} /> {m.docker_restart()}
+                <RotateCw size={13} />
+                {m.docker_restart()}
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
@@ -257,4 +266,6 @@
       </div>
     </ScrollArea>
   {/if}
+
+  <WidgetRefreshButton onclick={doFetch} />
 </div>

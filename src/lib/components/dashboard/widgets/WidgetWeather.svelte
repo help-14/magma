@@ -4,6 +4,7 @@
   import { m } from '$lib/paraglide/messages.js'
   import { getWeather } from '$lib/remotes/weather.remote.js'
   import * as Popover from '$lib/components/ui/popover/index.js'
+  import { Button } from '$lib/components/ui/button/index.js'
 
   import thunderstorms from '$lib/assets/weather-icons/thunderstorms.svg'
   import thunderstormsDay from '$lib/assets/weather-icons/thunderstorms-day.svg'
@@ -284,12 +285,13 @@
           <span class="text-magma-muted">{m.weather_sunset()}</span>
           <span>{formatHour(weather.sys?.sunset)}</span>
         </div>
-        <button
-          class="mt-2 w-full py-1.5 rounded-md bg-magma-accent/14 text-magma-accent text-xs font-bold cursor-pointer border-0 transition-colors hover:bg-magma-accent/24"
+        <Button
+          variant="ghost"
+          class="mt-2 w-full py-1.5 rounded-md bg-magma-accent/14 text-magma-accent text-xs font-bold hover:bg-magma-accent/24"
           onclick={getLocation}
         >
           {m.weather_update_location()}
-        </button>
+        </Button>
       </Popover.Content>
     {/if}
   </Popover.Root>

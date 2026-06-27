@@ -81,6 +81,26 @@
  */
 
 /**
+ * @typedef {Object} ServerStatusConfig
+ * @property {string} sshCmd
+ * @property {boolean} [showHostname]
+ * @property {boolean} [showUptime]
+ * @property {boolean} [showCpu]
+ * @property {boolean} [showRam]
+ * @property {boolean} [showDisk]
+ */
+
+/**
+ * @typedef {Object} GithubRepoConfig
+ * @property {string} repo
+ * @property {boolean} [showStars]
+ * @property {boolean} [showForks]
+ * @property {boolean} [showPrs]
+ * @property {boolean} [showIssues]
+ * @property {number} [refreshInterval]
+ */
+
+/**
  * @typedef {Record<string, any>} WidgetConfig
  */
 
