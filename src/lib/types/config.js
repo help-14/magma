@@ -25,6 +25,9 @@
 
 /**
  * @typedef {Object} StackConfig
+ * @property {string} [flow]
+ * @property {number} [cols]
+ * @property {number} [rows]
  * @property {number} [gap]
  */
 
@@ -39,8 +42,41 @@
  */
 
 /**
+ * @typedef {Object} WebsiteConfig
+ * @property {string} [url]
+ */
+
+/**
  * @typedef {Object} DeepSeekConfig
  * @property {string} [authToken]
+ * @property {number} [refreshInterval]
+ */
+
+/**
+ * @typedef {Object} YoutubeConfig
+ * @property {string} [mode]
+ * @property {string} [channels]
+ * @property {string} [flow]
+ * @property {number} [cols]
+ * @property {number} [rows]
+ * @property {number} [limit]
+ */
+
+/**
+ * @typedef {Object} StockConfig
+ * @property {string} [stocks]
+ * @property {string} [sortBy]
+ * @property {number} [refreshInterval]
+ */
+
+/**
+ * @typedef {Object} RssWidgetConfig
+ * @property {string} [feeds]
+ * @property {string} [style]
+ * @property {number} [limit]
+ * @property {number} [collapseAfter]
+ * @property {boolean} [singleLineTitles]
+ * @property {boolean} [preserveOrder]
  * @property {number} [refreshInterval]
  */
 

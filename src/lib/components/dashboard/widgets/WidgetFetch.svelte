@@ -2,6 +2,7 @@
   // @ts-nocheck
   import { RefreshCw } from '@lucide/svelte'
   import { fetchUrl } from '$lib/remotes/fetch.remote.js'
+  import { Button } from '$lib/components/ui/button/index.js'
 
   /** @type {import('$lib/types/widget.js').BaseWidgetProps} */
   let { widget, compact = false } = $props()
@@ -90,11 +91,12 @@
       title={widget.title}
     ></iframe>
   {/if}
-  <button
+  <Button
     onclick={doFetch}
-    class="absolute top-1 right-1 p-1 rounded hover:bg-white/10 text-magma-muted hover:text-magma-text transition-colors"
+    variant="ghost"
+    class="absolute top-1 right-1 p-1 rounded text-sm aspect-square"
     title="Refresh"
   >
-    <RefreshCw size={12} />
-  </button>
+    <RefreshCw class="size-3" />
+  </Button>
 </div>

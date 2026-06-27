@@ -3,6 +3,7 @@
   import { Trash2 } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
   import WidgetRenderer from '../WidgetRenderer.svelte'
+
   /** @type {import('$lib/types/widget.js').StackWidgetProps} */
   let {
     widget,
@@ -15,6 +16,18 @@
     onDropChild = () => {},
     onDragOverChild = () => {}
   } = $props()
+
+  let flow = $derived(widget.config?.flow || (widget.type === 'stack-vertical' ? 'vertical' : 'horizontal'))
+  let cols = $derived(widget.config?.cols ?? 2)
+  let rows = $derived(widget.config?.rows ?? 0)
+  let gap = $derived(widget.config?.gap ?? 12)
+
+  let gridStyle = $derived.by(() => {
+    if (flow === 'horizontal' && rows > 0) {
+      return `display: grid; grid-template-rows: repeat(${rows}, auto); grid-auto-flow: column; gap: ${gap}px;`
+    }
+    return `display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: ${gap}px;`
+  })
 </script>
 
 <div class="flex flex-col p-3 w-full min-w-0 min-h-0">
@@ -22,18 +35,17 @@
     {widget.title}
   </div>
   <div
-    class="flex flex-1 min-h-0"
-    class:flex-col={widget.type === 'stack-vertical'}
+    class="flex-1 min-h-0"
     role="list"
     aria-label={`${widget.title} children`}
     ondrop={onDropChild}
     ondragover={onDragOverChild}
-    style={`gap: ${widget.config?.gap ?? 12}px;`}
+    style={gridStyle}
   >
     {#each widget.children || [] as child (child.id)}
       <div
         class:selected={selectedChildId === child.id}
-        class={'relative flex-1 min-w-0 min-h-0 overflow-hidden rounded-lg bg-white/6' +
+        class={'relative min-w-0 min-h-0 overflow-hidden rounded-lg bg-white/6' +
           (selectedChildId === child.id
             ? ' shadow-[0_0_0_2px_var(--magma-accent),0_18px_46px_rgb(0_0_0/26%)]'
             : '')}

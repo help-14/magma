@@ -3,6 +3,19 @@ import { query } from '$app/server';
 import { env } from '$env/dynamic/private';
 import * as v from 'valibot';
 
+const weatherCache = new Map();
+const WEATHER_CACHE_TTL = 600_000;
+
+function getCached(key) {
+	const entry = weatherCache.get(key);
+	if (entry && Date.now() - entry.ts < WEATHER_CACHE_TTL) return entry.data;
+	return null;
+}
+
+function setCache(key, data) {
+	weatherCache.set(key, { data, ts: Date.now() });
+}
+
 export const getWeather = query(
 	v.object({
 		latitude: v.number(),
@@ -26,6 +39,10 @@ export const getWeather = query(
 			};
 		}
 
+		const cacheKey = `${latitude}:${longitude}`;
+		const cached = getCached(cacheKey);
+		if (cached) return cached;
+
 		const url = new URL('https://api.openweathermap.org/data/2.5/weather');
 		url.searchParams.set('lat', String(latitude));
 		url.searchParams.set('lon', String(longitude));
@@ -35,6 +52,8 @@ export const getWeather = query(
 		if (!response.ok) {
 			throw new Error('Weather request failed.');
 		}
-		return response.json();
+		const data = await response.json();
+		setCache(cacheKey, data);
+		return data;
 	}
 );

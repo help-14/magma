@@ -1,7 +1,7 @@
 {
 	"name": "magma",
 	"private": true,
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -37,6 +37,7 @@
 		"vite": "^8.1.0"
 	},
 	"dependencies": {
+		"fast-xml-parser": "^5.9.3",
 		"svelte-sonner": "^1.1.1",
 		"yaml": "^2.9.0"
 	}

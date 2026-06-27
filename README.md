@@ -33,7 +33,7 @@ A customizable SvelteKit dashboard app with a grid-based widget editor, multi-la
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) >= 20
+- [Node.js](https://nodejs.org/) >= 26
 - [pnpm](https://pnpm.io/installation)
 
 ### Install

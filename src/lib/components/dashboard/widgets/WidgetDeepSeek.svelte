@@ -1,8 +1,14 @@
 <script>
   // @ts-nocheck
   import { RefreshCw } from '@lucide/svelte'
+  import { Button } from '$lib/components/ui/button/index.js'
   import { Progress } from '$lib/components/ui/progress/index.js'
-  import { Tooltip, TooltipTrigger, TooltipContent, Provider as TooltipProvider } from '$lib/components/ui/tooltip/index.js'
+  import {
+    Tooltip,
+    TooltipTrigger,
+    TooltipContent,
+    Provider as TooltipProvider
+  } from '$lib/components/ui/tooltip/index.js'
   import { deepseekSummary } from '$lib/remotes/deepseek.remote.js'
 
   /** @type {import('$lib/types/widget.js').DeepSeekWidgetProps} */
@@ -17,8 +23,8 @@
 
   let walletDisplay = $derived.by(() => {
     if (!data?.normal_wallets) return ''
-    const usd = data.normal_wallets.find(w => w.currency === 'USD')
-    const cny = data.normal_wallets.find(w => w.currency === 'CNY')
+    const usd = data.normal_wallets.find((w) => w.currency === 'USD')
+    const cny = data.normal_wallets.find((w) => w.currency === 'CNY')
     const parts = []
     if (usd) parts.push('$' + parseFloat(usd.balance).toFixed(2))
     if (cny) parts.push('\u00a5' + parseFloat(cny.balance).toFixed(2))
@@ -35,7 +41,10 @@
 
   let tooltipText = $derived.by(() => {
     if (!data) return ''
-    const total = parseInt(data.total_available_token_estimation, 10).toLocaleString()
+    const total = parseInt(
+      data.total_available_token_estimation,
+      10
+    ).toLocaleString()
     const current = parseInt(data.current_token, 10).toLocaleString()
     return `${total} / ${current} tokens`
   })
@@ -77,7 +86,9 @@
   </div>
 
   {#if state === 'idle'}
-    <div class="flex items-center justify-center h-full text-magma-muted text-xs p-4">
+    <div
+      class="flex items-center justify-center h-full text-magma-muted text-xs p-4"
+    >
       Configure Auth Token in properties
     </div>
   {:else if state === 'loading'}
@@ -85,7 +96,9 @@
       <RefreshCw class="animate-spin text-magma-muted" size={24} />
     </div>
   {:else if state === 'error'}
-    <div class="flex items-center justify-center h-full text-red-400 text-xs p-4 text-center">
+    <div
+      class="flex items-center justify-center h-full text-red-400 text-xs p-4 text-center"
+    >
       {errorMsg}
     </div>
   {:else if state === 'content'}
@@ -97,7 +110,9 @@
         <Tooltip>
           <TooltipTrigger class="flex items-center gap-2 w-full cursor-default">
             <Progress value={progressValue} class="h-2 flex-1" />
-            <span class="text-xs text-magma-muted tabular-nums w-8 text-right">{progressValue}%</span>
+            <span class="text-xs text-magma-muted tabular-nums w-8 text-right"
+              >{progressValue}%</span
+            >
           </TooltipTrigger>
           <TooltipContent>
             {tooltipText}
@@ -107,11 +122,12 @@
     </div>
   {/if}
 
-  <button
+  <Button
     onclick={doFetch}
-    class="absolute top-1 right-1 p-1 rounded hover:bg-white/10 text-magma-muted hover:text-magma-text transition-colors"
+    variant="ghost"
+    class="absolute top-1 right-1 p-1 rounded text-sm aspect-square"
     title="Refresh"
   >
-    <RefreshCw size={12} />
-  </button>
+    <RefreshCw class="size-3" />
+  </Button>
 </div>

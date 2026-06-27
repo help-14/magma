@@ -1,5 +1,5 @@
 /**
- * @typedef {'button'|'search'|'timer'|'weather'|'calendar'|'stack-horizontal'|'stack-vertical'|'docker-status'|'service-status'|'fetch'|'deepseek'} WidgetType
+ * @typedef {'button'|'search'|'timer'|'weather'|'calendar'|'stack-horizontal'|'stack-vertical'|'docker-status'|'service-status'|'fetch'|'deepseek'|'website'|'youtube-live'|'stack'|'rss'|'stock'} WidgetType
  */
 
 /**
@@ -90,6 +90,24 @@
 /**
  * @typedef {Object} DeepSeekWidgetProps
  * @property {Omit<Widget, 'config'> & { config?: import('./config.js').DeepSeekConfig }} widget
+ * @property {boolean} [compact]
+ */
+
+/**
+ * @typedef {Object} YoutubeWidgetProps
+ * @property {Omit<Widget, 'config'> & { config?: import('./config.js').YoutubeConfig }} widget
+ * @property {boolean} [compact]
+ */
+
+/**
+ * @typedef {Object} StockWidgetProps
+ * @property {Omit<Widget, 'config'> & { config?: import('./config.js').StockConfig }} widget
+ * @property {boolean} [compact]
+ */
+
+/**
+ * @typedef {Object} RssWidgetProps
+ * @property {Omit<Widget, 'config'> & { config?: import('./config.js').RssWidgetConfig }} widget
  * @property {boolean} [compact]
  */
 

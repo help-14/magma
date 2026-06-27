@@ -12,6 +12,7 @@ const knownWidgetTypes = new Set([
 	'calendar',
 	'honeygain',
 	'search',
+	'stack',
 	'stack-horizontal',
 	'stack-vertical',
 	'timer',
@@ -19,8 +20,11 @@ const knownWidgetTypes = new Set([
 	'youtube-live',
 	'service-status',
 	'docker-status',
-	'fetch',
-	'deepseek'
+  'fetch',
+  'website',
+  'deepseek',
+  'rss',
+  'stock'
 ])
 
 export async function readDashboardYaml() {
@@ -238,7 +242,7 @@ function validateWidget(widget, grid, topLevel, seen) {
 	}
 
 	if (widget.children !== undefined) {
-		if (!['stack-horizontal', 'stack-vertical'].includes(widget.type)) {
+		if (!['stack', 'stack-horizontal', 'stack-vertical'].includes(widget.type)) {
 			throw new Error(`Only stack widgets can contain children: ${widget.id}`)
 		}
 		if (!Array.isArray(widget.children)) {

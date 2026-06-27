@@ -29,13 +29,16 @@ dashboard:
         provider: google
         placeholder: type something to search...
     - id: apps-stack
-      type: stack-horizontal
+      type: stack
       title: Applications
       x: -5
       y: 4
       w: 10
       h: 2
       config:
+        flow: horizontal
+        cols: 4
+        rows: 0
         gap: 12
       children:
         - id: unifi
@@ -64,13 +67,16 @@ dashboard:
             url: https://
             iconColor: ""
     - id: media-stack
-      type: stack-horizontal
+      type: stack
       title: Media
       x: -5
       y: 6
       w: 10
       h: 2
       config:
+        flow: horizontal
+        cols: 4
+        rows: 0
         gap: 12
       children:
         - id: photos
@@ -125,6 +131,51 @@ dashboard:
       w: 4
       h: 4
       config: {}
+    - id: rss-news
+      type: rss
+      title: News
+      x: 5
+      y: 9
+      w: 4
+      h: 8
+      config:
+        feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"},{"url":"https://feeds.feedburner.com/TheHackersNews","title":"Threat
+          Intel"}]'
+        style: vertical-list
+        limit: 25
+        collapseAfter: 5
+        refreshInterval: 600
+    - id: stocks-main
+      type: stock
+      title: Markets
+      x: 1
+      y: 15
+      w: 4
+      h: 4
+      config:
+        stocks: |-
+          AAPL
+          NVDA
+          MSFT
+        sortBy: change
+        refreshInterval: 300
+    - id: youtube-tech
+      type: youtube-live
+      title: YouTube
+      x: -5
+      y: 12
+      w: 10
+      h: 3
+      config:
+        mode: uploads
+        channels: |
+          UCXuqSBlHAE6Xw-yeJA0Tunw
+          UCR-DXc1voovS8nhAvccRZhg
+          UCsBjURrPoezykLs9EqgamOA
+        limit: 10
+        rows: 1
+        flow: horizontal
+        cols: 0
     - id: fetch-posts
       type: fetch
       title: Latest Posts

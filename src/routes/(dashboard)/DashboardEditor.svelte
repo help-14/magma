@@ -35,48 +35,19 @@
   let draggingWidgetId = $state(null)
 
   const templates = [
-    {
-      type: 'button',
-      title: 'Button',
-      w: 4,
-      h: 2,
-      config: { icon: 'server', url: 'https://' }
-    },
-    {
-      type: 'search',
-      title: 'Search',
-      w: 8,
-      h: 2,
-      config: { provider: 'google' }
-    },
-    { type: 'timer', title: 'Timer', w: 10, h: 4, config: {} },
-    {
-      type: 'weather',
-      title: 'Weather',
-      w: 4,
-      h: 4,
-      config: { locationRef: 'default' }
-    },
+    { type: 'button', title: 'Button', w: 4, h: 2, config: { icon: 'server', url: 'https://' } },
     { type: 'calendar', title: 'Calendar', w: 4, h: 4, config: {} },
-    {
-      type: 'stack-horizontal',
-      title: 'Horizontal Stack',
-      w: 10,
-      h: 4,
-      config: { gap: 12 },
-      children: []
-    },
-    {
-      type: 'stack-vertical',
-      title: 'Vertical Stack',
-      w: 6,
-      h: 8,
-      config: { gap: 12 },
-      children: []
-    },
+    { type: 'deepseek', title: 'DeepSeek', w: 3, h: 2, config: { refreshInterval: 600 } },
     { type: 'docker-status', title: 'Docker', w: 6, h: 4, config: {} },
     { type: 'fetch', title: 'Fetch', w: 8, h: 8, config: {} },
-    { type: 'deepseek', title: 'DeepSeek', w: 3, h: 2, config: { refreshInterval: 600 } }
+    { type: 'rss', title: 'RSS', w: 6, h: 8, config: { feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"}]', style: 'vertical-list', limit: 25, collapseAfter: 5 } },
+    { type: 'stock', title: 'Stock', w: 4, h: 4, config: { stocks: 'SPY: S&P 500\nAAPL: Apple\nNVDA\nBTC-USD: Bitcoin', sortBy: 'change', refreshInterval: 300 } },
+    { type: 'search', title: 'Search', w: 8, h: 2, config: { provider: 'google' } },
+    { type: 'stack', title: 'Stack', w: 10, h: 6, config: { flow: 'horizontal', cols: 2, rows: 0, gap: 12 }, children: [] },
+    { type: 'timer', title: 'Timer', w: 10, h: 4, config: {} },
+    { type: 'weather', title: 'Weather', w: 4, h: 4, config: { locationRef: 'default' } },
+    { type: 'website', title: 'Website', w: 8, h: 6, config: {} },
+    { type: 'youtube-live', title: 'YouTube', w: 6, h: 8, config: { mode: 'uploads', channels: '', limit: 10 } }
   ]
 
   let grid = $derived(config.dashboard.grid)
@@ -238,7 +209,7 @@
     gridActive = false
     if (
       !editMode ||
-      !['stack-horizontal', 'stack-vertical'].includes(stack.type)
+      !['stack', 'stack-horizontal', 'stack-vertical'].includes(stack.type)
     )
       return
 

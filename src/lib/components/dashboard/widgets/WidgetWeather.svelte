@@ -216,7 +216,9 @@
   }
 </script>
 
-<div class="relative flex flex-col justify-center p-4 w-full min-w-0 min-h-0">
+<div
+  class="relative flex flex-col justify-center p-4 pl-1 w-full min-w-0 min-h-0"
+>
   <Popover.Root>
     <Popover.Trigger
       class="flex flex-row items-center content-center justify-center gap-2 w-full cursor-pointer bg-transparent border-0 p-0 text-left"
@@ -241,7 +243,8 @@
           >{weather ? toCelsius(weather.main?.temp) : '--°C'}</strong
         >
         <span class="text-magma-muted text-xs"
-          >{weather?.name || 'Weather'} · {weather?.main?.humidity ?? '--'}%</span
+          >{weather?.name || 'Weather'} · {weather?.main?.humidity ??
+            '--'}%</span
         >
       </div>
     </Popover.Trigger>
