@@ -1,4 +1,4 @@
-/** @type {Record<string, import('$lib/types/config.js').ConfigFieldDescriptor[]>} */
+/** @type {Record<string, import('./config.js').ConfigFieldDescriptor[]>} */
 export const widgetConfigFields = {
 	button: [
 		{ key: 'url', label: 'URL', type: 'text', default: '' },
@@ -121,7 +121,7 @@ export const widgetConfigFields = {
     { key: 'refreshInterval', label: 'Refresh (s)', type: 'number', default: 600 }
   ],
   'server-status': [
-    { key: 'sshCmd', label: 'SSH Command', type: 'text', default: '' },
+    { key: 'sshCmd', label: 'SSH Command', type: 'text', default: '', placeholder: 'ssh user@host' },
     { key: 'showHostname', label: 'Show Hostname', type: 'checkbox', default: true },
     { key: 'showUptime', label: 'Show Uptime', type: 'checkbox', default: true },
     { key: 'showCpu', label: 'Show CPU', type: 'checkbox', default: true },

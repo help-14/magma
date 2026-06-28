@@ -7,6 +7,7 @@
 		ref = $bindable(null),
 		class: className,
 		inset,
+		value = '',
 		children: childrenProp,
 		...restProps
 	} = $props();
@@ -14,6 +15,7 @@
 
 <ContextMenuPrimitive.RadioItem
 	bind:ref
+	{value}
 	data-slot="context-menu-radio-item"
 	data-inset={inset}
 	class={cn(

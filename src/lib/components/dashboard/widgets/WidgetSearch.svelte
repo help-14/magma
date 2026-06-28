@@ -2,7 +2,7 @@
   // @ts-nocheck
   import { Search } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
-  import { onMount } from 'svelte'
+  import { tick } from 'svelte'
 
   /** @type {import('$lib/types/widget.js').SearchWidgetProps} */
   let { widget, compact = false } = $props()
@@ -21,9 +21,9 @@
     searchProviders[provider] || searchProviders.google
   )
 
-  onMount(() => {
+  $effect(() => {
     if (!compact) {
-      setTimeout(() => searchInput?.focus(), 0)
+      tick().then(() => searchInput?.focus())
     }
   })
 

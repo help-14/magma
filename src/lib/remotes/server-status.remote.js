@@ -1,10 +1,10 @@
 // @ts-nocheck
 import { query } from '$app/server';
 import * as v from 'valibot';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 const cache = new Map();
 const CACHE_TTL = 300_000; // 5 minutes
@@ -19,10 +19,16 @@ function setCache(key, data) {
 	cache.set(key, { data, ts: Date.now() });
 }
 
+const sshCmdPattern = /^ssh -p \d+ [a-zA-Z0-9._%+-]+@[a-zA-Z0-9._%+-]+$|^ssh [a-zA-Z0-9._%+-]+@[a-zA-Z0-9._%+-]+$/;
+
 export const fetchServerStatus = query(
 	v.object({ sshCmd: v.string() }),
 	async ({ sshCmd }) => {
 		if (!sshCmd.trim()) throw new Error('SSH command not configured');
+
+		if (!sshCmdPattern.test(sshCmd.trim())) {
+			throw new Error('Invalid SSH command format. Use: ssh user@host or ssh -p port user@host');
+		}
 
 		const cached = getCached(sshCmd);
 		if (cached) return cached;
@@ -43,10 +49,8 @@ export const fetchServerStatus = query(
 			"echo '---EOF---'"
 		].join('; ');
 
-		const escapedCmd = metricsCmd.replace(/"/g, '\\"').replace(/\$/g, '\\$');
-		const cmd = `${sshCmd} "${escapedCmd}"`;
-
-		const { stdout, stderr } = await execAsync(cmd, { timeout: 15000 });
+		const [cmd, ...args] = sshCmd.trim().split(/\s+/);
+		const { stdout, stderr } = await execFileAsync(cmd, [...args, metricsCmd], { timeout: 15000 });
 		if (stderr && !stdout) throw new Error(stderr);
 
 		function parse(marker) {

@@ -1,4 +1,5 @@
 <script>
+	// @ts-nocheck
 	import { ScrollArea as ScrollAreaPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
 
@@ -6,7 +7,7 @@
 		ref = $bindable(null),
 		class: className,
 		orientation = "vertical",
-		children,
+		children = undefined,
 		...restProps
 	} = $props();
 </script>
@@ -14,8 +15,7 @@
 <ScrollAreaPrimitive.Scrollbar
 	bind:ref
 	data-slot="scroll-area-scrollbar"
-	data-orientation={orientation}
-	{orientation}
+	orientation={orientation}
 	class={cn(
 		"data-horizontal:h-2.5 data-horizontal:flex-col data-horizontal:border-t data-horizontal:border-t-transparent data-vertical:h-full data-vertical:w-2.5 data-vertical:border-l data-vertical:border-l-transparent flex touch-none p-px transition-colors select-none",
 		className

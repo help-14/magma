@@ -7,6 +7,7 @@
 		ref = $bindable(null),
 		viewportRef = $bindable(null),
 		class: className,
+		/** @type {'vertical' | 'horizontal' | 'both'} */
 		orientation = "vertical",
 		scrollbarXClasses = "",
 		scrollbarYClasses = "",

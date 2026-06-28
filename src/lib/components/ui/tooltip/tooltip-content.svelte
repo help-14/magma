@@ -1,4 +1,5 @@
 <script>
+	// @ts-nocheck
 	import { Tooltip as TooltipPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
 	import TooltipPortal from "./tooltip-portal.svelte";

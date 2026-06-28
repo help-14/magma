@@ -16,6 +16,7 @@
   import WidgetPalette from '$lib/components/dashboard/WidgetPalette.svelte'
   import WidgetPropertyPanel from '$lib/components/dashboard/WidgetPropertyPanel.svelte'
   import WidgetRenderer from '$lib/components/dashboard/WidgetRenderer.svelte'
+  import { widgetStyle, makeId, cellFromEvent, canPlace, findNearestFreePosition, overlaps } from '$lib/dashboard/grid-utils.js'
 
   import { m } from '$lib/paraglide/messages.js';
 
@@ -84,18 +85,7 @@
     })()
   )
 
-  function widgetStyle(widget) {
-    return [
-      `left: ${pageCenter + widget.x * cellSize}px`,
-      `top: ${(widget.y - 1) * cellHeight}px`,
-      `width: ${widget.w * cellSize}px`,
-      `height: ${widget.h * cellHeight}px`
-    ].join(';')
-  }
-
-  function makeId(type) {
-    return `${type}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
-  }
+  // widgetStyle and makeId moved to $lib/dashboard/grid-utils.js
 
   function dragTemplate(event, template) {
     if (!editMode) return
@@ -116,13 +106,7 @@
     event.dataTransfer.setData('application/x-magma-widget-id', widget.id)
   }
 
-  function cellFromEvent(event) {
-    const rect = canvasElement.getBoundingClientRect()
-    return {
-      x: Math.floor((event.clientX - pageCenter) / cellSize),
-      y: Math.max(1, Math.floor((event.clientY - rect.top) / cellHeight) + 1)
-    }
-  }
+  // cellFromEvent moved to $lib/dashboard/grid-utils.js
 
   function onDrop(event) {
     event.preventDefault()
@@ -140,31 +124,16 @@
       return
     }
 
-    const cell = cellFromEvent(event)
+    const cell = cellFromEvent(event, canvasElement, pageCenter, cellSize, cellHeight)
     const templateW = template.w
     const templateH = template.h
 
-    // Find the nearest valid position to where the user dropped
-    let bestPos = null
-    let bestDist = Infinity
-    const scanRange = 20
-
-    for (let dy = 0; dy <= scanRange; dy++) {
-      for (let dx = -scanRange; dx <= scanRange; dx++) {
-        const x = cell.x + dx
-        const y = Math.max(1, cell.y + dy)
-        const candidate = { x, y, w: templateW, h: templateH }
-        if (template.config) candidate.config = template.config
-        if (template.children) candidate.children = template.children
-        if (canPlace(candidate)) {
-          const dist = Math.abs(dx) + Math.abs(dy)
-          if (dist < bestDist) {
-            bestDist = dist
-            bestPos = { x, y }
-          }
-        }
-      }
-    }
+    const bestPos = findNearestFreePosition(
+      cell,
+      { w: templateW, h: templateH },
+      widgets,
+      20
+    )
 
     if (bestPos) {
       const widget = {
@@ -274,13 +243,13 @@
   function startMove(event, widget) {
     if (!editMode) return
     event.preventDefault()
-    const start = cellFromEvent(event)
+    const start = cellFromEvent(event, canvasElement, pageCenter, cellSize, cellHeight)
     const original = { x: widget.x, y: widget.y }
     draftWidget = widget.id
     gridActive = true
 
     function move(moveEvent) {
-      const cell = cellFromEvent(moveEvent)
+      const cell = cellFromEvent(moveEvent, canvasElement, pageCenter, cellSize, cellHeight)
       updateWidget(widget.id, {
         x: original.x + cell.x - start.x,
         y: Math.max(1, original.y + cell.y - start.y)
@@ -302,13 +271,13 @@
   function startResize(event, widget) {
     if (!editMode) return
     event.preventDefault()
-    const start = cellFromEvent(event)
+    const start = cellFromEvent(event, canvasElement, pageCenter, cellSize, cellHeight)
     const original = { w: widget.w, h: widget.h }
     draftWidget = widget.id
     gridActive = true
 
     function move(moveEvent) {
-      const cell = cellFromEvent(moveEvent)
+      const cell = cellFromEvent(moveEvent, canvasElement, pageCenter, cellSize, cellHeight)
       updateWidget(widget.id, {
         w: Math.max(1, original.w + cell.x - start.x),
         h: Math.max(1, original.h + cell.y - start.y)
@@ -331,7 +300,7 @@
     config.dashboard.widgets = widgets.map((widget) => {
       if (widget.id !== id) return widget
       const next = { ...widget, ...patch }
-      return canPlace(next, id) ? next : widget
+      return canPlace(next, widgets, id) ? next : widget
     })
   }
 
@@ -409,7 +378,7 @@
     const current = widgets.find((widget) => widget.id === selected.id)
     if (!current) return
     const next = { ...current, ...patch }
-    if (!canPlace(next, selected.id)) {
+    if (!canPlace(next, widgets, selected.id)) {
       toast.error(m.editor_properties_dont_fit())
       return
     }
@@ -436,23 +405,7 @@
     updateSelected({ [key]: Math.round(number) })
   }
 
-  function canPlace(candidate, ignoreId = candidate.id) {
-    if (candidate.y < 1 || candidate.w < 1 || candidate.h < 1) return false
-
-    return widgets.every(
-      (widget) => widget.id === ignoreId || !overlaps(candidate, widget)
-    )
-  }
-
-  function overlaps(a, b) {
-    return (
-      a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
-    )
-  }
-
-  function clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value))
-  }
+  // canPlace, overlaps, clamp moved to $lib/dashboard/grid-utils.js
 
   async function save() {
     saving = true
@@ -543,7 +496,7 @@
           class:selected={selected?.id === widget.id && !selected?.childId}
           class="absolute p-1.5 animate-in fade-in duration-200"
           draggable={editMode && widget.type === 'button'}
-          style={widgetStyle(widget)}
+          style={widgetStyle(widget, pageCenter, cellSize, cellHeight)}
           onclick={(event) => selectWidget(event, widget)}
           onkeydown={(event) => {
             if (event.key === 'Enter' || event.key === ' ') {

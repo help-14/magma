@@ -14,7 +14,7 @@
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
 
   /** @type {import('$lib/types/widget.js').DeepSeekWidgetProps} */
-  let { widget, compact = false } = $props()
+  let { widget } = $props()
 
   let state = $state('idle')
   let errorMsg = $state('')
