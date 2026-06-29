@@ -2,11 +2,27 @@
 import { readFile, rename, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import YAML from 'yaml'
+import { createHash } from 'node:crypto'
 
 const configDir = process.env.CONFIG_DIR || 'config'
 const dashboardConfigPath = path.resolve(configDir, 'dashboard.yaml')
 const systemConfigPath = path.resolve(configDir, 'system.yaml')
 const overrideCssPath = path.resolve(configDir, 'override.css')
+
+const configCache = new Map()
+
+function getCached(key) {
+	return configCache.get(key) ?? null
+}
+
+function setCached(key, data) {
+	configCache.set(key, data)
+}
+
+export function invalidateConfigCache() {
+	configCache.clear()
+}
+
 const knownWidgetTypes = new Set([
 	'button',
 	'calendar',
@@ -30,12 +46,20 @@ const knownWidgetTypes = new Set([
 ])
 
 export async function readDashboardYaml() {
-	return readFile(dashboardConfigPath, 'utf8')
+	const cached = getCached('dashboard:yaml')
+	if (cached !== null) return cached
+	const data = await readFile(dashboardConfigPath, 'utf8')
+	setCached('dashboard:yaml', data)
+	return data
 }
 
 export async function readSystemYaml() {
+	const cached = getCached('system:yaml')
+	if (cached !== null) return cached
 	try {
-		return await readFile(systemConfigPath, 'utf8')
+		const data = await readFile(systemConfigPath, 'utf8')
+		setCached('system:yaml', data)
+		return data
 	} catch (error) {
 		if (error.code === 'ENOENT') return stringifySystemConfig(defaultSystemConfig())
 		throw error
@@ -43,32 +67,48 @@ export async function readSystemYaml() {
 }
 
 export async function readDashboardConfig() {
+	const cached = getCached('dashboard:config')
+	if (cached !== null) return cached
 	const [dashboardYaml, systemConfig] = await Promise.all([readDashboardYaml(), readSystemConfig()])
 	const config = mergeDashboardWithSystem(YAML.parse(dashboardYaml), systemConfig)
 	validateDashboardConfig(config)
+	setCached('dashboard:config', config)
 	return config
 }
 
 export async function readSystemConfig() {
+	const cached = getCached('system:config')
+	if (cached !== null) return cached
 	const yaml = await readSystemYaml()
 	const config = YAML.parse(yaml) || defaultSystemConfig()
 	validateSystemConfig(config)
+	setCached('system:config', config)
 	return config
 }
 
 export async function readOverrideCss() {
+	const cached = getCached('override:css')
+	if (cached !== null) return cached
 	try {
-		return await readFile(overrideCssPath, 'utf8')
+		const data = await readFile(overrideCssPath, 'utf8')
+		setCached('override:css', data)
+		return data
 	} catch (error) {
 		if (error.code === 'ENOENT') return ''
 		throw error
 	}
 }
 
+export async function getOverrideCssEtag() {
+	const css = await readOverrideCss()
+	return createHash('md5').update(css).digest('hex')
+}
+
 export async function writeOverrideCss(css) {
 	const tempPath = `${overrideCssPath}.tmp`
 	await writeFile(tempPath, css || '', 'utf8')
 	await rename(tempPath, overrideCssPath)
+	invalidateConfigCache()
 	return css || ''
 }
 
@@ -78,6 +118,7 @@ export async function writeDashboardConfig(config) {
 	const tempPath = `${dashboardConfigPath}.tmp`
 	await writeFile(tempPath, yaml, 'utf8')
 	await rename(tempPath, dashboardConfigPath)
+	invalidateConfigCache()
 	return config
 }
 
@@ -106,6 +147,7 @@ export async function writeSystemConfig(config) {
 	const tempPath = `${systemConfigPath}.tmp`
 	await writeFile(tempPath, yaml, 'utf8')
 	await rename(tempPath, systemConfigPath)
+	invalidateConfigCache()
 	return config
 }
 

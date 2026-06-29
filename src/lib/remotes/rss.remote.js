@@ -2,19 +2,9 @@
 import { query } from '$app/server';
 import * as v from 'valibot';
 import { XMLParser } from 'fast-xml-parser';
+import { createCache } from '$lib/server/cache.js';
 
-const feedCache = new Map();
-const RSS_CACHE_TTL = 300_000;
-
-function getCached(key) {
-	const entry = feedCache.get(key);
-	if (entry && Date.now() - entry.ts < RSS_CACHE_TTL) return entry.data;
-	return null;
-}
-
-function setCache(key, data) {
-	feedCache.set(key, { data, ts: Date.now() });
-}
+const cache = createCache(600_000, 50);
 
 const parser = new XMLParser({
 	ignoreAttributes: false,
@@ -93,7 +83,8 @@ export const fetchRss = query(
 
 		for (const feed of feeds) {
 			try {
-				const cached = getCached(feed.url);
+				const feedKey = JSON.stringify({ url: feed.url, headers: feed.headers, limit: feed.limit });
+				const cached = cache.get(feedKey);
 				if (cached) {
 					allArticles.push(...cached);
 					continue;
@@ -120,7 +111,7 @@ export const fetchRss = query(
 					count++;
 				}
 
-				setCache(feed.url, feedArticles);
+				cache.set(feedKey, feedArticles);
 				allArticles.push(...feedArticles);
 			} catch (err) {
 				errors.push({ feedUrl: feed.url, message: err.message || 'Fetch failed' });

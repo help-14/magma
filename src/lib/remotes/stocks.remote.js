@@ -2,22 +2,11 @@
 import { query } from '$app/server';
 import * as v from 'valibot';
 
+const listCache = new Map();
+
 const headers = {
 	'User-Agent': 'Mozilla/5.0'
 };
-
-const symbolCache = new Map();
-const CACHE_TTL = 60_000;
-
-function getCached(key) {
-	const entry = symbolCache.get(key);
-	if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data;
-	return null;
-}
-
-function setCache(key, data) {
-	symbolCache.set(key, { data, ts: Date.now() });
-}
 
 function parseStocksText(text) {
 	return text
@@ -43,17 +32,20 @@ async function fetchJson(url, retries = 2) {
 		if (response.status !== 429 || attempt >= retries) {
 			throw new Error(`${response.status} ${response.statusText}`);
 		}
-		await sleep(1000 * (attempt + 1));
+		await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
 	}
 }
 
 async function fetchSingle(symbol) {
-	const cached = getCached(symbol);
-	if (cached) return cached;
+	const [quoteData, chartData] = await Promise.all([
+		fetchJson(
+			`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1d&interval=5m`
+		),
+		fetchJson(
+			`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1mo&interval=1d`
+		).catch(() => null)
+	]);
 
-	const quoteData = await fetchJson(
-		`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1d&interval=5m`
-	);
 	const quoteResult = quoteData.chart?.result?.[0];
 	if (!quoteResult) {
 		const err = quoteData.chart?.error;
@@ -64,20 +56,11 @@ async function fetchSingle(symbol) {
 	const prevClose = meta.previousClose;
 	if (price == null) throw new Error('Price unavailable');
 
-	let chartData = null;
-	try {
-		chartData = await fetchJson(
-			`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1mo&interval=1d`
-		);
-	} catch {
-		chartData = null;
-	}
-
 	const chartResult = chartData?.chart?.result?.[0];
 	const closes = chartResult?.indicators?.quote?.[0]?.close || [];
 	const chart = closes.filter((c) => c != null).map((c) => Math.round(c * 100) / 100);
 
-	const result = {
+	return {
 		symbol: meta.symbol || symbol,
 		name: meta.shortName || meta.longName || symbol,
 		price,
@@ -86,41 +69,46 @@ async function fetchSingle(symbol) {
 		marketState: meta.marketState || 'UNKNOWN',
 		chart
 	};
-	setCache(symbol, result);
-	return result;
-}
-
-async function sleep(ms) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export const fetchStocks = query(
 	v.object({
 		stocks: v.string(),
-		sortBy: v.optional(v.picklist(['default', 'change', 'absolute-change']), 'default')
+		sortBy: v.optional(v.picklist(['default', 'change', 'absolute-change']), 'default'),
+		cacheTime: v.optional(v.number(), 300)
 	}),
-	async ({ stocks: stocksText, sortBy }) => {
+	async ({ stocks: stocksText, sortBy, cacheTime }) => {
 		const parsed = parseStocksText(stocksText);
 		if (parsed.length === 0) {
 			return { stocks: [], errors: [{ symbol: '', message: 'No stocks configured' }] };
 		}
 
-		const stocks = [];
-		const errors = [];
+		const cacheKey = `${stocksText}::${sortBy}::${cacheTime}`;
+		const cached = listCache.get(cacheKey);
+		if (cached && Date.now() - cached.ts < cacheTime * 1000) {
+			return cached.data;
+		}
 
-		for (const entry of parsed) {
-			const nameOverride = entry.name !== entry.symbol ? entry.name : null;
-			try {
+		const results = await Promise.allSettled(
+			parsed.map(async (entry) => {
+				const nameOverride = entry.name !== entry.symbol ? entry.name : null;
 				const stock = await fetchSingle(entry.symbol);
 				if (nameOverride) stock.name = nameOverride;
-				stocks.push(stock);
-			} catch (e) {
+				return stock;
+			})
+		);
+
+		const stocks = [];
+		const errors = [];
+		for (const result of results) {
+			if (result.status === 'fulfilled') {
+				stocks.push(result.value);
+			} else {
 				errors.push({
-					symbol: entry.symbol,
-					message: e?.message || 'Unknown error'
+					symbol: 'unknown',
+					message: result.reason?.message || 'Unknown error'
 				});
 			}
-			await sleep(300);
 		}
 
 		if (sortBy === 'change') {
@@ -129,6 +117,8 @@ export const fetchStocks = query(
 			stocks.sort((a, b) => Math.abs(b.changePercent || 0) - Math.abs(a.changePercent || 0));
 		}
 
-		return { stocks, errors };
+		const data = { stocks, errors };
+		listCache.set(cacheKey, { data, ts: Date.now() });
+		return data;
 	}
 );

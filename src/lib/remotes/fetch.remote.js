@@ -1,19 +1,9 @@
 // @ts-nocheck
 import { query } from '$app/server';
 import * as v from 'valibot';
+import { createCache } from '$lib/server/cache.js';
 
-const fetchCache = new Map();
-const FETCH_CACHE_TTL = 60_000;
-
-function getCached(key) {
-	const entry = fetchCache.get(key);
-	if (entry && Date.now() - entry.ts < FETCH_CACHE_TTL) return entry.data;
-	return null;
-}
-
-function setCache(key, data) {
-	fetchCache.set(key, { data, ts: Date.now() });
-}
+const cache = createCache(60_000, 50);
 
 export const fetchUrl = query(
 	v.object({
@@ -24,12 +14,14 @@ export const fetchUrl = query(
 	}),
 	async ({ url, method, headers, body }) => {
 		try {
-			if (method === 'GET') {
-				const cached = getCached(url);
+			const parsedHeaders = JSON.parse(headers);
+			const getCacheKey = method === 'GET' ? JSON.stringify({ url, headers: parsedHeaders }) : null;
+
+			if (getCacheKey) {
+				const cached = cache.get(getCacheKey);
 				if (cached) return cached;
 			}
 
-			const parsedHeaders = JSON.parse(headers);
 			const headerMap = {};
 			if (Array.isArray(parsedHeaders)) {
 				for (const h of parsedHeaders) {
@@ -48,7 +40,7 @@ export const fetchUrl = query(
 				statusText: response.statusText,
 				responseText
 			};
-			if (method === 'GET') setCache(url, result);
+			if (getCacheKey) cache.set(getCacheKey, result);
 			return result;
 		} catch (err) {
 			return {

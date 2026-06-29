@@ -3,21 +3,11 @@ import { query } from '$app/server';
 import * as v from 'valibot';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import { createCache } from '$lib/server/cache.js';
 
 const execFileAsync = promisify(execFile);
 
-const cache = new Map();
-const CACHE_TTL = 300_000; // 5 minutes
-
-function getCached(key) {
-	const entry = cache.get(key);
-	if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data;
-	return null;
-}
-
-function setCache(key, data) {
-	cache.set(key, { data, ts: Date.now() });
-}
+const cache = createCache(300_000, 20);
 
 const sshCmdPattern = /^ssh -p \d+ [a-zA-Z0-9._%+-]+@[a-zA-Z0-9._%+-]+$|^ssh [a-zA-Z0-9._%+-]+@[a-zA-Z0-9._%+-]+$/;
 
@@ -30,7 +20,7 @@ export const fetchServerStatus = query(
 			throw new Error('Invalid SSH command format. Use: ssh user@host or ssh -p port user@host');
 		}
 
-		const cached = getCached(sshCmd);
+		const cached = cache.get(sshCmd);
 		if (cached) return cached;
 
 		const metricsCmd = [
@@ -80,7 +70,7 @@ export const fetchServerStatus = query(
 			diskUsePct: diskRaw[3] || '0%',
 		};
 
-		setCache(sshCmd, result);
+		cache.set(sshCmd, result);
 		return result;
 	}
 );

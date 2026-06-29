@@ -1,21 +1,18 @@
 import {
-	readDashboardConfig,
 	readDashboardYaml,
 	readOverrideCss,
-	readSystemConfig,
 	readSystemYaml
 } from '$lib/server/config.js';
 
-export async function load() {
-	const [dashboardConfig, systemConfig, systemYaml, yaml, customCss] = await Promise.all([
-		readDashboardConfig(),
-		readSystemConfig(),
+export async function load({ parent }) {
+	const { config, systemConfig } = await parent();
+	const [systemYaml, yaml, customCss] = await Promise.all([
 		readSystemYaml(),
 		readDashboardYaml(),
 		readOverrideCss()
 	]);
 	return {
-		config: dashboardConfig,
+		config,
 		customCss,
 		systemConfig,
 		systemYaml,

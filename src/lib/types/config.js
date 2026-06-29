@@ -68,6 +68,7 @@
  * @property {string} [stocks]
  * @property {string} [sortBy]
  * @property {number} [refreshInterval]
+ * @property {number} [cacheTime]
  */
 
 /**

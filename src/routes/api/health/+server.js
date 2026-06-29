@@ -3,5 +3,9 @@ import { readDashboardConfig } from '$lib/server/config.js';
 
 export async function GET() {
 	await readDashboardConfig();
-	return json({ ok: true, service: 'magma' });
+	return json({ ok: true, service: 'magma' }, {
+		headers: {
+			'cache-control': 'no-cache'
+		}
+	});
 }

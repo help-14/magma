@@ -1,21 +1,11 @@
 // @ts-nocheck
 import { query } from '$app/server';
 import * as v from 'valibot';
+import { createCache } from '$lib/server/cache.js';
 
 const channelListSchema = v.array(v.string());
 
-const feedCache = new Map();
-const YT_CACHE_TTL = 600_000;
-
-function getCached(key) {
-	const entry = feedCache.get(key);
-	if (entry && Date.now() - entry.ts < YT_CACHE_TTL) return entry.data;
-	return null;
-}
-
-function setCache(key, data) {
-	feedCache.set(key, { data, ts: Date.now() });
-}
+const cache = createCache(600_000, 50);
 
 function parseFeedXml(xml) {
 	const entries = [];
@@ -54,7 +44,7 @@ export const getYoutubeUploads = query(
 			const results = await Promise.allSettled(
 				channels.map(async (channelId) => {
 					const cacheKey = `uploads:${channelId}`;
-					const cached = getCached(cacheKey);
+					const cached = cache.get(cacheKey);
 					if (cached) return cached;
 
 					const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
@@ -64,7 +54,7 @@ export const getYoutubeUploads = query(
 					const parsed = parseFeedXml(xml);
 					if (parsed.length === 0) throw new Error(`No entries for channel ${channelId}`);
 
-					setCache(cacheKey, parsed);
+					cache.set(cacheKey, parsed);
 					return parsed;
 				})
 			);
@@ -97,7 +87,7 @@ export const getYoutubeLivestreams = query(
 			const results = await Promise.allSettled(
 				channels.map(async (channelId) => {
 					const cacheKey = `live:${channelId}`;
-					const cached = getCached(cacheKey);
+					const cached = cache.get(cacheKey);
 					if (cached) return cached;
 
 					const liveUrl = `https://www.youtube.com/channel/${channelId}/live`;
@@ -107,7 +97,7 @@ export const getYoutubeLivestreams = query(
 
 					if (!videoId) {
 						const result = { channelId, isLive: false };
-						setCache(cacheKey, result);
+						cache.set(cacheKey, result);
 						return result;
 					}
 
@@ -125,7 +115,7 @@ export const getYoutubeLivestreams = query(
 						channelName: info?.author_name || '',
 						videoUrl: `https://www.youtube.com/watch?v=${videoId}`
 					};
-					setCache(cacheKey, result);
+					cache.set(cacheKey, result);
 					return result;
 				})
 			);

@@ -16,7 +16,8 @@
 
   let stocksText = $derived(widget.config?.stocks || '')
   let sortBy = $derived(widget.config?.sortBy || 'default')
-  let refreshInterval = $derived(widget.config?.refreshInterval ?? 300)
+  let cacheTime = $derived(widget.config?.cacheTime ?? 300)
+  let refreshInterval = $derived(widget.config?.refreshInterval ?? cacheTime)
 
   let hasStocks = $derived(stocksText.trim().length > 0)
 
@@ -25,7 +26,7 @@
     state = 'loading'
     errorMsg = ''
     try {
-      const result = await fetchStocks({ stocks: stocksText, sortBy })
+      const result = await fetchStocks({ stocks: stocksText, sortBy, cacheTime })
       stocks = result.stocks || []
       feedErrors = result.errors || []
       state = 'content'

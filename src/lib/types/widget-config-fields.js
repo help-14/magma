@@ -110,6 +110,7 @@ export const widgetConfigFields = {
         { label: 'Absolute change %', value: 'absolute-change' }
       ]
     },
+    { key: 'cacheTime', label: 'Cache time (s)', type: 'number', default: 300 },
     { key: 'refreshInterval', label: 'Refresh (s)', type: 'number', default: 300 }
   ],
   rss: [

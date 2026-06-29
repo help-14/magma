@@ -1,19 +1,9 @@
 // @ts-nocheck
 import { query } from '$app/server';
 import * as v from 'valibot';
+import { createCache } from '$lib/server/cache.js';
 
-const cache = new Map();
-const CACHE_TTL = 3_600_000; // 1 hour
-
-function getCached(key) {
-	const entry = cache.get(key);
-	if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data;
-	return null;
-}
-
-function setCache(key, data) {
-	cache.set(key, { data, ts: Date.now() });
-}
+const cache = createCache(3_600_000, 50);
 
 function extractLastPage(linkHeader) {
 	if (!linkHeader) return null;
@@ -30,7 +20,7 @@ export const fetchGithubRepo = query(
 			throw new Error('Invalid repo format. Use owner/repo (e.g. "help-14/magma")');
 		}
 
-		const cached = getCached(cleaned);
+		const cached = cache.get(cleaned);
 		if (cached) return cached;
 
 		const headers = { Accept: 'application/vnd.github.v3+json' };
@@ -79,7 +69,7 @@ export const fetchGithubRepo = query(
 			htmlUrl: repoData.html_url ?? `https://github.com/${cleaned}`,
 		};
 
-		setCache(cleaned, result);
+		cache.set(cleaned, result);
 		return result;
 	}
 );
