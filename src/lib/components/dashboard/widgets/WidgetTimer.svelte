@@ -6,11 +6,13 @@
   let { widget, compact = false } = $props()
 
   let now = useNow()
+  let w = $derived(widget.w ?? 0)
+  let h = $derived(widget.h ?? 0)
 
   let size = $derived(
     compact ? 'small' :
-    widget.w <= 2 && widget.h <= 1 ? 'small' :
-    widget.w >= 4 && widget.h >= 4 ? 'large' :
+    w <= 2 && h <= 1 ? 'small' :
+    w >= 4 && h >= 4 ? 'large' :
     'medium'
   )
 
@@ -23,6 +25,7 @@
   }
 
   function formatTime() {
+    /** @type {Intl.DateTimeFormatOptions} */
     const opts = {
       hour: '2-digit',
       minute: '2-digit',
@@ -35,6 +38,7 @@
 
   function formatDate() {
     if (!widget.config?.showDate || size === 'small') return ''
+    /** @type {Intl.DateTimeFormatOptions} */
     const opts = size === 'large'
       ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
       : { weekday: 'short', month: 'short', day: 'numeric' }
