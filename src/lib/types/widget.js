@@ -80,7 +80,9 @@
  */
 
 /**
- * @typedef {BaseWidgetProps} TimerWidgetProps
+ * @typedef {Object} TimerWidgetProps
+ * @property {Omit<Widget, 'config'> & { config?: import('./config.js').ClockConfig }} widget
+ * @property {boolean} [compact]
  */
 
 /**

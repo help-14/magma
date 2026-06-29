@@ -1,6 +1,7 @@
 /**
  * @typedef {Object} ButtonConfig
- * @property {string} [url]
+ * @property {string} [urls]
+ * @property {'_self'|'_blank'|'_window'} [openIn]
  * @property {string} [icon]
  * @property {string} [iconColor]
  */
@@ -98,6 +99,15 @@
  * @property {boolean} [showPrs]
  * @property {boolean} [showIssues]
  * @property {number} [refreshInterval]
+ */
+
+/**
+ * @typedef {Object} ClockConfig
+ * @property {boolean} [showSeconds]
+ * @property {boolean} [showDate]
+ * @property {boolean} [showGreeting]
+ * @property {boolean} [hour12]
+ * @property {string} [timezone]
  */
 
 /**
