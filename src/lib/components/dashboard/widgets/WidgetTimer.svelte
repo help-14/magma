@@ -1,9 +1,18 @@
 <script>
-  import { m } from '$lib/paraglide/messages.js';
+  import { m } from '$lib/paraglide/messages.js'
   import { useNow } from './clock.svelte.js'
+
   /** @type {import('$lib/types/widget.js').TimerWidgetProps} */
   let { widget, compact = false } = $props()
+
   let now = useNow()
+
+  let size = $derived(
+    compact ? 'small' :
+    widget.w <= 2 && widget.h <= 1 ? 'small' :
+    widget.w >= 4 && widget.h >= 4 ? 'large' :
+    'medium'
+  )
 
   function greeting() {
     const hour = now.getHours()
@@ -13,21 +22,72 @@
     return m.timer_night()
   }
 
-  function formattedDate() {
-    return now.toLocaleTimeString('vi-VN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric'
-    })
+  function formatTime() {
+    const opts = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: widget.config?.hour12 ?? false,
+    }
+    if (widget.config?.timezone) opts.timeZone = widget.config.timezone
+    if (size !== 'small' && widget.config?.showSeconds) opts.second = '2-digit'
+    return now.toLocaleTimeString('en-US', opts)
   }
+
+  function formatDate() {
+    if (!widget.config?.showDate || size === 'small') return ''
+    const opts = size === 'large'
+      ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+      : { weekday: 'short', month: 'short', day: 'numeric' }
+    if (widget.config?.timezone) opts.timeZone = widget.config.timezone
+    return now.toLocaleDateString('en-US', opts)
+  }
+
+  function formatTimezone() {
+    if (!widget.config?.timezone) return ''
+    try {
+      const short = now.toLocaleTimeString('en-US', {
+        timeZone: widget.config.timezone,
+        timeZoneName: 'short'
+      })
+      return short.split(' ').pop() || widget.config.timezone.split('/').pop()
+    } catch {
+      return widget.config.timezone.split('/').pop() || widget.config.timezone
+    }
+  }
+
+  let dateStr = $derived(formatDate())
+  let timeStr = $derived(formatTime())
+  let greetingStr = $derived(greeting())
+  let tzStr = $derived(formatTimezone())
 </script>
 
-<div class="flex flex-col justify-center p-4 w-full min-w-0 min-h-0">
-  <span class="text-magma-muted">{formattedDate()}</span>
-  <strong class="mt-2 text-[clamp(1.4rem,3vw,2.65rem)] leading-[1.05]"
-    >{greeting()}</strong
-  >
-</div>
+{#if size === 'small'}
+  <div class="flex items-center justify-center w-full h-full min-w-0 min-h-0 p-2">
+    <span class="text-white font-bold leading-none text-[clamp(2rem,10vw,5rem)]">
+      {timeStr}
+    </span>
+  </div>
+{:else}
+  <div class="flex flex-col justify-center w-full min-w-0 min-h-0 h-full p-4 gap-1">
+    <span class="text-white font-bold leading-none text-[clamp(1.8rem,5vw,3rem)]">
+      {timeStr}
+    </span>
+
+    {#if dateStr}
+      <span class="text-magma-muted text-sm leading-snug">
+        {dateStr}
+      </span>
+    {/if}
+
+    {#if widget.config?.showGreeting}
+      <span class="text-magma-accent text-xs leading-snug">
+        {greetingStr}
+        {#if size === 'large' && tzStr}
+          <span class="text-magma-muted"> · {tzStr}</span>
+        {/if}
+      </span>
+    {:else if size === 'large' && tzStr}
+      <span class="text-magma-muted text-xs leading-snug">{tzStr}</span>
+    {/if}
+  </div>
+{/if}
