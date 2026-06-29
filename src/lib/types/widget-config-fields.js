@@ -1,7 +1,18 @@
 /** @type {Record<string, import('./config.js').ConfigFieldDescriptor[]>} */
 export const widgetConfigFields = {
 	button: [
-		{ key: 'url', label: 'URL', type: 'text', default: '' },
+		{ key: 'urls', label: 'URLs (one per line)', type: 'textarea', default: '', rows: 4 },
+		{
+			key: 'openIn',
+			label: 'Open in',
+			type: 'select',
+			default: '_self',
+			options: [
+				{ label: 'Current tab', value: '_self' },
+				{ label: 'New tab', value: '_blank' },
+				{ label: 'New window', value: '_window' }
+			]
+		},
 		{ key: 'icon', label: 'Icon', type: 'icon-picker', default: '' },
 		{ key: 'iconColor', label: 'Icon color', type: 'color', default: '#fabd2f' }
 	],
@@ -161,5 +172,12 @@ export const widgetConfigFields = {
     { key: 'cols', label: 'Columns', type: 'number', default: 2 },
     { key: 'rows', label: 'Rows', type: 'number', default: 0 },
     { key: 'limit', label: 'Max videos', type: 'number', default: 10 }
+  ],
+  timer: [
+    { key: 'showSeconds', label: 'Show seconds', type: 'checkbox', default: false },
+    { key: 'showDate', label: 'Show date', type: 'checkbox', default: true },
+    { key: 'showGreeting', label: 'Show greeting', type: 'checkbox', default: true },
+    { key: 'hour12', label: '12-hour format', type: 'checkbox', default: false },
+    { key: 'timezone', label: 'Timezone', type: 'text', default: '', placeholder: 'e.g. America/New_York' }
   ]
 }
