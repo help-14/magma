@@ -36,7 +36,7 @@
   let draggingWidgetId = $state(null)
 
   const templates = [
-    { type: 'button', title: 'Button', w: 4, h: 2, config: { icon: 'server', url: 'https://' } },
+    { type: 'button', title: 'Button', w: 4, h: 2, config: { icon: 'server', urls: '', openIn: '_self' } },
     { type: 'calendar', title: 'Calendar', w: 4, h: 4, config: {} },
     { type: 'deepseek', title: 'DeepSeek', w: 3, h: 2, config: { refreshInterval: 600 } },
     { type: 'docker-status', title: 'Docker', w: 6, h: 4, config: {} },

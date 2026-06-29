@@ -37,7 +37,7 @@
   }
 
   function formatDate() {
-    if (!widget.config?.showDate || size === 'small') return ''
+    if (!(widget.config?.showDate ?? true) || size === 'small') return ''
     /** @type {Intl.DateTimeFormatOptions} */
     const opts = size === 'large'
       ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
@@ -59,10 +59,30 @@
     }
   }
 
+  function formatMediumDateTime() {
+    const showDate = widget.config?.showDate ?? true
+    const tz = widget.config?.timezone || undefined
+    if (showDate) {
+      const datePart = now.toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric', timeZone: tz
+      })
+      const timePart = now.toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit',
+        hour12: widget.config?.hour12 ?? false, timeZone: tz
+      })
+      return `${datePart} · ${timePart}`
+    }
+    return now.toLocaleTimeString('en-US', {
+      hour: '2-digit', minute: '2-digit',
+      hour12: widget.config?.hour12 ?? false, timeZone: tz
+    })
+  }
+
   let dateStr = $derived(formatDate())
   let timeStr = $derived(formatTime())
   let greetingStr = $derived(greeting())
   let tzStr = $derived(formatTimezone())
+  let mediumDateTimeStr = $derived(formatMediumDateTime())
 </script>
 
 {#if size === 'small'}
@@ -70,6 +90,15 @@
     <span class="text-white font-bold leading-none text-[clamp(2rem,10vw,5rem)]">
       {timeStr}
     </span>
+  </div>
+{:else if size === 'medium'}
+  <div class="flex flex-col justify-center w-full min-w-0 min-h-0 h-full p-4 gap-1">
+    <span class="text-magma-muted text-sm leading-snug">{mediumDateTimeStr}</span>
+    {#if (widget.config?.showGreeting ?? true)}
+      <strong class="text-[clamp(1.4rem,3vw,2.65rem)] leading-[1.05] text-magma-accent">
+        {greetingStr}
+      </strong>
+    {/if}
   </div>
 {:else}
   <div class="flex flex-col justify-center w-full min-w-0 min-h-0 h-full p-4 gap-1">
@@ -83,14 +112,14 @@
       </span>
     {/if}
 
-    {#if widget.config?.showGreeting}
+    {#if (widget.config?.showGreeting ?? true)}
       <span class="text-magma-accent text-xs leading-snug">
         {greetingStr}
-        {#if size === 'large' && tzStr}
+        {#if tzStr}
           <span class="text-magma-muted"> · {tzStr}</span>
         {/if}
       </span>
-    {:else if size === 'large' && tzStr}
+    {:else if tzStr}
       <span class="text-magma-muted text-xs leading-snug">{tzStr}</span>
     {/if}
   </div>

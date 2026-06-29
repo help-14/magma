@@ -101,34 +101,35 @@ Create a remote function using SvelteKit's `query` with valibot validation. Add 
 
 ```js
 // @ts-nocheck
-import { query } from '$app/server';
-import * as v from 'valibot';
+import { query } from '$app/server'
+import * as v from 'valibot'
 
-const cache = new Map();
-const CACHE_TTL = 60_000;
+const cache = new Map()
+const CACHE_TTL = 60_000
 
 function getCached(key) {
-  const entry = cache.get(key);
-  if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data;
-  return null;
+  const entry = cache.get(key)
+  if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data
+  return null
 }
 
 function setCache(key, data) {
-  cache.set(key, { data, ts: Date.now() });
+  cache.set(key, { data, ts: Date.now() })
 }
 
 export const fetchMyData = query(
   v.object({ param: v.string() }),
   async ({ param }) => {
-    const cached = getCached(param);
-    if (cached) return cached;
-    const response = await fetch(`https://api.example.com/${param}`);
-    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-    const data = await response.json();
-    setCache(param, data);
-    return data;
+    const cached = getCached(param)
+    if (cached) return cached
+    const response = await fetch(`https://api.example.com/${param}`)
+    if (!response.ok)
+      throw new Error(`${response.status} ${response.statusText}`)
+    const data = await response.json()
+    setCache(param, data)
+    return data
   }
-);
+)
 ```
 
 Cache GET requests only — skip caching for POST/PUT/DELETE. Do NOT cache `docker.remote.js` (local API).
@@ -252,6 +253,56 @@ Add a widget entry to verify it renders:
     apiKey: ''
     refreshInterval: 300
 ```
+
+## Responsive Widget Design
+
+Use `widget.w` and `widget.h` (grid units, default 100px each) to adapt layout at different sizes.
+
+### Approach
+
+1. **Design the content first**, then find minimum w/h needed for each layout. Don't pick arbitrary thresholds — estimate pixel needs.
+2. Use `$derived` to compute a `size` tier from `widget.w` and `widget.h`.
+3. Branch template with `{#if size === 'small'} ... {:else if ...}` blocks.
+
+### Pattern
+
+```svelte
+<script>
+  let { widget, compact = false } = $props()
+
+  let size = $derived(
+    compact ? 'small' :
+    widget.w <= 2 && widget.h <= 2 ? 'small' :
+    widget.w >= 4 && widget.h >= 4 ? 'large' :
+    'medium'
+  )
+
+  let iconPx = $derived(
+    size === 'small' ? 36 :
+    size === 'medium' ? 48 :
+    64
+  )
+</script>
+
+{#if size === 'small'}
+  <!-- compact layout: minimal info, click for popover/modal -->
+{:else if weather}
+  <!-- expanded layout: inline details, no popover -->
+  {#if size === 'large'}
+    <!-- extra elements that need more room -->
+  {/if}
+{/if}
+```
+
+### Threshold Guidelines
+
+This is an example guidelines, it should change base on the widget design.
+
+- **Small**: `w <= 2 && h <= 2` — minimal space, use popovers/modals for extra info
+- **Medium**: one dimension ≥ 3 but not both ≥ 4 — inline stat grids, no overlay
+- **Large**: `w >= 4 && h >= 4` — can fit additional controls, rows, or larger visuals
+
+The `compact` prop (passed by `stack` widgets) should force `size = 'small'` regardless of dimensions.
 
 ## Verification
 
