@@ -5,7 +5,7 @@ import { createCache } from '$lib/server/cache.js';
 const channelListSchema = v.array(v.string());
 
 type YoutubeVideo = { videoId: string; title: string; published: string; thumbnail: string; channelName: string; channelUrl: string; videoUrl: string }
-type YoutubeLive = { channelId: string; isLive: boolean; videoId?: string; title?: string; thumbnail?: string; channelName?: string; videoUrl?: string }
+type YoutubeLive = { channelId: string; isLive: boolean; videoId?: string; title?: string; thumbnail?: string; channelName: string; videoUrl?: string }
 
 const uploadsCache = createCache<YoutubeVideo[]>(600_000, 50);
 const livestreamCache = createCache<YoutubeLive>(600_000, 50);
@@ -99,7 +99,19 @@ export const getYoutubeLivestreams = query(
 					const videoId = videoMatch ? videoMatch[1] : null;
 
 					if (!videoId) {
-						const result = { channelId, isLive: false };
+						let channelName = channelId;
+						try {
+							const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+							const feedRes = await fetch(feedUrl);
+							if (feedRes.ok) {
+								const feedXml = await feedRes.text();
+								const feedVideos = parseFeedXml(feedXml);
+								if (feedVideos.length > 0 && feedVideos[0].channelName) {
+									channelName = feedVideos[0].channelName;
+								}
+							}
+						} catch {}
+						const result = { channelId, isLive: false, channelName };
 						livestreamCache.set(cacheKey, result);
 						return result;
 					}
@@ -128,7 +140,7 @@ export const getYoutubeLivestreams = query(
 				if (result.status === 'fulfilled') {
 					channelsData.push(result.value);
 				} else {
-					channelsData.push({ channelId: 'unknown', isLive: false });
+					channelsData.push({ channelId: 'unknown', isLive: false, channelName: 'Unknown' });
 				}
 			}
 

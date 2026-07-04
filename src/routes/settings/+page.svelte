@@ -28,6 +28,7 @@
   let customCss = $state(data.customCss || '')
   let saving = $state(false)
   let language = $state(data.systemConfig.language || 'en')
+  let title = $state(data.systemConfig.title || 'Magma')
 
   let highlightedSystemYaml = $derived(highlightYaml(systemYaml))
   let highlightedDashboardYaml = $derived(highlightYaml(dashboardYaml))
@@ -99,6 +100,18 @@
   function updateBackgroundImage(value: string) {
     backgroundImage = value
     updateSystemThemeField('backgroundImage', value || '/bg.jpg')
+  }
+
+  function updateSystemTitle(value: string) {
+    title = value
+    const lines = systemYaml.split('\n')
+    const titleIndex = lines.findIndex((line: string) => /^title:/.test(line))
+    if (titleIndex === -1) {
+      lines.splice(0, 0, `title: ${value || 'Magma'}`)
+    } else {
+      lines.splice(titleIndex, 1, `title: ${value || 'Magma'}`)
+    }
+    systemYaml = lines.join('\n')
   }
 
   function updateSystemLanguage(value: string) {
@@ -221,6 +234,7 @@
           result.systemConfig.system?.dashboardGrid?.cellHeight || cellHeight
         backgroundImage =
           result.systemConfig.theme?.backgroundImage || backgroundImage
+        title = result.systemConfig.title || 'Magma'
       }
       if (result.yaml) {
         dashboardYaml = result.yaml
@@ -293,6 +307,18 @@
               {m.settings_system()}
             </h2>
             <p>{@html m.settings_system_desc()}</p>
+            <Label class="grid gap-2 mt-4">
+              <span class="text-magma-accent text-xs font-bold uppercase"
+                >Title</span
+              >
+              <Input
+                value={title}
+                placeholder="Magma"
+                class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                oninput={(event: Event) =>
+                  updateSystemTitle(inputValue(event))}
+              />
+            </Label>
             <div class="grid grid-cols-2 gap-3">
               <Label class="grid gap-2 mt-4">
                 <span class="text-magma-accent text-xs font-bold uppercase"

@@ -2,10 +2,7 @@ services:
   magma:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./config:/config
-    environment:
-      - NODE_ENV=production
-      - ORIGIN=http://localhost:3000
     restart: unless-stopped

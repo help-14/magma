@@ -195,6 +195,7 @@ export function stringifySystemConfig(config: ConfigObject) {
 
 export function defaultSystemConfig(): ConfigObject {
 	return {
+		title: 'Magma',
 		version: 1,
 		language: 'en',
 		system: {
@@ -258,6 +259,9 @@ export function validateSystemConfig(config: any) {
 	}
 	if (config.language !== undefined && typeof config.language !== 'string') {
 		throw new Error('language must be a string.')
+	}
+	if (config.title !== undefined && typeof config.title !== 'string') {
+		throw new Error('title must be a string.')
 	}
 }
 

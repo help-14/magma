@@ -77,6 +77,47 @@
   })
 </script>
 
+{#snippet thumbnailCard(item: any)}
+  <a
+    href={item.videoUrl}
+    target="_blank"
+    rel="noreferrer"
+    class="group relative rounded-lg overflow-hidden border border-magma-line/30 no-underline w-48"
+  >
+    <div class="aspect-video bg-magma-muted/20">
+      <img
+        src={item.thumbnail}
+        alt={item.title}
+        loading="lazy"
+        class="w-full h-full object-cover"
+      />
+    </div>
+    <div
+      class="absolute inset-0 flex flex-col justify-end p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+    >
+      <div class="absolute inset-0 bg-black/70"></div>
+      <span
+        class="relative text-xs font-semibold text-white line-clamp-2 leading-tight"
+      >
+        {item.title}
+      </span>
+      <span class="relative text-[11px] text-white/70 truncate">
+        {item.channelName}
+      </span>
+    </div>
+  </a>
+{/snippet}
+
+{#snippet channelNameLabel(name: string)}
+  <div
+    class="flex items-center justify-center rounded-lg border border-magma-line/20 bg-magma-panel-strong/30 p-3 w-48"
+  >
+    <span class="text-xs text-magma-muted text-center leading-tight">
+      {name}
+    </span>
+  </div>
+{/snippet}
+
 <div class="relative flex flex-col w-full min-w-0 min-h-0 h-full p-3">
   <WidgetTitleBar title={widget.title}>
     {#snippet trailing()}
@@ -92,95 +133,26 @@
     idleMessage="Add channel IDs in properties"
   >
     {#snippet children()}
-      {#if mode === 'uploads'}
-        <ScrollArea
-          class="flex-1 min-h-0 w-full"
-          orientation={scrollOrientation}
-        >
-          <div class="grid gap-2 pt-2 justify-center" style={gridStyle}>
+      <ScrollArea
+        class="flex-1 min-h-0 w-full"
+        orientation={scrollOrientation}
+      >
+        <div class="grid gap-2 pt-2 justify-center" style={gridStyle}>
+          {#if mode === 'uploads'}
             {#each data.videos as video (video.videoId)}
-              <a
-                href={video.videoUrl}
-                target="_blank"
-                rel="noreferrer"
-                class="group relative rounded-lg overflow-hidden border border-magma-line/30 no-underline w-48"
-              >
-                <div class="aspect-video bg-magma-muted/20">
-                  <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    loading="lazy"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-                <div
-                  class="absolute inset-0 flex flex-col justify-end p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                >
-                  <div class="absolute inset-0 bg-black/70"></div>
-                  <span
-                    class="relative text-xs font-semibold text-white line-clamp-2 leading-tight"
-                  >
-                    {video.title}
-                  </span>
-                  <span class="relative text-[11px] text-white/70 truncate">
-                    {video.channelName}
-                  </span>
-                </div>
-              </a>
+              {@render thumbnailCard(video)}
             {/each}
-          </div>
-        </ScrollArea>
-      {:else if mode === 'livestream'}
-        <ScrollArea class="flex-1 min-h-0 w-full" orientation="both">
-          <div class="flex flex-col gap-1.5 pt-2 min-w-max justify-center">
+          {:else}
             {#each data.channels as ch (ch.channelId)}
               {#if ch.isLive}
-                <a
-                  href={ch.videoUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  class="group flex items-start gap-2 rounded-lg overflow-hidden bg-magma-panel-strong/60 hover:bg-magma-panel-strong transition-colors border border-magma-accent/30 no-underline p-1.5 w-80"
-                >
-                  <div
-                    class="aspect-video shrink-0 bg-magma-muted/20 rounded overflow-hidden"
-                  >
-                    <img
-                      src={ch.thumbnail}
-                      alt={ch.title}
-                      loading="lazy"
-                      class="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div class="flex flex-col gap-0.5 min-w-0 flex-1">
-                    <span class="flex items-center gap-1">
-                      <span
-                        class="size-1.5 rounded-full bg-red-500 animate-pulse shrink-0"
-                      ></span>
-                      <span class="text-[11px] font-bold text-red-400 uppercase"
-                        >LIVE</span
-                      >
-                    </span>
-                    <span
-                      class="text-xs font-semibold text-magma-text line-clamp-2 leading-tight"
-                    >
-                      {ch.title}
-                    </span>
-                    <span class="text-[11px] text-magma-muted truncate"
-                      >{ch.channelName}</span
-                    >
-                  </div>
-                </a>
+                {@render thumbnailCard(ch)}
               {:else}
-                <div
-                  class="flex items-center gap-2 rounded-lg p-2 border border-magma-line/20 bg-magma-panel-strong/30 w-80"
-                >
-                  <span class="text-xs text-magma-muted/50">Not streaming</span>
-                </div>
+                {@render channelNameLabel(ch.channelName)}
               {/if}
             {/each}
-          </div>
-        </ScrollArea>
-      {/if}
+          {/if}
+        </div>
+      </ScrollArea>
     {/snippet}
   </WidgetStateWrapper>
 

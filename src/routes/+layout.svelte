@@ -14,6 +14,7 @@
 </script>
 
 <svelte:head>
+  <title>{data.siteTitle}</title>
   <link rel="icon" href={favicon} />
   <link rel="stylesheet" href={`/custom.css?v=${data.customCssVersion}`} />
 </svelte:head>

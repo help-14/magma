@@ -13,6 +13,7 @@ export async function load({ cookies }) {
 	return {
 		config: dashboardConfig,
 		systemConfig,
+		siteTitle: systemConfig.title || 'Magma',
 		theme: dashboardConfig.theme || {},
 		customCss,
 		customCssVersion: Date.now(),
