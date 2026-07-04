@@ -16,9 +16,16 @@
   import WidgetPalette from '$lib/components/dashboard/WidgetPalette.svelte'
   import WidgetPropertyPanel from '$lib/components/dashboard/WidgetPropertyPanel.svelte'
   import WidgetRenderer from '$lib/components/dashboard/WidgetRenderer.svelte'
-  import { widgetStyle, makeId, cellFromEvent, canPlace, findNearestFreePosition, overlaps } from '$lib/dashboard/grid-utils.js'
+  import {
+    widgetStyle,
+    makeId,
+    cellFromEvent,
+    canPlace,
+    findNearestFreePosition,
+    overlaps
+  } from '$lib/dashboard/grid-utils.js'
 
-  import { m } from '$lib/paraglide/messages.js';
+  import { m } from '$lib/paraglide/messages.js'
 
   let { initialConfig } = $props()
 
@@ -34,24 +41,6 @@
   let selected = $state(null)
   let draggingTemplateType = $state(null)
   let draggingWidgetId = $state(null)
-
-  const templates = [
-    { type: 'button', title: 'Button', w: 4, h: 2, config: { icon: 'server', urls: '', openIn: '_self' } },
-    { type: 'calendar', title: 'Calendar', w: 4, h: 4, config: {} },
-    { type: 'deepseek', title: 'DeepSeek', w: 3, h: 2, config: { refreshInterval: 600 } },
-    { type: 'docker-status', title: 'Docker', w: 6, h: 4, config: {} },
-    { type: 'fetch', title: 'Fetch', w: 8, h: 8, config: {} },
-    { type: 'rss', title: 'RSS', w: 6, h: 8, config: { feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"}]', style: 'vertical-list', limit: 25, collapseAfter: 5 } },
-    { type: 'stock', title: 'Stock', w: 4, h: 4, config: { stocks: 'SPY: S&P 500\nAAPL: Apple\nNVDA\nBTC-USD: Bitcoin', sortBy: 'change', refreshInterval: 300 } },
-    { type: 'search', title: 'Search', w: 8, h: 2, config: { provider: 'google' } },
-    { type: 'stack', title: 'Stack', w: 10, h: 6, config: { flow: 'horizontal', cols: 2, rows: 0, gap: 12 }, children: [] },
-    { type: 'timer', title: 'Timer', w: 10, h: 4, config: {} },
-    { type: 'weather', title: 'Weather', w: 4, h: 4, config: { locationRef: 'default' } },
-    { type: 'website', title: 'Website', w: 8, h: 6, config: {} },
-    { type: 'youtube-live', title: 'YouTube', w: 6, h: 8, config: { mode: 'uploads', channels: '', limit: 10 } },
-    { type: 'server-status', title: 'Server Status', w: 4, h: 6, config: { sshCmd: '', showHostname: true, showUptime: true, showCpu: true, showRam: true, showDisk: true } },
-    { type: 'github-repo', title: 'GitHub Repo', w: 6, h: 5, config: { repo: '', showStars: true, showForks: true, showPrs: true, showIssues: true, refreshInterval: 3600 } }
-  ]
 
   let grid = $derived(config.dashboard.grid)
   let widgets = $derived(config.dashboard.widgets)
@@ -124,7 +113,13 @@
       return
     }
 
-    const cell = cellFromEvent(event, canvasElement, pageCenter, cellSize, cellHeight)
+    const cell = cellFromEvent(
+      event,
+      canvasElement,
+      pageCenter,
+      cellSize,
+      cellHeight
+    )
     const templateW = template.w
     const templateH = template.h
 
@@ -243,13 +238,25 @@
   function startMove(event, widget) {
     if (!editMode) return
     event.preventDefault()
-    const start = cellFromEvent(event, canvasElement, pageCenter, cellSize, cellHeight)
+    const start = cellFromEvent(
+      event,
+      canvasElement,
+      pageCenter,
+      cellSize,
+      cellHeight
+    )
     const original = { x: widget.x, y: widget.y }
     draftWidget = widget.id
     gridActive = true
 
     function move(moveEvent) {
-      const cell = cellFromEvent(moveEvent, canvasElement, pageCenter, cellSize, cellHeight)
+      const cell = cellFromEvent(
+        moveEvent,
+        canvasElement,
+        pageCenter,
+        cellSize,
+        cellHeight
+      )
       updateWidget(widget.id, {
         x: original.x + cell.x - start.x,
         y: Math.max(1, original.y + cell.y - start.y)
@@ -271,13 +278,25 @@
   function startResize(event, widget) {
     if (!editMode) return
     event.preventDefault()
-    const start = cellFromEvent(event, canvasElement, pageCenter, cellSize, cellHeight)
+    const start = cellFromEvent(
+      event,
+      canvasElement,
+      pageCenter,
+      cellSize,
+      cellHeight
+    )
     const original = { w: widget.w, h: widget.h }
     draftWidget = widget.id
     gridActive = true
 
     function move(moveEvent) {
-      const cell = cellFromEvent(moveEvent, canvasElement, pageCenter, cellSize, cellHeight)
+      const cell = cellFromEvent(
+        moveEvent,
+        canvasElement,
+        pageCenter,
+        cellSize,
+        cellHeight
+      )
       updateWidget(widget.id, {
         w: Math.max(1, original.w + cell.x - start.x),
         h: Math.max(1, original.h + cell.y - start.y)
@@ -471,7 +490,8 @@
     </Button>
     {#if editMode}
       <Button variant="magma" onclick={() => (drawerOpen = true)}>
-        <Plus size={18} /> {m.editor_add_widget()}
+        <Plus size={18} />
+        {m.editor_add_widget()}
       </Button>
     {/if}
   </nav>
@@ -565,7 +585,6 @@
 
   {#if editMode && drawerOpen}
     <WidgetPalette
-      {templates}
       onClose={() => (drawerOpen = false)}
       onDragStart={dragTemplate}
       onDragEnd={endTemplateDrag}

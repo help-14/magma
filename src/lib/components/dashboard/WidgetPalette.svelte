@@ -5,11 +5,112 @@
 
   /** @type {import('$lib/types/widget.js').WidgetPaletteProps} */
   let {
-    templates = [],
     onClose = () => {},
     onDragStart = () => {},
     onDragEnd = () => {}
   } = $props()
+
+  const templates = [
+    {
+      type: 'button',
+      title: 'Button',
+      w: 4,
+      h: 2,
+      config: { icon: 'server', urls: '', openIn: '_self' }
+    },
+    { type: 'calendar', title: 'Calendar', w: 4, h: 4, config: {} },
+    {
+      type: 'deepseek',
+      title: 'DeepSeek',
+      w: 3,
+      h: 2,
+      config: { refreshInterval: 600 }
+    },
+    { type: 'docker-status', title: 'Docker', w: 6, h: 4, config: {} },
+    { type: 'fetch', title: 'Fetch', w: 8, h: 8, config: {} },
+    {
+      type: 'rss',
+      title: 'RSS',
+      w: 6,
+      h: 8,
+      config: {
+        feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"}]',
+        style: 'vertical-list',
+        limit: 25,
+        collapseAfter: 5
+      }
+    },
+    {
+      type: 'stock',
+      title: 'Stock',
+      w: 4,
+      h: 4,
+      config: {
+        stocks: 'SPY: S&P 500\nAAPL: Apple\nNVDA\nBTC-USD: Bitcoin',
+        sortBy: 'change',
+        refreshInterval: 300
+      }
+    },
+    {
+      type: 'search',
+      title: 'Search',
+      w: 8,
+      h: 2,
+      config: { provider: 'google' }
+    },
+    {
+      type: 'stack',
+      title: 'Stack',
+      w: 10,
+      h: 6,
+      config: { flow: 'horizontal', cols: 2, rows: 0, gap: 12 },
+      children: []
+    },
+    { type: 'timer', title: 'Timer', w: 10, h: 4, config: {} },
+    {
+      type: 'weather',
+      title: 'Weather',
+      w: 4,
+      h: 4,
+      config: { locationRef: 'default' }
+    },
+    { type: 'website', title: 'Website', w: 8, h: 6, config: {} },
+    {
+      type: 'youtube-live',
+      title: 'YouTube',
+      w: 6,
+      h: 8,
+      config: { mode: 'uploads', channels: '', limit: 10 }
+    },
+    {
+      type: 'server-status',
+      title: 'Server Status',
+      w: 4,
+      h: 6,
+      config: {
+        sshCmd: '',
+        showHostname: true,
+        showUptime: true,
+        showCpu: true,
+        showRam: true,
+        showDisk: true
+      }
+    },
+    {
+      type: 'github-repo',
+      title: 'GitHub Repo',
+      w: 6,
+      h: 5,
+      config: {
+        repo: '',
+        showStars: true,
+        showForks: true,
+        showPrs: true,
+        showIssues: true,
+        refreshInterval: 3600
+      }
+    }
+  ]
 
   let el = $state(null)
   let posX = $state(null)
