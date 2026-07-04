@@ -11,7 +11,7 @@
 		"hooks": "$lib/hooks",
 		"lib": "$lib"
 	},
-	"typescript": false,
+	"typescript": true,
 	"registry": "https://shadcn-svelte.com/registry",
 	"style": "nova",
 	"iconLibrary": "lucide",

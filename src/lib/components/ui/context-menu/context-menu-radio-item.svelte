@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { ContextMenu as ContextMenuPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
 	import CheckIcon from '@lucide/svelte/icons/check';
@@ -10,7 +10,7 @@
 		value = '',
 		children: childrenProp,
 		...restProps
-	} = $props();
+	}: Record<string, any> = $props();
 </script>
 
 <ContextMenuPrimitive.RadioItem

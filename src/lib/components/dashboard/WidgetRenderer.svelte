@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import WidgetTimer from './widgets/WidgetTimer.svelte'
   import WidgetWeather from './widgets/WidgetWeather.svelte'
   import WidgetSearch from './widgets/WidgetSearch.svelte'
@@ -15,11 +14,12 @@
   import WidgetStock from './widgets/WidgetStock.svelte'
   import WidgetGithubRepo from './widgets/WidgetGithubRepo.svelte'
   import WidgetFallback from './widgets/WidgetFallback.svelte'
+  import type { Component } from 'svelte'
+  import type { WidgetRendererProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').WidgetRendererProps} */
-  let { widget, ...rest } = $props()
+  let { widget, ...rest }: WidgetRendererProps = $props()
 
-  const map = {
+  const map: Record<string, Component<any>> = {
     timer: WidgetTimer,
     weather: WidgetWeather,
     search: WidgetSearch,

@@ -1,18 +1,17 @@
-<script>
+<script lang="ts">
   import { RefreshCw } from '@lucide/svelte'
+  import type { Snippet } from 'svelte'
 
-  /**
-   * WidgetStateWrapper — Unified idle/loading/error/content state rendering.
-   * @prop {'idle'|'loading'|'error'|'content'} state - Current widget state.
-   * @prop {string} [idleMessage='Configure in properties'] - Message shown in idle state.
-   * @prop {string} [errorMsg=''] - Error message shown in error state.
-   * @prop {import('svelte').Snippet} [children] - Content rendered when state is 'content'.
-   */
   let {
     state,
     idleMessage = 'Configure in properties',
     errorMsg = '',
     children
+  }: {
+    state: 'idle' | 'loading' | 'error' | 'content'
+    idleMessage?: string
+    errorMsg?: string
+    children?: Snippet
   } = $props()
 </script>
 

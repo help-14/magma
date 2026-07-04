@@ -1,5 +1,4 @@
-<script module>
-  // @ts-nocheck
+<script module lang="ts">
   import { cn } from '$lib/utils.js'
   import { tv } from 'tailwind-variants'
 
@@ -42,8 +41,7 @@
   })
 </script>
 
-<script>
-  // @ts-nocheck
+<script lang="ts">
   let {
     class: className,
     variant = 'default',
@@ -54,7 +52,7 @@
     disabled,
     children,
     ...restProps
-  } = $props()
+  }: Record<string, any> = $props()
 </script>
 
 {#if href}

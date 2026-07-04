@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { Button } from '$lib/components/ui/button/index.js'
   import { Progress } from '$lib/components/ui/progress/index.js'
   import {
@@ -12,21 +11,21 @@
   import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
+  import type { DeepSeekWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').DeepSeekWidgetProps} */
-  let { widget } = $props()
+  let { widget }: DeepSeekWidgetProps = $props()
 
-  let state = $state('idle')
+  let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
-  let data = $state(null)
+  let data: any = $state(null)
 
   let refreshInterval = $derived(widget.config?.refreshInterval ?? 600)
   let authToken = $derived(widget.config?.authToken || '')
 
   let walletDisplay = $derived.by(() => {
     if (!data?.normal_wallets) return ''
-    const usd = data.normal_wallets.find((w) => w.currency === 'USD')
-    const cny = data.normal_wallets.find((w) => w.currency === 'CNY')
+    const usd = data.normal_wallets.find((w: any) => w.currency === 'USD')
+    const cny = data.normal_wallets.find((w: any) => w.currency === 'CNY')
     const parts = []
     if (usd) parts.push('$' + parseFloat(usd.balance).toFixed(2))
     if (cny) parts.push('\u00a5' + parseFloat(cny.balance).toFixed(2))
@@ -53,26 +52,26 @@
 
   async function doFetch() {
     if (!authToken) return
-    state = 'loading'
+    widgetState = 'loading'
     errorMsg = ''
     try {
       const result = await deepseekSummary({ authToken })
       if (!result.ok) {
-        state = 'error'
+        widgetState = 'error'
         errorMsg = result.error
         return
       }
       data = result.data
-      state = 'content'
+      widgetState = 'content'
     } catch (err) {
-      state = 'error'
-      errorMsg = err.message || String(err)
+      widgetState = 'error'
+      errorMsg = err instanceof Error ? err.message : String(err)
     }
   }
 
   $effect(() => {
     if (!authToken) {
-      state = 'idle'
+      widgetState = 'idle'
       data = null
       return
     }
@@ -85,7 +84,7 @@
 <div class="relative flex flex-col w-full min-w-0 min-h-0 h-full">
   <WidgetTitleBar title={widget.title} />
   <WidgetStateWrapper
-    {state}
+    state={widgetState}
     {errorMsg}
     idleMessage="Configure Auth Token in properties"
   >

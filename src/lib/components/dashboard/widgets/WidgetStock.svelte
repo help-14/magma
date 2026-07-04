@@ -1,18 +1,17 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { TrendingUp, TrendingDown, Minus } from '@lucide/svelte'
   import { fetchStocks } from '$lib/remotes/stocks.remote.js'
   import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
+  import type { StockWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').StockWidgetProps} */
-  let { widget, compact = false } = $props()
+  let { widget, compact = false }: StockWidgetProps = $props()
 
-  let state = $state('idle')
+  let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
-  let stocks = $state([])
-  let feedErrors = $state([])
+  let stocks: any[] = $state([])
+  let feedErrors: any[] = $state([])
 
   let stocksText = $derived(widget.config?.stocks || '')
   let sortBy = $derived(widget.config?.sortBy || 'default')
@@ -23,22 +22,22 @@
 
   async function doFetch() {
     if (!hasStocks) return
-    state = 'loading'
+    widgetState = 'loading'
     errorMsg = ''
     try {
-      const result = await fetchStocks({ stocks: stocksText, sortBy, cacheTime })
+      const result = await fetchStocks({ stocks: stocksText, sortBy: sortBy as any, cacheTime })
       stocks = result.stocks || []
       feedErrors = result.errors || []
-      state = 'content'
+      widgetState = 'content'
     } catch (err) {
-      state = 'error'
-      errorMsg = err.message || String(err)
+      widgetState = 'error'
+      errorMsg = err instanceof Error ? err.message : String(err)
     }
   }
 
   $effect(() => {
     if (!hasStocks) {
-      state = 'idle'
+      widgetState = 'idle'
       stocks = []
       return
     }
@@ -47,7 +46,7 @@
     return () => clearInterval(id)
   })
 
-  function formatPrice(price) {
+  function formatPrice(price: number | null | undefined) {
     if (price == null) return '—'
     if (price >= 1000)
       return price.toLocaleString('en-US', {
@@ -58,19 +57,19 @@
     return price.toFixed(4)
   }
 
-  function formatChange(val) {
+  function formatChange(val: number | null | undefined) {
     if (val == null) return '—'
     const sign = val >= 0 ? '+' : ''
     return sign + val.toFixed(2)
   }
 
-  function formatChangePercent(val) {
+  function formatChangePercent(val: number | null | undefined) {
     if (val == null) return '—'
     const sign = val >= 0 ? '+' : ''
     return sign + val.toFixed(2) + '%'
   }
 
-  function sparklinePath(chart) {
+  function sparklinePath(chart: number[]) {
     if (!chart || chart.length < 2) return ''
     const w = 60,
       h = 24
@@ -83,7 +82,7 @@
     const yRange = yMax - yMin || 1
     const step = w / (chart.length - 1)
     return chart
-      .map((v, i) => {
+      .map((v: number, i: number) => {
         const x = i * step
         const y = h - ((v - yMin) / yRange) * h
         return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
@@ -100,7 +99,7 @@
       {#if feedErrors.length > 0}
         <span
           class="text-amber-400 text-xs shrink-0 cursor-help"
-          title={feedErrors.map((e) => `${e.symbol}: ${e.message}`).join('\n')}
+          title={feedErrors.map((e: any) => `${e.symbol}: ${e.message}`).join('\n')}
         >
           ⚠
         </span>
@@ -108,10 +107,10 @@
     {/snippet}
   </WidgetTitleBar>
 
-  <WidgetStateWrapper {state} {errorMsg} idleMessage="Add stocks in properties">
+  <WidgetStateWrapper state={widgetState} {errorMsg} idleMessage="Add stocks in properties">
     {#snippet children()}
       <div class="flex-1 overflow-y-auto min-h-0 px-1 pb-1">
-        {#each stocks as stock}
+        {#each stocks as stock (stock.symbol)}
           <div
             class="flex items-center px-2 py-1.5 rounded hover:bg-white/5 transition-colors"
           >

@@ -1,14 +1,13 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
+  import type { WidgetPaletteProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').WidgetPaletteProps} */
   let {
     onClose = () => {},
     onDragStart = () => {},
     onDragEnd = () => {}
-  } = $props()
+  }: WidgetPaletteProps = $props()
 
   const templates = [
     {
@@ -112,9 +111,9 @@
     }
   ]
 
-  let el = $state(null)
-  let posX = $state(null)
-  let posY = $state(null)
+  let el = $state<HTMLElement | null>(null)
+  let posX = $state<number | null>(null)
+  let posY = $state<number | null>(null)
   let dragOffset = $state({ x: 0, y: 0 })
   let dragging = $state(false)
 
@@ -125,8 +124,9 @@
     posY = window.innerHeight - rect.height - 84
   })
 
-  function startDrag(event) {
-    if (event.target.closest('button')) return
+  function startDrag(event: PointerEvent) {
+    if ((event.target as Element | null)?.closest('button')) return
+    if (!el) return
     event.preventDefault()
     const rect = el.getBoundingClientRect()
     if (posX === null) posX = rect.left
@@ -136,7 +136,7 @@
 
     const dragH = rect.height
 
-    function move(moveEvent) {
+    function move(moveEvent: PointerEvent) {
       let x = moveEvent.clientX - dragOffset.x
       let y = moveEvent.clientY - dragOffset.y
       const w = Math.min(760, window.innerWidth - 48)
@@ -184,12 +184,12 @@
     >
   </div>
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4">
-    {#each templates as template}
+    {#each templates as template (template.type)}
       <Button
         variant="magma"
         type="button"
         draggable="true"
-        ondragstart={(event) => onDragStart(event, template)}
+        ondragstart={(event: DragEvent) => onDragStart(event, template)}
         ondragend={onDragEnd}
       >
         <strong>{template.title}</strong>

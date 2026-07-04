@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { cn } from "$lib/utils.js";
 
 	let {
@@ -9,7 +9,7 @@
 		class: className,
 		"data-slot": dataSlot = "input",
 		...restProps
-	} = $props();
+	}: Record<string, any> = $props();
 </script>
 
 {#if type === "file"}

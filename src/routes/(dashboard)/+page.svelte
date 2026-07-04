@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import DashboardEditor from "./DashboardEditor.svelte";
 
   let { data } = $props();

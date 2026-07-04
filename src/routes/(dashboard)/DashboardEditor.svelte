@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import {
     GripHorizontal,
     ArrowDownRight,
@@ -26,23 +25,23 @@
     overlaps
   } from '$lib/dashboard/grid-utils.js'
 
-  let { initialConfig } = $props()
+  let { initialConfig }: { initialConfig: any } = $props()
 
   const startingConfig = structuredClone(initialConfig)
-  let config = $state(startingConfig)
+  let config: any = $state(startingConfig)
   let drawerOpen = $state(false)
   let saving = $state(false)
-  let canvasElement = $state()
-  let draftWidget = $state(null)
+  let canvasElement = $state<HTMLElement | null>(null)
+  let draftWidget: string | null = $state(null)
   let gridActive = $state(false)
   let editMode = $state(false)
   let dirty = $state(false)
-  let selected = $state(null)
-  let draggingTemplateType = $state(null)
-  let draggingWidgetId = $state(null)
+  let selected: { id: string; childId?: string } | null = $state(null)
+  let draggingTemplateType: string | null = $state(null)
+  let draggingWidgetId: string | null = $state(null)
 
   let grid = $derived(config.dashboard.grid)
-  let widgets = $derived(config.dashboard.widgets)
+  let widgets: any[] = $derived(config.dashboard.widgets)
   let selectedWidget = $derived(getSelectedWidget())
 
   let viewWidth = $state(browser ? window.innerWidth : 1920)
@@ -65,18 +64,19 @@
     grid.cellHeight || Math.max(viewHeight / (grid.rows || 8), 1)
   )
   let pageCenter = $derived(viewWidth / 2)
-  let gridVisualHeight = $derived(Math.max(gridRows * cellHeight, viewHeight))
 
   let gridRows = $derived(
     (() => {
-      return Math.max(8, ...widgets.map((w) => w.y + w.h - 1))
+      return Math.max(8, ...widgets.map((w: any) => w.y + w.h - 1))
     })()
   )
+  let gridVisualHeight = $derived(Math.max(gridRows * cellHeight, viewHeight))
 
   // widgetStyle and makeId moved to $lib/dashboard/grid-utils.js
 
-  function dragTemplate(event, template) {
+  function dragTemplate(event: DragEvent, template: any) {
     if (!editMode) return
+    if (!event.dataTransfer) return
     gridActive = true
     draggingTemplateType = template.type
     event.dataTransfer.effectAllowed = 'copy'
@@ -86,8 +86,9 @@
     )
   }
 
-  function dragWidget(event, widget) {
+  function dragWidget(event: DragEvent, widget: any) {
     if (!editMode || widget.type !== 'button') return
+    if (!event.dataTransfer) return
     gridActive = true
     draggingWidgetId = widget.id
     event.dataTransfer.effectAllowed = 'move'
@@ -96,9 +97,10 @@
 
   // cellFromEvent moved to $lib/dashboard/grid-utils.js
 
-  function onDrop(event) {
+  function onDrop(event: DragEvent) {
     event.preventDefault()
     if (!editMode) return
+    if (!event.dataTransfer || !canvasElement) return
     const raw = event.dataTransfer.getData('application/x-magma-template')
     if (!raw) {
       gridActive = false
@@ -130,7 +132,7 @@
     )
 
     if (bestPos) {
-      const widget = {
+      const widget: any = {
         id: makeId(template.type),
         type: template.type,
         title: template.title,
@@ -152,8 +154,9 @@
     }
   }
 
-  function onDragOver(event) {
+  function onDragOver(event: DragEvent) {
     if (!editMode) return
+    if (!event.dataTransfer) return
     if (draggingTemplateType === 'button' || draggingWidgetId) {
       event.dataTransfer.dropEffect = 'none'
       return
@@ -168,10 +171,11 @@
     draggingWidgetId = null
   }
 
-  function dropIntoStack(event, stack) {
+  function dropIntoStack(event: DragEvent, stack: any) {
     event.preventDefault()
     event.stopPropagation()
     gridActive = false
+    if (!event.dataTransfer) return
     if (
       !editMode ||
       !['stack', 'stack-horizontal', 'stack-vertical'].includes(stack.type)
@@ -202,7 +206,7 @@
     }
 
     if (widgetId) {
-      const widget = widgets.find((item) => item.id === widgetId)
+      const widget = widgets.find((item: any) => item.id === widgetId)
       if (!widget || widget.type !== 'button' || widget.id === stack.id) return
       const child = {
         id: widget.id,
@@ -211,8 +215,8 @@
         config: structuredClone(widget.config || {})
       }
       config.dashboard.widgets = widgets
-        .filter((item) => item.id !== widget.id)
-        .map((item) =>
+        .filter((item: any) => item.id !== widget.id)
+        .map((item: any) =>
           item.id === stack.id
             ? { ...item, children: [...(item.children || []), child] }
             : item
@@ -223,8 +227,9 @@
     }
   }
 
-  function dragOverStack(event) {
+  function dragOverStack(event: DragEvent) {
     if (!editMode) return
+    if (!event.dataTransfer) return
     const acceptsDrop =
       draggingTemplateType === 'button' || Boolean(draggingWidgetId)
 
@@ -234,12 +239,14 @@
     event.dataTransfer.dropEffect = draggingWidgetId ? 'move' : 'copy'
   }
 
-  function startMove(event, widget) {
+  function startMove(event: PointerEvent, widget: any) {
     if (!editMode) return
+    if (!canvasElement) return
+    const canvas = canvasElement
     event.preventDefault()
     const start = cellFromEvent(
       event,
-      canvasElement,
+      canvas,
       pageCenter,
       cellSize,
       cellHeight
@@ -248,10 +255,10 @@
     draftWidget = widget.id
     gridActive = true
 
-    function move(moveEvent) {
+    function move(moveEvent: PointerEvent) {
       const cell = cellFromEvent(
         moveEvent,
-        canvasElement,
+        canvas,
         pageCenter,
         cellSize,
         cellHeight
@@ -274,12 +281,14 @@
     window.addEventListener('pointerup', stop)
   }
 
-  function startResize(event, widget) {
+  function startResize(event: PointerEvent, widget: any) {
     if (!editMode) return
+    if (!canvasElement) return
+    const canvas = canvasElement
     event.preventDefault()
     const start = cellFromEvent(
       event,
-      canvasElement,
+      canvas,
       pageCenter,
       cellSize,
       cellHeight
@@ -288,10 +297,10 @@
     draftWidget = widget.id
     gridActive = true
 
-    function move(moveEvent) {
+    function move(moveEvent: PointerEvent) {
       const cell = cellFromEvent(
         moveEvent,
-        canvasElement,
+        canvas,
         pageCenter,
         cellSize,
         cellHeight
@@ -314,16 +323,16 @@
     window.addEventListener('pointerup', stop)
   }
 
-  function updateWidget(id, patch) {
-    config.dashboard.widgets = widgets.map((widget) => {
+  function updateWidget(id: string, patch: Record<string, any>) {
+    config.dashboard.widgets = widgets.map((widget: any) => {
       if (widget.id !== id) return widget
       const next = { ...widget, ...patch }
       return canPlace(next, widgets, id) ? next : widget
     })
   }
 
-  function addChildToStack(stackId, child) {
-    config.dashboard.widgets = widgets.map((widget) =>
+  function addChildToStack(stackId: string, child: any) {
+    config.dashboard.widgets = widgets.map((widget: any) =>
       widget.id === stackId
         ? { ...widget, children: [...(widget.children || []), child] }
         : widget
@@ -332,16 +341,16 @@
     dirty = true
   }
 
-  function deleteWidget(widget, childId = null) {
+  function deleteWidget(widget: any, childId?: string) {
     if (!editMode) return
 
     if (childId) {
-      config.dashboard.widgets = widgets.map((item) =>
+      config.dashboard.widgets = widgets.map((item: any) =>
         item.id === widget.id
           ? {
               ...item,
               children: (item.children || []).filter(
-                (child) => child.id !== childId
+                (child: any) => child.id !== childId
               )
             }
           : item
@@ -352,7 +361,7 @@
       return
     }
 
-    config.dashboard.widgets = widgets.filter((item) => item.id !== widget.id)
+    config.dashboard.widgets = widgets.filter((item: any) => item.id !== widget.id)
     if (selected?.id === widget.id) selected = null
     dirty = true
     toast.info(m.editor_widget_deleted())
@@ -360,32 +369,34 @@
 
   function getSelectedWidget() {
     if (!selected) return null
-    const parent = widgets.find((widget) => widget.id === selected.id)
+    const currentSelection = selected
+    const parent = widgets.find((widget: any) => widget.id === currentSelection.id)
     if (!parent) return null
-    if (!selected.childId) return parent
+    if (!currentSelection.childId) return parent
     return (
-      parent.children?.find((child) => child.id === selected.childId) || null
+      parent.children?.find((child: any) => child.id === currentSelection.childId) || null
     )
   }
 
-  function selectWidget(event, widget, childId = null) {
+  function selectWidget(event: Event, widget: any, childId?: string) {
     if (!editMode) return
     event.preventDefault()
     event.stopPropagation()
-    selected = { id: widget.id, childId }
+    selected = childId ? { id: widget.id, childId } : { id: widget.id }
     drawerOpen = false
   }
 
-  function updateSelected(patch) {
+  function updateSelected(patch: Record<string, any>) {
     if (!selected) return
+    const currentSelection = selected
 
-    if (selected.childId) {
-      config.dashboard.widgets = widgets.map((widget) => {
-        if (widget.id !== selected.id) return widget
+    if (currentSelection.childId) {
+      config.dashboard.widgets = widgets.map((widget: any) => {
+        if (widget.id !== currentSelection.id) return widget
         return {
           ...widget,
-          children: (widget.children || []).map((child) =>
-            child.id === selected.childId ? { ...child, ...patch } : child
+          children: (widget.children || []).map((child: any) =>
+            child.id === currentSelection.childId ? { ...child, ...patch } : child
           )
         }
       })
@@ -393,21 +404,21 @@
       return
     }
 
-    const current = widgets.find((widget) => widget.id === selected.id)
+    const current = widgets.find((widget: any) => widget.id === currentSelection.id)
     if (!current) return
     const next = { ...current, ...patch }
-    if (!canPlace(next, widgets, selected.id)) {
+    if (!canPlace(next, widgets, currentSelection.id)) {
       toast.error(m.editor_properties_dont_fit())
       return
     }
 
-    config.dashboard.widgets = widgets.map((widget) =>
-      widget.id === selected.id ? next : widget
+    config.dashboard.widgets = widgets.map((widget: any) =>
+      widget.id === currentSelection.id ? next : widget
     )
     dirty = true
   }
 
-  function updateSelectedConfig(key, value) {
+  function updateSelectedConfig(key: string, value: string | boolean | number) {
     if (!selectedWidget) return
     updateSelected({
       config: {
@@ -417,7 +428,7 @@
     })
   }
 
-  function updateSelectedNumber(key, value) {
+  function updateSelectedNumber(key: string, value: string) {
     const number = Number(value)
     if (!Number.isFinite(number)) return
     updateSelected({ [key]: Math.round(number) })
@@ -434,7 +445,7 @@
       toast.success(m.editor_dashboard_saved())
       return true
     } catch (saveError) {
-      toast.error(saveError.message)
+      toast.error(saveError instanceof Error ? saveError.message : String(saveError))
       return false
     } finally {
       saving = false
@@ -516,14 +527,14 @@
           class="absolute p-1.5 animate-in fade-in duration-200"
           draggable={editMode && widget.type === 'button'}
           style={widgetStyle(widget, pageCenter, cellSize, cellHeight)}
-          onclick={(event) => selectWidget(event, widget)}
-          onkeydown={(event) => {
+          onclick={(event: MouseEvent) => selectWidget(event, widget)}
+          onkeydown={(event: KeyboardEvent) => {
             if (event.key === 'Enter' || event.key === ' ') {
               event.preventDefault()
               selectWidget(event, widget)
             }
           }}
-          ondragstart={(event) => dragWidget(event, widget)}
+          ondragstart={(event: DragEvent) => dragWidget(event, widget)}
           ondragend={endTemplateDrag}
           tabindex={editMode ? 0 : -1}
         >
@@ -531,9 +542,9 @@
             <Button
               class={`absolute top-1.5 left-1.5 right-1.5 z-3 flex items-center justify-center gap-1.5 h-7 border-0 rounded-t-lg text-xs font-extrabold cursor-grab transition-opacity duration-100 focus-visible:opacity-100 active:cursor-grabbing ${editMode ? 'opacity-100' : 'opacity-0'}`}
               draggable={widget.type === 'button'}
-              ondragstart={(event) => dragWidget(event, widget)}
+              ondragstart={(event: DragEvent) => dragWidget(event, widget)}
               ondragend={endTemplateDrag}
-              onpointerdown={(event) => startMove(event, widget)}
+              onpointerdown={(event: PointerEvent) => startMove(event, widget)}
             >
               <GripHorizontal size={16} />
             </Button>
@@ -542,7 +553,7 @@
               aria-label={m.editor_delete_widget()}
               variant="ghost"
               title={m.editor_delete_widget()}
-              onclick={(event) => {
+              onclick={(event: MouseEvent) => {
                 event.preventDefault()
                 event.stopPropagation()
                 deleteWidget(widget)
@@ -571,7 +582,7 @@
           {#if editMode}
             <Button
               class={`absolute right-1 bottom-1 z-4 grid size-7 text-magma-text cursor-nwse-resize focus-visible:opacity-100 ${editMode ? 'opacity-100' : 'opacity-0'}`}
-              onpointerdown={(event) => startResize(event, widget)}
+              onpointerdown={(event: PointerEvent) => startResize(event, widget)}
               variant="ghost"
             >
               <ArrowDownRight size={14} />

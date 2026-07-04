@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { ExternalLink } from '@lucide/svelte'
   import { Button } from '$lib/components/ui/button/index.js'
   import WidgetTitleBar from './WidgetTitleBar.svelte'

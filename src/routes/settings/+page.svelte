@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { ArrowLeft, Save } from '@lucide/svelte'
   import { toast } from 'svelte-sonner'
   import { m } from '$lib/paraglide/messages.js'
@@ -14,7 +13,7 @@
     saveSystemSettings
   } from '$lib/remotes/settings.remote.js'
 
-  let { data } = $props()
+  let { data }: { data: any } = $props()
 
   let activeTab = $state('system')
   let systemYaml = $state(data.systemYaml)
@@ -40,7 +39,11 @@
     { id: 'css', label: m.settings_css() }
   ])
 
-  function escapeHtml(value) {
+  function inputValue(event: Event) {
+    return (event.currentTarget as HTMLInputElement | HTMLSelectElement).value
+  }
+
+  function escapeHtml(value: string) {
     return value
       .replaceAll('&', '&amp;')
       .replaceAll('<', '&lt;')
@@ -48,10 +51,10 @@
       .replaceAll('"', '&quot;')
   }
 
-  function highlightYaml(source) {
+  function highlightYaml(source: string) {
     return source
       .split('\n')
-      .map((line) => {
+      .map((line: string) => {
         const escaped = escapeHtml(line)
         const commentIndex = escaped.indexOf('#')
         const content =
@@ -79,7 +82,7 @@
       .join('\n')
   }
 
-  function highlightCss(source) {
+  function highlightCss(source: string) {
     return escapeHtml(source)
       .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="syntax-comment">$1</span>')
       .replace(
@@ -93,14 +96,14 @@
       )
   }
 
-  function updateBackgroundImage(value) {
+  function updateBackgroundImage(value: string) {
     backgroundImage = value
     updateSystemThemeField('backgroundImage', value || '/bg.jpg')
   }
 
-  function updateSystemLanguage(value) {
+  function updateSystemLanguage(value: string) {
     const lines = systemYaml.split('\n')
-    const langIndex = lines.findIndex((line) => /^language:/.test(line))
+    const langIndex = lines.findIndex((line: string) => /^language:/.test(line))
     if (langIndex === -1) {
       lines.splice(1, 0, `language: ${value}`)
     } else {
@@ -109,22 +112,22 @@
     systemYaml = lines.join('\n')
   }
 
-  function updateSystemGridField(key, value) {
+  function updateSystemGridField(key: 'cellWidth' | 'cellHeight', value: string) {
     const numberValue = Number.parseInt(value || '100', 10)
     if (key === 'cellWidth') cellWidth = numberValue
     if (key === 'cellHeight') cellHeight = numberValue
 
     const lines = systemYaml.split('\n')
-    const fieldIndex = lines.findIndex((line) =>
+    const fieldIndex = lines.findIndex((line: string) =>
       new RegExp(`^\\s+${key}:`).test(line)
     )
     const nextLine = `    ${key}: ${Number.isFinite(numberValue) ? numberValue : 100}`
     if (fieldIndex === -1) {
-      const gridIndex = lines.findIndex((line) =>
+      const gridIndex = lines.findIndex((line: string) =>
         /^\s+dashboardGrid:\s*$/.test(line)
       )
       if (gridIndex === -1) {
-        const systemIndex = lines.findIndex((line) => /^system:\s*$/.test(line))
+        const systemIndex = lines.findIndex((line: string) => /^system:\s*$/.test(line))
         if (systemIndex === -1) {
           systemYaml = `version: 1\nsystem:\n  dashboardGrid:\n${nextLine}\n`
         } else {
@@ -141,20 +144,20 @@
     }
   }
 
-  function updateThemeField(key, value) {
+  function updateThemeField(key: string, value: string) {
     const lines = dashboardYaml.split('\n')
-    const themeIndex = lines.findIndex((line) => /^theme:\s*$/.test(line))
+    const themeIndex = lines.findIndex((line: string) => /^theme:\s*$/.test(line))
     if (themeIndex === -1) {
       dashboardYaml = `${dashboardYaml.trimEnd()}\n\ntheme:\n${formatThemeField(key, value)}\n`
       return
     }
 
     const nextSectionIndex = lines.findIndex(
-      (line, index) => index > themeIndex && /^\S/.test(line)
+      (line: string, index: number) => index > themeIndex && /^\S/.test(line)
     )
     const endIndex = nextSectionIndex === -1 ? lines.length : nextSectionIndex
     const fieldIndex = lines.findIndex(
-      (line, index) =>
+      (line: string, index: number) =>
         index > themeIndex &&
         index < endIndex &&
         new RegExp(`^\\s+${key}:`).test(line)
@@ -168,20 +171,20 @@
     dashboardYaml = lines.join('\n')
   }
 
-  function updateSystemThemeField(key, value) {
+  function updateSystemThemeField(key: string, value: string) {
     const lines = systemYaml.split('\n')
-    const themeIndex = lines.findIndex((line) => /^theme:\s*$/.test(line))
+    const themeIndex = lines.findIndex((line: string) => /^theme:\s*$/.test(line))
     if (themeIndex === -1) {
       systemYaml = `${systemYaml.trimEnd()}\n\ntheme:\n${formatThemeField(key, value)}\n`
       return
     }
 
     const nextSectionIndex = lines.findIndex(
-      (line, index) => index > themeIndex && /^\S/.test(line)
+      (line: string, index: number) => index > themeIndex && /^\S/.test(line)
     )
     const endIndex = nextSectionIndex === -1 ? lines.length : nextSectionIndex
     const fieldIndex = lines.findIndex(
-      (line, index) =>
+      (line: string, index: number) =>
         index > themeIndex &&
         index < endIndex &&
         new RegExp(`^\\s+${key}:`).test(line)
@@ -195,7 +198,7 @@
     systemYaml = lines.join('\n')
   }
 
-  function formatThemeField(key, value) {
+  function formatThemeField(key: string, value: string) {
     return `  ${key}: ${value}`
   }
 
@@ -203,7 +206,7 @@
     saving = true
 
     try {
-      let result
+      let result: any
       if (activeTab === 'system')
         result = await saveSystemSettings({ systemYaml })
       if (activeTab === 'dashboard')
@@ -230,7 +233,7 @@
         window.location.reload()
       }
     } catch (saveError) {
-      toast.error(saveError.message)
+      toast.error(saveError instanceof Error ? saveError.message : String(saveError))
     } finally {
       saving = false
     }
@@ -265,7 +268,7 @@
 
     <Tabs.Root bind:value={activeTab}>
       <Tabs.List class="flex flex-wrap gap-3 mt-6 bg-transparent">
-        {#each tabs as tab}
+        {#each tabs as tab (tab.id)}
           <Tabs.Trigger
             value={tab.id}
             class="inline-flex items-center justify-center gap-2 min-h-10 px-3.5 border border-magma-line rounded-lg bg-magma-panel text-magma-text! backdrop-blur-md cursor-pointer transition-all duration-140 hover:border-magma-accent/48 hover:bg-magma-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-magma-accent focus-visible:outline-offset-2 data-active:border-magma-accent/48 data-active:bg-magma-accent/40 data-active:hover:bg-magma-accent/96"
@@ -300,10 +303,10 @@
                   min="1"
                   value={cellWidth}
                   class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
-                  oninput={(event) =>
+                  oninput={(event: Event) =>
                     updateSystemGridField(
                       'cellWidth',
-                      event.currentTarget.value
+                      inputValue(event)
                     )}
                 />
               </Label>
@@ -316,10 +319,10 @@
                   min="1"
                   value={cellHeight}
                   class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
-                  oninput={(event) =>
+                  oninput={(event: Event) =>
                     updateSystemGridField(
                       'cellHeight',
-                      event.currentTarget.value
+                      inputValue(event)
                     )}
                 />
               </Label>
@@ -331,8 +334,8 @@
                   value={backgroundImage}
                   placeholder="/bg.jpg"
                   class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
-                  oninput={(event) =>
-                    updateBackgroundImage(event.currentTarget.value)}
+                  oninput={(event: Event) =>
+                    updateBackgroundImage(inputValue(event))}
                 />
               </Label>
               <Label class="grid col-span-2 gap-2 mt-4">
@@ -342,9 +345,9 @@
                 <select
                   class="flex h-9 w-full rounded-md border border-magma-line bg-magma-panel px-3 py-1 text-sm text-magma-text shadow-sm cursor-pointer outline-0"
                   value={language}
-                  onchange={(event) => {
-                    language = event.currentTarget.value
-                    updateSystemLanguage(event.currentTarget.value)
+                  onchange={(event: Event) => {
+                    language = inputValue(event)
+                    updateSystemLanguage(inputValue(event))
                   }}
                 >
                   <option value="en">English</option>

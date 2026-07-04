@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { Progress as ProgressPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
 
@@ -8,7 +8,7 @@
 		max = 100,
 		value,
 		...restProps
-	} = $props();
+	}: Record<string, any> = $props();
 </script>
 
 <ProgressPrimitive.Root

@@ -1,14 +1,13 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { fetchUrl } from '$lib/remotes/fetch.remote.js'
   import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
+  import type { BaseWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').BaseWidgetProps} */
-  let { widget, compact = false } = $props()
+  let { widget, compact = false }: BaseWidgetProps = $props()
 
-  let state = $state('idle')
+  let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
   let htmlContent = $state('')
   let contentKey = $state(0)
@@ -18,7 +17,7 @@
 
   async function doFetch() {
     if (!url) return
-    state = 'loading'
+    widgetState = 'loading'
     errorMsg = ''
     try {
       const result = await fetchUrl({
@@ -28,7 +27,7 @@
         body: widget.config?.body || ''
       })
       if (!result.ok) {
-        state = 'error'
+        widgetState = 'error'
         errorMsg = `${result.status} ${result.statusText}`
         return
       }
@@ -40,20 +39,20 @@
         const html = fn(result.responseText) ?? ''
         htmlContent = html
         contentKey++
-        state = 'content'
+        widgetState = 'content'
       } catch (scriptErr) {
-        state = 'error'
-        errorMsg = 'Script error: ' + (scriptErr.message || String(scriptErr))
+        widgetState = 'error'
+        errorMsg = 'Script error: ' + (scriptErr instanceof Error ? scriptErr.message : String(scriptErr))
       }
     } catch (err) {
-      state = 'error'
-      errorMsg = 'Request failed: ' + (err.message || String(err))
+      widgetState = 'error'
+      errorMsg = 'Request failed: ' + (err instanceof Error ? err.message : String(err))
     }
   }
 
   $effect(() => {
     if (!url) {
-      state = 'idle'
+      widgetState = 'idle'
       htmlContent = ''
       return
     }
@@ -66,7 +65,7 @@
 <div class="relative flex flex-col w-full min-w-0 min-h-0 h-full p-1">
   <WidgetTitleBar title={widget.title} />
   <WidgetStateWrapper
-    {state}
+    state={widgetState}
     {errorMsg}
     idleMessage="Configure URL in properties"
   >

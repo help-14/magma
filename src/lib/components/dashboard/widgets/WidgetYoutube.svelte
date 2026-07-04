@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { Radio } from '@lucide/svelte'
   import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
   import {
@@ -9,13 +8,13 @@
   import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
+  import type { YoutubeWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').YoutubeWidgetProps} */
-  let { widget, compact = false } = $props()
+  let { widget, compact = false }: YoutubeWidgetProps = $props()
 
-  let state = $state('idle')
+  let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
-  let data = $state(null)
+  let data: any = $state(null)
 
   let mode = $derived(widget.config?.mode || 'uploads')
   let channels = $derived(widget.config?.channels || '')
@@ -39,16 +38,16 @@
     return `grid-template-columns: repeat(${cols}, auto);`
   })
 
-  let scrollOrientation = $derived(
+  let scrollOrientation = $derived<'vertical' | 'horizontal'>(
     flow === 'horizontal' ? 'horizontal' : 'vertical'
   )
 
   async function doFetch() {
     if (channelList.length === 0) {
-      state = 'idle'
+      widgetState = 'idle'
       return
     }
-    state = 'loading'
+    widgetState = 'loading'
     errorMsg = ''
     try {
       let result
@@ -58,15 +57,15 @@
         result = await getYoutubeUploads({ channels: channelList, limit })
       }
       if (!result.ok) {
-        state = 'error'
-        errorMsg = result.error
+        widgetState = 'error'
+        errorMsg = result.error || 'YouTube request failed'
         return
       }
       data = result.data
-      state = 'content'
+      widgetState = 'content'
     } catch (err) {
-      state = 'error'
-      errorMsg = err.message || String(err)
+      widgetState = 'error'
+      errorMsg = err instanceof Error ? err.message : String(err)
     }
   }
 
@@ -88,7 +87,7 @@
   </WidgetTitleBar>
 
   <WidgetStateWrapper
-    {state}
+    state={widgetState}
     {errorMsg}
     idleMessage="Add channel IDs in properties"
   >

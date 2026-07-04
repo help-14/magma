@@ -1,12 +1,8 @@
-<script>
+<script lang="ts">
   import { RefreshCw } from '@lucide/svelte'
   import { Button } from '$lib/components/ui/button/index.js'
 
-  /**
-   * WidgetRefreshButton — Standard top-right refresh button.
-   * @prop {() => void} onclick - Called when button is clicked.
-   */
-  let { onclick } = $props()
+  let { onclick }: { onclick: () => void | Promise<void> } = $props()
 </script>
 
 <Button

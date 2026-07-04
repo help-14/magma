@@ -1,14 +1,13 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { Search } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
   import { tick } from 'svelte'
+  import type { SearchWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').SearchWidgetProps} */
-  let { widget, compact = false } = $props()
-  let searchInput = $state()
+  let { widget, compact = false }: SearchWidgetProps = $props()
+  let searchInput = $state<HTMLInputElement>()
 
-  const searchProviders = {
+  const searchProviders: Record<string, string> = {
     google: 'https://google.com/search?q=',
     duckduckgo: 'https://duckduckgo.com/?q=',
     bing: 'https://www.bing.com/search?q=',
@@ -27,9 +26,9 @@
     }
   })
 
-  function search(event) {
+  function search(event: SubmitEvent) {
     event.preventDefault()
-    const formData = new FormData(event.currentTarget)
+    const formData = new FormData(event.currentTarget as HTMLFormElement)
     const query = String(formData.get('query') || '').trim()
     if (query) {
       window.location.href = `${providerUrl}${encodeURIComponent(query)}`

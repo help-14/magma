@@ -1,5 +1,4 @@
-<script>
-	// @ts-nocheck
+<script lang="ts">
 	import {
 		CalendarDays,
 		CloudSun,
@@ -14,11 +13,12 @@
 		Timer,
 		Tv
 	} from '@lucide/svelte';
+  import type { Component } from 'svelte';
+  import type { DashboardIconProps } from '$lib/types/widget.js';
 
-	/** @type {import('$lib/types/widget.js').DashboardIconProps} */
-	let { name = '', size = 24, title = '', color = '' } = $props();
+  let { name = '', size = 24, title = '', color = '' }: DashboardIconProps = $props();
 
-	const localIcons = {
+	const localIcons: Record<string, Component<any>> = {
 		calendar: CalendarDays,
 		docker: Container,
 		film: Film,

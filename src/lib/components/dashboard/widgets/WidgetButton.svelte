@@ -1,20 +1,19 @@
-<script>
+<script lang="ts">
   import { RefreshCw } from '@lucide/svelte'
   import DashboardIcon from '../DashboardIcon.svelte';
   import { resolveUrl } from '$lib/remotes/button.remote.js'
+  import type { ButtonWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').ButtonWidgetProps} */
-  let { widget, compact = false } = $props();
+  let { widget, compact = false }: ButtonWidgetProps = $props();
 
   let navigating = $state(false);
 
   function parseUrls() {
     const raw = widget.config?.urls || '';
-    const urls = raw.split('\n').map(s => s.trim()).filter(Boolean);
-    // @ts-ignore - legacy migration: old configs may have `url` instead of `urls`
-    if (urls.length === 0 && widget.config?.url) {
-      // @ts-ignore
-      return [widget.config.url.trim()];
+    const urls = raw.split('\n').map((s: string) => s.trim()).filter(Boolean);
+    const legacyUrl = (widget.config as { url?: string } | undefined)?.url
+    if (urls.length === 0 && legacyUrl) {
+      return [legacyUrl.trim()];
     }
     return urls;
   }
@@ -40,8 +39,7 @@
     }
   }
 
-  /** @param {string} url */
-  function navigate(url) {
+  function navigate(url: string) {
     const target = widget.config?.openIn || '_self';
     if (target === '_self') {
       window.location.href = url;

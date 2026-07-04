@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
 	import { cn } from "$lib/utils.js";
 	let {
 		ref = $bindable(null),
 		class: className,
 		children,
 		...restProps
-	} = $props();
+	}: Record<string, any> = $props();
 </script>
 
 <span

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { ContextMenu as ContextMenuPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
@@ -9,7 +9,7 @@
 		inset,
 		children,
 		...restProps
-	} = $props();
+	}: Record<string, any> = $props();
 </script>
 
 <ContextMenuPrimitive.SubTrigger

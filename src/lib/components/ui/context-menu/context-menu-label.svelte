@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { cn } from "$lib/utils.js";
 	let {
 		ref = $bindable(null),
@@ -6,7 +6,7 @@
 		inset,
 		children,
 		...restProps
-	} = $props();
+	}: Record<string, any> = $props();
 </script>
 
 <div

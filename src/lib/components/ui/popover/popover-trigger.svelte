@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { cn } from "$lib/utils.js";
 	import { Popover as PopoverPrimitive } from "bits-ui";
 
@@ -6,7 +6,7 @@
 		ref = $bindable(null),
 		class: className,
 		...restProps
-	} = $props();
+	}: Record<string, any> = $props();
 </script>
 
 <PopoverPrimitive.Trigger

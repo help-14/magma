@@ -1,11 +1,7 @@
-<script>
-  /**
-   * WidgetTitleBar — Unified title bar for widgets.
-   * @prop {string} title - The widget title to display.
-   * @prop {import('svelte').Snippet} [icon] - Optional leading icon snippet.
-   * @prop {import('svelte').Snippet} [trailing] - Optional trailing snippet (e.g., status badge).
-   */
-  let { title, icon, trailing } = $props()
+<script lang="ts">
+  import type { Snippet } from 'svelte'
+
+  let { title, icon, trailing }: { title: string; icon?: Snippet; trailing?: Snippet } = $props()
 </script>
 
 <div

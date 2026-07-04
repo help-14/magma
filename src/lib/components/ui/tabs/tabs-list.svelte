@@ -1,5 +1,4 @@
-<script module>
-	// @ts-nocheck
+<script module lang="ts">
 	import { tv } from "tailwind-variants";
 
 	export const tabsListVariants = tv({
@@ -16,8 +15,7 @@
 	});
 </script>
 
-<script>
-	// @ts-nocheck
+<script lang="ts">
 	import { Tabs as TabsPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
 
@@ -26,7 +24,7 @@
 		variant = "default",
 		class: className,
 		...restProps
-	} = $props();
+	}: Record<string, any> = $props();
 </script>
 
 <TabsPrimitive.List

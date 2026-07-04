@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { browser } from '$app/environment'
   import {
     Star,
@@ -13,13 +12,13 @@
   import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
+  import type { GithubRepoWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').GithubRepoWidgetProps} */
-  let { widget, compact = false } = $props()
+  let { widget, compact = false }: GithubRepoWidgetProps = $props()
 
-  let state = $state('idle')
+  let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
-  let data = $state(null)
+  let data: any = $state(null)
 
   let repo = $derived((widget.config?.repo || '').trim())
   let hasConfig = $derived(repo.length > 0)
@@ -32,20 +31,20 @@
 
   async function doFetch() {
     if (!hasConfig) return
-    state = 'loading'
+    widgetState = 'loading'
     errorMsg = ''
     try {
       data = await fetchGithubRepo({ repo })
-      state = 'content'
+      widgetState = 'content'
     } catch (err) {
-      state = 'error'
-      errorMsg = err.message || String(err)
+      widgetState = 'error'
+      errorMsg = err instanceof Error ? err.message : String(err)
     }
   }
 
   $effect(() => {
     if (!browser || !hasConfig) {
-      state = 'idle'
+      widgetState = 'idle'
       data = null
       return
     }
@@ -74,7 +73,7 @@
   </WidgetTitleBar>
 
   <WidgetStateWrapper
-    {state}
+    state={widgetState}
     {errorMsg}
     idleMessage="Configure repo in properties"
   >
@@ -125,7 +124,7 @@
               <span>Pull Requests</span>
               <span class="text-magma-muted font-normal">({data.openPrs})</span>
             </div>
-            {#each data.pulls.slice(0, 5) as pr}
+            {#each data.pulls.slice(0, 5) as pr (pr.htmlUrl)}
               <a
                 href={pr.htmlUrl}
                 target="_blank"
@@ -147,7 +146,7 @@
                 >({data.openIssues})</span
               >
             </div>
-            {#each data.issues.slice(0, 5) as issue}
+            {#each data.issues.slice(0, 5) as issue (issue.htmlUrl)}
               <a
                 href={issue.htmlUrl}
                 target="_blank"

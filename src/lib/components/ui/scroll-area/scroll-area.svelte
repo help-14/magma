@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { ScrollArea as ScrollAreaPrimitive } from "bits-ui";
 	import { Scrollbar } from "./index.js";
 	import { cn } from "$lib/utils.js";
@@ -7,13 +7,12 @@
 		ref = $bindable(null),
 		viewportRef = $bindable(null),
 		class: className,
-		/** @type {'vertical' | 'horizontal' | 'both'} */
 		orientation = "vertical",
 		scrollbarXClasses = "",
 		scrollbarYClasses = "",
 		children,
 		...restProps
-	} = $props();
+	}: { orientation?: 'vertical' | 'horizontal' | 'both'; [key: string]: any } = $props();
 </script>
 
 <ScrollAreaPrimitive.Root

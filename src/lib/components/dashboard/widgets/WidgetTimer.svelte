@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   import { m } from '$lib/paraglide/messages.js'
   import { useNow } from './clock.svelte.js'
+  import type { TimerWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').TimerWidgetProps} */
-  let { widget, compact = false } = $props()
+  let { widget, compact = false }: TimerWidgetProps = $props()
 
   let now = useNow()
   let w = $derived(widget.w ?? 0)
@@ -25,8 +25,7 @@
   }
 
   function formatTime() {
-    /** @type {Intl.DateTimeFormatOptions} */
-    const opts = {
+    const opts: Intl.DateTimeFormatOptions = {
       hour: '2-digit',
       minute: '2-digit',
       hour12: widget.config?.hour12 ?? false,
@@ -38,8 +37,7 @@
 
   function formatDate() {
     if (!(widget.config?.showDate ?? true) || size === 'small') return ''
-    /** @type {Intl.DateTimeFormatOptions} */
-    const opts = size === 'large'
+    const opts: Intl.DateTimeFormatOptions = size === 'large'
       ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
       : { weekday: 'short', month: 'short', day: 'numeric' }
     if (widget.config?.timezone) opts.timeZone = widget.config.timezone

@@ -1,11 +1,10 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { Trash2 } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import WidgetRenderer from '../WidgetRenderer.svelte'
+  import type { StackWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').StackWidgetProps} */
   let {
     widget,
     locations = {},
@@ -16,7 +15,7 @@
     onDeleteChild = () => {},
     onDropChild = () => {},
     onDragOverChild = () => {}
-  } = $props()
+  }: StackWidgetProps = $props()
 
   let flow = $derived(
     widget.config?.flow ||
@@ -54,7 +53,7 @@
             ? ' shadow-[0_0_0_2px_var(--magma-accent),0_18px_46px_rgb(0_0_0/26%)]'
             : '')}
         role="listitem"
-        onclickcapture={(event) => {
+        onclickcapture={(event: Event) => {
           if (editMode) onSelectChild(event, child)
         }}
       >
@@ -67,7 +66,7 @@
             class={`absolute top-1.5 right-1.5 z-5 size-7 border border-white/18 rounded-lg bg-[rgb(80_24_18/88%)] text-[#ffe1d8] cursor-pointer transition-all duration-100 hover:bg-[rgb(130_36_28/94%)] active:scale-96 focus-visible:opacity-100 ${editMode ? 'opacity-100' : 'opacity-0'}`}
             aria-label={m.widget_delete()}
             title={m.widget_delete()}
-            onclick={(event) => {
+            onclick={(event: MouseEvent) => {
               event.preventDefault()
               event.stopPropagation()
               onDeleteChild(event, child)

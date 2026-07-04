@@ -1,15 +1,14 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { MapPin } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
   import { getWeather } from '$lib/remotes/weather.remote.js'
   import * as Popover from '$lib/components/ui/popover/index.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import { getWeatherIcon } from '$lib/assets/weather-icons.js'
+  import type { WeatherWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').WeatherWidgetProps} */
-  let { widget, locations = {}, compact = false } = $props()
-  let weather = $state(null)
+  let { widget, locations = {}, compact = false }: WeatherWidgetProps = $props()
+  let weather = $state<any>(null)
 
   let w = $derived(widget.w ?? 0)
   let h = $derived(widget.h ?? 0)
@@ -53,11 +52,11 @@
     }
   })
 
-  function toCelsius(value) {
+  function toCelsius(value: number | null | undefined) {
     return `${Math.floor((value || 0) - 273.15)}°C`
   }
 
-  function formatHour(timestamp) {
+  function formatHour(timestamp: number | null | undefined) {
     if (!timestamp) return ''
     const date = new Date(timestamp * 1000)
     return date.toLocaleTimeString('en-US', {
@@ -66,7 +65,7 @@
     })
   }
 
-  function formatVisibility(meters) {
+  function formatVisibility(meters: number | null | undefined) {
     if (meters == null) return ''
     if (meters > 1000) return `${Math.floor(meters / 1000)}km`
     return `${meters}m`
@@ -83,7 +82,7 @@
     }
   }
 
-  function formatWind(speed, deg) {
+  function formatWind(speed: number | null | undefined, deg: number | null | undefined) {
     const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
     const dir = directions[Math.round((deg || 0) / 45) % 8]
     return `${speed ?? '--'}m/s · ${dir}`
@@ -185,7 +184,7 @@
     </div>
 
     <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-xs leading-snug">
-      {#each stats as stat}
+      {#each stats as stat (stat.label)}
         <span class="text-magma-muted whitespace-nowrap">{stat.label}</span>
         <span>{stat.value}</span>
       {/each}

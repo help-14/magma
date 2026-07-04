@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import {
     listContainers,
     startContainer,
@@ -28,13 +27,13 @@
   } from '$lib/components/ui/context-menu/index.js'
   import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import type { DockerStatusWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').DockerStatusWidgetProps} */
-  let { widget, compact = false } = $props()
+  let { widget, compact = false }: DockerStatusWidgetProps = $props()
 
-  let state = $state('idle')
+  let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
-  let containers = $state([])
+  let containers: any[] = $state([])
 
   let dockerHost = $derived(widget.config?.dockerHost || '')
   let hideOffline = $derived(widget.config?.hideOffline ?? false)
@@ -43,8 +42,8 @@
 
   let filtered = $derived(
     containers
-      .filter((c) => !hideOffline || c.State === 'running')
-      .sort((a, b) => {
+      .filter((c: any) => !hideOffline || c.State === 'running')
+      .sort((a: any, b: any) => {
         if (a.State === 'running' && b.State !== 'running') return -1
         if (a.State !== 'running' && b.State === 'running') return 1
         const aName = (a.Names?.[0] || a.Id || '').replace(/^\//, '')
@@ -55,18 +54,18 @@
 
   async function doFetch() {
     if (!dockerHost) {
-      state = 'idle'
+      widgetState = 'idle'
       containers = []
       return
     }
-    state = 'loading'
+    widgetState = 'loading'
     errorMsg = ''
     try {
       containers = await listContainers({ dockerHost, all: true })
-      state = 'content'
+      widgetState = 'content'
     } catch (e) {
-      state = 'error'
-      errorMsg = e.message || String(e)
+      widgetState = 'error'
+      errorMsg = e instanceof Error ? e.message : String(e)
       containers = []
     }
   }
@@ -78,7 +77,7 @@
     return () => clearInterval(id)
   })
 
-  function getHostname(url) {
+  function getHostname(url: string) {
     try {
       return new URL(url).hostname
     } catch {
@@ -86,23 +85,23 @@
     }
   }
 
-  function containerUrl(c) {
+  function containerUrl(c: any) {
     const hostname = getHostname(dockerHost)
-    const port = c.Ports?.find((p) => p.PublicPort)
+    const port = c.Ports?.find((p: any) => p.PublicPort)
     if (port && port.PublicPort) {
       return `http://${hostname}:${port.PublicPort}`
     }
     return null
   }
 
-  function clickContainer(c) {
+  function clickContainer(c: any) {
     const url = containerUrl(c)
     if (url) {
       window.open(url, '_blank', 'noreferrer')
     }
   }
 
-  async function operate(operation, container) {
+  async function operate(operation: string, container: any) {
     const id = container.Id
 
     try {
@@ -121,22 +120,22 @@
         toast.error(m.docker_operation_failed({ operation }))
       }
     } catch (e) {
-      toast.error(m.docker_operation_failed({ operation }) + `: ${e.message}`)
+      toast.error(m.docker_operation_failed({ operation }) + `: ${e instanceof Error ? e.message : String(e)}`)
     }
   }
 
-  function displayName(c) {
+  function displayName(c: any) {
     return (c.Names?.[0] || c.Id || '').replace(/^\//, '')
   }
 
-  function shortId(c) {
+  function shortId(c: any) {
     return (c.Id || '').slice(0, 12)
   }
 
-  function portSummary(c) {
+  function portSummary(c: any) {
     return (c.Ports || [])
-      .filter((p) => p.PublicPort)
-      .map((p) => `${p.PublicPort}:${p.PrivatePort}/${p.Type}`)
+      .filter((p: any) => p.PublicPort)
+      .map((p: any) => `${p.PublicPort}:${p.PrivatePort}/${p.Type}`)
       .join(', ')
   }
 </script>
@@ -144,7 +143,7 @@
 <div class="flex flex-col w-full min-w-0 min-h-0 h-full">
   <WidgetTitleBar title={widget.title} />
 
-  {#if state === 'idle'}
+  {#if widgetState === 'idle'}
     <div
       class="flex flex-col justify-center items-center gap-2 p-4 text-magma-muted"
     >
@@ -153,7 +152,7 @@
         >{m.docker_configure_host()}</span
       >
     </div>
-  {:else if state === 'loading'}
+  {:else if widgetState === 'loading'}
     <div class="flex flex-wrap gap-2 p-3 w-full">
       {#each Array(6) as _, i (i)}
         <div
@@ -161,7 +160,7 @@
         ></div>
       {/each}
     </div>
-  {:else if state === 'error'}
+  {:else if widgetState === 'error'}
     <div
       class="flex flex-col justify-center h-full items-center gap-1 p-4 text-magma-muted text-xs"
     >
@@ -169,7 +168,7 @@
       <span>{m.docker_connection_error()}</span>
       <span class="text-xs opacity-60">{errorMsg}</span>
     </div>
-  {:else if state === 'content'}
+  {:else if widgetState === 'content'}
     <ScrollArea class="flex-1 min-h-0 w-full">
       <div
         class="grid gap-2 p-2 w-full items-stretch auto-rows-auto"

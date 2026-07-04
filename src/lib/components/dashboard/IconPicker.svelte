@@ -1,16 +1,15 @@
-<script>
-	// @ts-nocheck
+<script lang="ts">
 	import { Search } from '@lucide/svelte';
 	import { m } from '$lib/paraglide/messages.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { searchIcons } from '$lib/remotes/icons.remote.js';
 	import DashboardIcon from './DashboardIcon.svelte';
+  import type { IconPickerProps } from '$lib/types/widget.js';
 
-	/** @type {import('$lib/types/widget.js').IconPickerProps} */
-	let { value = '', onSelect = () => {} } = $props();
+  let { value = '', onSelect = () => {} }: IconPickerProps = $props();
 
 	let searchText = $state(value || '');
-	let results = $state([]);
+	let results = $state<string[]>([]);
 	let loading = $state(false);
 	let open = $state(false);
 
@@ -43,16 +42,20 @@
 		};
 	});
 
-	function update(value) {
+	function update(value: string) {
 		searchText = value;
 		open = true;
 		onSelect(value);
 	}
 
-	function choose(icon) {
+	function choose(icon: string) {
 		searchText = icon;
 		open = false;
 		onSelect(icon);
+	}
+
+	function inputValue(event: Event) {
+		return (event.currentTarget as HTMLInputElement).value;
 	}
 </script>
 
@@ -64,8 +67,8 @@
 			value={searchText}
 			placeholder="Search Iconify, e.g. docker or simple-icons:docker"
 			onfocus={() => (open = true)}
-			oninput={(event) => update(event.currentTarget.value)}
-			onkeydown={(event) => {
+			oninput={(event: Event) => update(inputValue(event))}
+			onkeydown={(event: KeyboardEvent) => {
 				if (event.key === 'Escape') open = false;
 			}}
 		/>
@@ -81,7 +84,7 @@
 					<span class="overflow-hidden text-ellipsis whitespace-nowrap">{m.icon_picker_use({ icon: searchText || 'icon' })}</span>
 				</button>
 			{:else}
-				{#each results as icon}
+				{#each results as icon (icon)}
 					<button type="button" class={(icon === value ? 'bg-magma-accent/16 ' : '') + 'flex items-center gap-2.5 w-full min-h-9 border-0 border-b border-b-[rgb(246_236_210/8%)] bg-transparent text-magma-text p-2 px-2.5 text-left cursor-pointer last:border-b-0 hover:bg-magma-accent/16'} onclick={() => choose(icon)}>
 						<DashboardIcon name={icon} size={18} />
 						<span class="overflow-hidden text-ellipsis whitespace-nowrap">{icon}</span>

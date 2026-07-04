@@ -1,5 +1,4 @@
-<script>
-	// @ts-nocheck
+<script lang="ts">
 	import { Tooltip as TooltipPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
 	import TooltipPortal from "./tooltip-portal.svelte";
@@ -12,7 +11,7 @@
 		arrowClasses,
 		portalProps,
 		...restProps
-	} = $props();
+	}: Record<string, any> = $props();
 </script>
 
 <TooltipPortal {...portalProps}>

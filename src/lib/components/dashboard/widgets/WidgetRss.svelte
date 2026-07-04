@@ -1,19 +1,18 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { ExternalLink, ChevronDown, ChevronUp } from '@lucide/svelte'
   import { fetchRss } from '$lib/remotes/rss.remote.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
+  import type { RssWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').RssWidgetProps} */
-  let { widget, compact = false } = $props()
+  let { widget, compact = false }: RssWidgetProps = $props()
 
-  let state = $state('idle')
+  let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
-  let articles = $state([])
-  let feedErrors = $state([])
+  let articles: any[] = $state([])
+  let feedErrors: any[] = $state([])
   let collapsed = $state(true)
 
   let feedsJson = $derived(widget.config?.feeds || '[]')
@@ -38,7 +37,7 @@
 
   async function doFetch() {
     if (!hasFeeds) return
-    state = 'loading'
+    widgetState = 'loading'
     errorMsg = ''
     try {
       const result = await fetchRss({
@@ -48,16 +47,16 @@
       })
       articles = result.articles || []
       feedErrors = result.errors || []
-      state = 'content'
+      widgetState = 'content'
     } catch (err) {
-      state = 'error'
-      errorMsg = err.message || String(err)
+      widgetState = 'error'
+      errorMsg = err instanceof Error ? err.message : String(err)
     }
   }
 
   $effect(() => {
     if (!hasFeeds) {
-      state = 'idle'
+      widgetState = 'idle'
       articles = []
       return
     }
@@ -66,7 +65,7 @@
     return () => clearInterval(id)
   })
 
-  function timeAgo(dateStr) {
+  function timeAgo(dateStr: string) {
     if (!dateStr) return ''
     const d = new Date(dateStr)
     if (isNaN(d.getTime())) return ''
@@ -77,12 +76,12 @@
     return `${Math.floor(diff / 86400)}d`
   }
 
-  function stripHtml(html) {
+  function stripHtml(html: string) {
     if (!html) return ''
     return html.replace(/<[^>]*>/g, '').trim()
   }
 
-  function truncate(text, len) {
+  function truncate(text: string, len: number) {
     if (!text) return ''
     if (text.length <= len) return text
     return text.slice(0, len) + '…'
@@ -97,7 +96,7 @@
       {#if feedErrors.length > 0}
         <span
           class="text-amber-400 text-xs shrink-0 cursor-help"
-          title={feedErrors.map((e) => `${e.feedUrl}: ${e.message}`).join('\n')}
+          title={feedErrors.map((e: any) => `${e.feedUrl}: ${e.message}`).join('\n')}
         >
           ⚠
         </span>
@@ -106,7 +105,7 @@
   </WidgetTitleBar>
 
   <WidgetStateWrapper
-    {state}
+    state={widgetState}
     {errorMsg}
     idleMessage="Configure feeds in properties"
   >

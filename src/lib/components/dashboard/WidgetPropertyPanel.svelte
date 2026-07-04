@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import { Input } from '$lib/components/ui/input/index.js'
@@ -7,8 +6,9 @@
   import { Label } from '$lib/components/ui/label/index.js'
   import IconPicker from './IconPicker.svelte'
   import { widgetConfigFields } from '$lib/types/widget-config-fields.js'
+  import type { ConfigFieldDescriptor } from '$lib/types/config.js'
+  import type { PropertyPanelProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').PropertyPanelProps} */
   let {
     grid,
     gridRows,
@@ -18,10 +18,17 @@
     onUpdate = () => {},
     onUpdateConfig = () => {},
     onUpdateNumber = () => {}
-  } = $props()
+  }: PropertyPanelProps = $props()
 
-  /** @type {import('$lib/types/config.js').ConfigFieldDescriptor[]} */
-  let fields = $derived(widgetConfigFields[widget.type] || [])
+  let fields: ConfigFieldDescriptor[] = $derived(widgetConfigFields[widget.type] || [])
+
+  function inputValue(event: Event) {
+    return (event.currentTarget as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value
+  }
+
+  function inputChecked(event: Event) {
+    return (event.currentTarget as HTMLInputElement).checked
+  }
 </script>
 
 <aside
@@ -42,7 +49,7 @@
     <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_title_field()}</span>
     <Input
       value={widget.title}
-      oninput={(event) => onUpdate({ title: event.currentTarget.value })}
+      oninput={(event: Event) => onUpdate({ title: inputValue(event) })}
     />
   </Label>
 
@@ -63,7 +70,7 @@
         <Input
           type="number"
           value={widget.x}
-          oninput={(event) => onUpdateNumber('x', event.currentTarget.value)}
+          oninput={(event: Event) => onUpdateNumber('x', inputValue(event))}
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
@@ -72,7 +79,7 @@
           type="number"
           min="1"
           value={widget.y}
-          oninput={(event) => onUpdateNumber('y', event.currentTarget.value)}
+          oninput={(event: Event) => onUpdateNumber('y', inputValue(event))}
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
@@ -82,7 +89,7 @@
           min="1"
           max={grid.columns}
           value={widget.w}
-          oninput={(event) => onUpdateNumber('w', event.currentTarget.value)}
+          oninput={(event: Event) => onUpdateNumber('w', inputValue(event))}
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
@@ -92,13 +99,13 @@
           min="1"
           max={gridRows}
           value={widget.h}
-          oninput={(event) => onUpdateNumber('h', event.currentTarget.value)}
+          oninput={(event: Event) => onUpdateNumber('h', inputValue(event))}
         />
       </Label>
     </div>
   {/if}
 
-  {#each fields as field}
+  {#each fields as field (field.key)}
     {#if field.type === 'icon-picker'}
       <Label class="grid gap-1.5 mt-3">
         <span class="text-magma-muted text-xs font-bold uppercase"
@@ -119,14 +126,14 @@
             class="min-w-0 p-1 cursor-pointer"
             type="color"
             value={widget.config?.[field.key] || field.default}
-            oninput={(event) =>
-              onUpdateConfig(field.key, event.currentTarget.value)}
+            oninput={(event: Event) =>
+              onUpdateConfig(field.key, inputValue(event))}
           />
           <Input
             value={widget.config?.[field.key] || ''}
             placeholder="default or {field.default}"
-            oninput={(event) =>
-              onUpdateConfig(field.key, event.currentTarget.value)}
+            oninput={(event: Event) =>
+              onUpdateConfig(field.key, inputValue(event))}
           />
         </div>
       </Label>
@@ -135,8 +142,8 @@
         <input
           type="checkbox"
           checked={widget.config?.[field.key] ?? field.default}
-          onchange={(event) =>
-            onUpdateConfig(field.key, event.currentTarget.checked)}
+          onchange={(event: Event) =>
+            onUpdateConfig(field.key, inputChecked(event))}
           class="accent-magma-accent"
         />
         <span class="text-magma-muted text-xs font-bold uppercase"
@@ -152,8 +159,8 @@
           type="password"
           value={widget.config?.[field.key] ?? field.default}
           placeholder={field.placeholder}
-          oninput={(event) =>
-            onUpdateConfig(field.key, event.currentTarget.value)}
+          oninput={(event: Event) =>
+            onUpdateConfig(field.key, inputValue(event))}
         />
       </Label>
     {:else if field.type === 'select'}
@@ -164,10 +171,10 @@
         <select
           class="flex h-9 w-full rounded-md border border-magma-line bg-magma-panel px-3 py-1 text-sm text-magma-text shadow-sm cursor-pointer outline-0"
           value={widget.config?.[field.key] ?? field.default}
-          onchange={(event) =>
-            onUpdateConfig(field.key, event.currentTarget.value)}
+          onchange={(event: Event) =>
+            onUpdateConfig(field.key, inputValue(event))}
         >
-          {#each field.options || [] as option}
+          {#each field.options || [] as option (option.value)}
             <option value={option.value}>{option.label}</option>
           {/each}
         </select>
@@ -178,7 +185,7 @@
         <Textarea
           value={widget.config?.[field.key] ?? field.default}
           rows={field.rows || 4}
-          oninput={(event) => onUpdateConfig(field.key, event.currentTarget.value)}
+          oninput={(event: Event) => onUpdateConfig(field.key, inputValue(event))}
         />
       </Label>
     {:else}
@@ -191,11 +198,9 @@
           min={field.type === 'number' ? '0' : undefined}
           value={widget.config?.[field.key] ?? field.default}
           placeholder={field.placeholder}
-          oninput={(event) => {
-            const val =
-              field.type === 'number'
-                ? Number(event.currentTarget.value)
-                : event.currentTarget.value
+          oninput={(event: Event) => {
+            const value = inputValue(event)
+            const val = field.type === 'number' ? Number(value) : value
             onUpdateConfig(field.key, val)
           }}
         />

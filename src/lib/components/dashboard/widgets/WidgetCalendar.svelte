@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
   import { ChevronLeft, ChevronRight } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
+  import type { CalendarWidgetProps } from '$lib/types/widget.js'
 
-  /** @type {import('$lib/types/widget.js').CalendarWidgetProps} */
-  let { widget, compact = false } = $props()
+  let { widget, compact = false }: CalendarWidgetProps = $props()
   let viewDate = $state(new Date())
   let today = $state(new Date())
 
