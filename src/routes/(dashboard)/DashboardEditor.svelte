@@ -9,6 +9,7 @@
     Settings,
     Trash2
   } from '@lucide/svelte'
+  import { m } from '$lib/paraglide/messages.js'
   import { toast } from 'svelte-sonner'
   import { browser } from '$app/environment'
   import { Button } from '$lib/components/ui/button/index.js'
@@ -24,8 +25,6 @@
     findNearestFreePosition,
     overlaps
   } from '$lib/dashboard/grid-utils.js'
-
-  import { m } from '$lib/paraglide/messages.js'
 
   let { initialConfig } = $props()
 

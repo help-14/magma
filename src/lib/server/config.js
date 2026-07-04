@@ -1,13 +1,11 @@
 // @ts-nocheck
-import { readFile, rename, writeFile } from 'node:fs/promises'
-import path from 'node:path'
 import YAML from 'yaml'
 import { createHash } from 'node:crypto'
+import * as db from './db.js'
 
-const configDir = process.env.CONFIG_DIR || 'config'
-const dashboardConfigPath = path.resolve(configDir, 'dashboard.yaml')
-const systemConfigPath = path.resolve(configDir, 'system.yaml')
-const overrideCssPath = path.resolve(configDir, 'override.css')
+export { setConfigStore } from './db.js'
+
+// ── In-memory cache ──────────────────────────────────────────────────
 
 const configCache = new Map()
 
@@ -23,7 +21,9 @@ export function invalidateConfigCache() {
 	configCache.clear()
 }
 
-const knownWidgetTypes = new Set([
+// ── Known widget types ───────────────────────────────────────────────
+
+export const knownWidgetTypes = new Set([
 	'button',
 	'calendar',
 	'honeygain',
@@ -36,125 +36,149 @@ const knownWidgetTypes = new Set([
 	'youtube-live',
 	'service-status',
 	'docker-status',
-  'fetch',
-  'website',
-  'deepseek',
-  'rss',
-  'stock',
-  'server-status',
-  'github-repo'
+	'fetch',
+	'website',
+	'deepseek',
+	'rss',
+	'stock',
+	'server-status',
+	'github-repo'
 ])
 
-export async function readDashboardYaml() {
-	const cached = getCached('dashboard:yaml')
-	if (cached !== null) return cached
-	const data = await readFile(dashboardConfigPath, 'utf8')
-	setCached('dashboard:yaml', data)
-	return data
-}
-
-export async function readSystemYaml() {
-	const cached = getCached('system:yaml')
-	if (cached !== null) return cached
-	try {
-		const data = await readFile(systemConfigPath, 'utf8')
-		setCached('system:yaml', data)
+export const store = {
+	async readDashboardYaml() {
+		const cached = getCached('dashboard:yaml')
+		if (cached !== null) return cached
+		const data = await db.store.read('dashboard.yaml')
+		setCached('dashboard:yaml', data)
 		return data
-	} catch (error) {
-		if (error.code === 'ENOENT') return stringifySystemConfig(defaultSystemConfig())
-		throw error
+	},
+
+	async readSystemYaml() {
+		const cached = getCached('system:yaml')
+		if (cached !== null) return cached
+		try {
+			const data = await db.store.read('system.yaml')
+			setCached('system:yaml', data)
+			return data
+		} catch (error) {
+			if (error.code === 'ENOENT') return stringifySystemConfig(defaultSystemConfig())
+			throw error
+		}
+	},
+
+	async readDashboardConfig() {
+		const cached = getCached('dashboard:config')
+		if (cached !== null) return cached
+		const [dashboardYaml, systemConfig] = await Promise.all([this.readDashboardYaml(), this.readSystemConfig()])
+		const config = mergeDashboardWithSystem(YAML.parse(dashboardYaml), systemConfig)
+		validateDashboardConfig(config)
+		setCached('dashboard:config', config)
+		return config
+	},
+
+	async readSystemConfig() {
+		const cached = getCached('system:config')
+		if (cached !== null) return cached
+		const yaml = await this.readSystemYaml()
+		const config = YAML.parse(yaml) || defaultSystemConfig()
+		validateSystemConfig(config)
+		setCached('system:config', config)
+		return config
+	},
+
+	async readOverrideCss() {
+		const cached = getCached('override:css')
+		if (cached !== null) return cached
+		try {
+			const data = await db.store.read('override.css')
+			setCached('override:css', data)
+			return data
+		} catch (error) {
+			if (error.code === 'ENOENT') return ''
+			throw error
+		}
+	},
+
+	async getOverrideCssEtag() {
+		const css = await this.readOverrideCss()
+		return createHash('md5').update(css).digest('hex')
+	},
+
+	async writeOverrideCss(css) {
+		await db.store.write('override.css', css || '')
+		invalidateConfigCache()
+		return css || ''
+	},
+
+	async writeDashboardConfig(config) {
+		validateDashboardConfig(config)
+		const yaml = stringifyDashboardConfig(config)
+		await db.store.write('dashboard.yaml', yaml)
+		invalidateConfigCache()
+		return config
+	},
+
+	async writeSystemConfig(config) {
+		validateSystemConfig(config)
+		const yaml = stringifySystemConfig(config)
+		await db.store.write('system.yaml', yaml)
+		invalidateConfigCache()
+		return config
+	},
+
+	parseDashboardYaml(yaml) {
+		return YAML.parse(yaml)
+	},
+
+	parseSystemYaml(yaml) {
+		const config = YAML.parse(yaml)
+		validateSystemConfig(config)
+		return config
+	},
+
+	stringifyDashboardConfig(config) {
+		return stringifyDashboardConfig(config)
+	},
+
+	stringifySystemConfig(config) {
+		return stringifySystemConfig(config)
+	},
+
+	mergeDashboardWithSystem(config, systemConfig) {
+		return mergeDashboardWithSystem(config, systemConfig)
+	},
+
+	defaultSystemConfig() {
+		return defaultSystemConfig()
 	}
 }
 
-export async function readDashboardConfig() {
-	const cached = getCached('dashboard:config')
-	if (cached !== null) return cached
-	const [dashboardYaml, systemConfig] = await Promise.all([readDashboardYaml(), readSystemConfig()])
-	const config = mergeDashboardWithSystem(YAML.parse(dashboardYaml), systemConfig)
-	validateDashboardConfig(config)
-	setCached('dashboard:config', config)
-	return config
-}
-
-export async function readSystemConfig() {
-	const cached = getCached('system:config')
-	if (cached !== null) return cached
-	const yaml = await readSystemYaml()
-	const config = YAML.parse(yaml) || defaultSystemConfig()
-	validateSystemConfig(config)
-	setCached('system:config', config)
-	return config
-}
-
-export async function readOverrideCss() {
-	const cached = getCached('override:css')
-	if (cached !== null) return cached
-	try {
-		const data = await readFile(overrideCssPath, 'utf8')
-		setCached('override:css', data)
-		return data
-	} catch (error) {
-		if (error.code === 'ENOENT') return ''
-		throw error
-	}
-}
-
-export async function getOverrideCssEtag() {
-	const css = await readOverrideCss()
-	return createHash('md5').update(css).digest('hex')
-}
-
-export async function writeOverrideCss(css) {
-	const tempPath = `${overrideCssPath}.tmp`
-	await writeFile(tempPath, css || '', 'utf8')
-	await rename(tempPath, overrideCssPath)
-	invalidateConfigCache()
-	return css || ''
-}
-
-export async function writeDashboardConfig(config) {
-	validateDashboardConfig(config)
-	const yaml = stringifyDashboardConfig(config)
-	const tempPath = `${dashboardConfigPath}.tmp`
-	await writeFile(tempPath, yaml, 'utf8')
-	await rename(tempPath, dashboardConfigPath)
-	invalidateConfigCache()
-	return config
-}
+// ── Module-level utility functions ───────────────────────────────────
 
 export function parseDashboardYaml(yaml) {
 	return YAML.parse(yaml)
-}
-
-export function stringifyDashboardConfig(config) {
-	validateDashboardConfig(config)
-	const dashboardConfig = structuredClone(config)
-	if (dashboardConfig.dashboard) {
-		delete dashboardConfig.dashboard.grid
-	}
-	if (dashboardConfig.theme) {
-		delete dashboardConfig.theme.backgroundImage
-		if (Object.keys(dashboardConfig.theme).length === 0) {
-			delete dashboardConfig.theme
-		}
-	}
-	return YAML.stringify(dashboardConfig, { lineWidth: 100 })
-}
-
-export async function writeSystemConfig(config) {
-	validateSystemConfig(config)
-	const yaml = stringifySystemConfig(config)
-	const tempPath = `${systemConfigPath}.tmp`
-	await writeFile(tempPath, yaml, 'utf8')
-	await rename(tempPath, systemConfigPath)
-	invalidateConfigCache()
-	return config
 }
 
 export function parseSystemYaml(yaml) {
 	const config = YAML.parse(yaml)
 	validateSystemConfig(config)
 	return config
+}
+
+export function stringifyDashboardConfig(config) {
+	validateDashboardConfig(config)
+	const cloned = structuredClone(config)
+	if (cloned.dashboard) {
+		delete cloned.dashboard.grid
+	}
+	if (cloned.theme) {
+		delete cloned.theme.backgroundImage
+		if (Object.keys(cloned.theme).length === 0) {
+			delete cloned.theme
+		}
+	}
+	return YAML.stringify(cloned, { lineWidth: 100 })
 }
 
 export function stringifySystemConfig(config) {
@@ -199,6 +223,8 @@ export function mergeDashboardWithSystem(config, systemConfig) {
 		}
 	}
 }
+
+// ── Validation ───────────────────────────────────────────────────────
 
 export function validateSystemConfig(config) {
 	if (!config || typeof config !== 'object') {

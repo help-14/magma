@@ -1,8 +1,8 @@
 import { json } from '@sveltejs/kit';
-import { readDashboardConfig } from '$lib/server/config.js';
+import { store } from '$lib/server/config.js';
 
 export async function GET() {
-	await readDashboardConfig();
+	await store.readDashboardConfig();
 	return json({ ok: true, service: 'magma' }, {
 		headers: {
 			'cache-control': 'no-cache'

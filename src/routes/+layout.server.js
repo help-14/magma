@@ -1,11 +1,11 @@
-import { readDashboardConfig, readOverrideCss, readSystemConfig } from '$lib/server/config.js';
+import { store } from '$lib/server/config.js';
 import { setLocale } from '$lib/paraglide/runtime.js';
 
 export async function load({ cookies }) {
 	const [dashboardConfig, systemConfig, customCss] = await Promise.all([
-		readDashboardConfig(),
-		readSystemConfig(),
-		readOverrideCss()
+		store.readDashboardConfig(),
+		store.readSystemConfig(),
+		store.readOverrideCss()
 	]);
 	const locale = systemConfig.language || 'en';
 	cookies.set('PARAGLIDE_LOCALE', locale, { path: '/', maxAge: 34560000 });

@@ -1,8 +1,8 @@
-import { getOverrideCssEtag, readOverrideCss } from '$lib/server/config.js';
+import { store } from '$lib/server/config.js';
 
 export async function GET({ request }) {
-	const css = await readOverrideCss();
-	const etag = await getOverrideCssEtag();
+	const css = await store.readOverrideCss();
+	const etag = await store.getOverrideCssEtag();
 
 	if (request.headers.get('if-none-match') === etag) {
 		return new Response(null, { status: 304 });
