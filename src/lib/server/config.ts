@@ -107,6 +107,28 @@ export const store = {
 		}
 	},
 
+	async readPasskeys() {
+		const cached = getCached('passkeys')
+		if (cached !== null) return cached
+		try {
+			const data = await db.store.read('passkey.yaml')
+			const parsed = YAML.parse(data)
+			const list = Array.isArray(parsed?.passkeys) ? parsed.passkeys : []
+			setCached('passkeys', list)
+			return list
+		} catch (error) {
+			if (isNodeError(error) && error.code === 'ENOENT') return []
+			throw error
+		}
+	},
+
+	async writePasskeys(passkeys: any[]) {
+		const yaml = YAML.stringify({ passkeys }, { lineWidth: 100 })
+		await db.store.write('passkey.yaml', yaml)
+		invalidateConfigCache()
+		return passkeys
+	},
+
 	async getOverrideCssEtag() {
 		const css = await this.readOverrideCss()
 		return createHash('md5').update(css).digest('hex')
