@@ -44,6 +44,7 @@
   let draftWidget: string | null = $state(null)
   let gridActive = $state(false)
   let editMode = $state(false)
+  let passkeyVerified = $state(false)
   let showPasskeyModal = $state(false)
   let dirty = $state(false)
   let selected: { id: string; childId?: string } | null = $state(null)
@@ -53,6 +54,7 @@
   let grid = $derived(config.dashboard.grid)
   let widgets: any[] = $derived(config.dashboard.widgets)
   let selectedWidget = $derived(getSelectedWidget())
+  let authenticatedForEdit = $derived(isAuthenticated || passkeyVerified)
 
   let viewWidth = $state(browser ? window.innerWidth : 1920)
   let viewHeight = $state(browser ? window.innerHeight : 1080)
@@ -464,7 +466,7 @@
 
   async function toggleEditMode() {
     if (!editMode) {
-      if (passkeyCount > 0 && !isAuthenticated) {
+      if (passkeyCount > 0 && !authenticatedForEdit) {
         showPasskeyModal = true
         return
       }
@@ -489,6 +491,7 @@
 
   function onPasskeySuccess() {
     showPasskeyModal = false
+    passkeyVerified = true
     editMode = true
     toast.info(m.editor_edit_mode())
   }
