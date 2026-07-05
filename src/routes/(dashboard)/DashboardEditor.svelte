@@ -24,8 +24,17 @@
     findNearestFreePosition,
     overlaps
   } from '$lib/dashboard/grid-utils.js'
+  import PasskeyModal from '$lib/components/dashboard/PasskeyModal.svelte'
 
-  let { initialConfig }: { initialConfig: any } = $props()
+  let {
+    initialConfig,
+    isAuthenticated = false,
+    passkeyCount = 0,
+  }: {
+    initialConfig: any
+    isAuthenticated?: boolean
+    passkeyCount?: number
+  } = $props()
 
   const startingConfig = structuredClone(initialConfig)
   let config: any = $state(startingConfig)
@@ -35,6 +44,7 @@
   let draftWidget: string | null = $state(null)
   let gridActive = $state(false)
   let editMode = $state(false)
+  let showPasskeyModal = $state(false)
   let dirty = $state(false)
   let selected: { id: string; childId?: string } | null = $state(null)
   let draggingTemplateType: string | null = $state(null)
@@ -454,6 +464,10 @@
 
   async function toggleEditMode() {
     if (!editMode) {
+      if (passkeyCount > 0 && !isAuthenticated) {
+        showPasskeyModal = true
+        return
+      }
       editMode = true
       toast.info(m.editor_edit_mode())
       return
@@ -471,6 +485,12 @@
     draggingTemplateType = null
     draggingWidgetId = null
     selected = null
+  }
+
+  function onPasskeySuccess() {
+    showPasskeyModal = false
+    editMode = true
+    toast.info(m.editor_edit_mode())
   }
 </script>
 
@@ -613,4 +633,10 @@
       onUpdateNumber={updateSelectedNumber}
     />
   {/if}
+
+  <PasskeyModal
+    open={showPasskeyModal}
+    onSuccess={onPasskeySuccess}
+    onClose={() => (showPasskeyModal = false)}
+  />
 </section>

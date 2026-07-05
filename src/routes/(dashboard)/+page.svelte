@@ -4,4 +4,8 @@
   let { data } = $props();
 </script>
 
-<DashboardEditor initialConfig={data.config} />
+<DashboardEditor
+  initialConfig={data.config}
+  isAuthenticated={data.isAuthenticated}
+  passkeyCount={data.passkeyCount}
+/>
