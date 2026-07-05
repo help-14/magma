@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { ArrowLeft, Save } from '@lucide/svelte'
+  import { ArrowLeft, Save, Fingerprint } from '@lucide/svelte'
+  import { invalidateAll } from '$app/navigation'
   import { toast } from 'svelte-sonner'
   import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
@@ -7,11 +8,13 @@
   import { Label } from '$lib/components/ui/label/index.js'
   import * as Tabs from '$lib/components/ui/tabs/index.js'
   import CodeEditor from '$lib/components/settings/CodeEditor.svelte'
+  import PasskeySetup from '$lib/components/settings/PasskeySetup.svelte'
   import {
     saveCssOverride,
     saveDashboardSettings,
     saveSystemSettings
   } from '$lib/remotes/settings.remote.js'
+  import { authenticateBegin } from '$lib/remotes/passkey.remote.js'
 
   let { data }: { data: any } = $props()
 
@@ -29,6 +32,10 @@
   let saving = $state(false)
   let language = $state(data.systemConfig.language || 'en')
   let title = $state(data.systemConfig.title || 'Magma')
+  let isAuthenticated = $derived(data.isAuthenticated)
+  let passkeyCount = $derived(data.passkeyCount)
+  let authenticating = $state(false)
+  let showGate = $derived(passkeyCount > 0 && !isAuthenticated)
 
   let highlightedSystemYaml = $derived(highlightYaml(systemYaml))
   let highlightedDashboardYaml = $derived(highlightYaml(dashboardYaml))
@@ -37,7 +44,8 @@
   let tabs = $derived([
     { id: 'system', label: m.settings_system() },
     { id: 'dashboard', label: m.settings_dashboard() },
-    { id: 'css', label: m.settings_css() }
+    { id: 'css', label: m.settings_css() },
+    { id: 'security', label: 'Security' }
   ])
 
   function inputValue(event: Event) {
@@ -252,6 +260,36 @@
       saving = false
     }
   }
+
+  async function handleAuthenticate() {
+    if (authenticating) return
+    authenticating = true
+    try {
+      const origin = window.location.origin
+      const rpID = window.location.hostname
+      const { challengeId, options } = await authenticateBegin({ origin, rpID })
+      const assertion = await navigator.credentials.get({
+        publicKey: options as unknown as PublicKeyCredentialRequestOptions,
+      }) as PublicKeyCredential | null
+      if (!assertion) throw new Error('Cancelled')
+      const response = await fetch('/api/auth/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ challengeId, credential: assertion.toJSON(), origin, rpID }),
+      })
+      if (!response.ok) throw new Error('Authentication failed')
+      await invalidateAll()
+    } catch (err) {
+      if (err instanceof Error && err.message === 'Cancelled') return
+      toast.error(err instanceof Error ? err.message : 'Failed to authenticate')
+    } finally {
+      authenticating = false
+    }
+  }
+
+  function handlePasskeyChanged() {
+    invalidateAll()
+  }
 </script>
 
 <main
@@ -280,149 +318,175 @@
       </nav>
     </header>
 
-    <Tabs.Root bind:value={activeTab}>
-      <Tabs.List class="flex flex-wrap gap-3 mt-6 bg-transparent">
-        {#each tabs as tab (tab.id)}
-          <Tabs.Trigger
-            value={tab.id}
-            class="inline-flex items-center justify-center gap-2 min-h-10 px-3.5 border border-magma-line rounded-lg bg-magma-panel text-magma-text! backdrop-blur-md cursor-pointer transition-all duration-140 hover:border-magma-accent/48 hover:bg-magma-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-magma-accent focus-visible:outline-offset-2 data-active:border-magma-accent/48 data-active:bg-magma-accent/40 data-active:hover:bg-magma-accent/96"
+    {#if showGate}
+      <div class="flex flex-col items-center justify-center py-16 text-center">
+        <Fingerprint size={64} class="text-magma-accent mb-4" />
+        <h2 class="text-magma-text text-lg font-bold mb-2">Verify your identity</h2>
+        <p class="text-magma-muted text-sm mb-6">Use your passkey to access settings</p>
+        <Button
+          variant="magma"
+          class="text-magma-text!"
+          onclick={handleAuthenticate}
+          disabled={authenticating}
+        >
+          {authenticating ? 'Verifying...' : 'Use Passkey'}
+        </Button>
+      </div>
+    {:else}
+      <Tabs.Root bind:value={activeTab}>
+        <Tabs.List class="flex flex-wrap gap-3 mt-6 bg-transparent">
+          {#each tabs as tab (tab.id)}
+            <Tabs.Trigger
+              value={tab.id}
+              class="inline-flex items-center justify-center gap-2 min-h-10 px-3.5 border border-magma-line rounded-lg bg-magma-panel text-magma-text! backdrop-blur-md cursor-pointer transition-all duration-140 hover:border-magma-accent/48 hover:bg-magma-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-magma-accent focus-visible:outline-offset-2 data-active:border-magma-accent/48 data-active:bg-magma-accent/40 data-active:hover:bg-magma-accent/96"
             >{tab.label}</Tabs.Trigger
-          >
-        {/each}
-      </Tabs.List>
+            >
+          {/each}
+        </Tabs.List>
 
-      <Tabs.Content value="system">
-        <section
-          class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mt-2 max-lg:grid-cols-1"
-        >
-          <CodeEditor
-            bind:value={systemYaml}
-            highlighted={highlightedSystemYaml}
-            label="System YAML"
-          />
-          <aside
-            class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted"
+        <Tabs.Content value="system">
+          <section
+            class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mt-2 max-lg:grid-cols-1"
           >
-            <h2 class="text-magma-text text-base m-0 mb-2.5">
-              {m.settings_system()}
-            </h2>
-            <p>{@html m.settings_system_desc()}</p>
-            <Label class="grid gap-2 mt-4">
-              <span class="text-magma-accent text-xs font-bold uppercase"
-                >Title</span
-              >
-              <Input
-                value={title}
-                placeholder="Magma"
-                class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
-                oninput={(event: Event) =>
-                  updateSystemTitle(inputValue(event))}
-              />
-            </Label>
-            <div class="grid grid-cols-2 gap-3">
+            <CodeEditor
+              bind:value={systemYaml}
+              highlighted={highlightedSystemYaml}
+              label="System YAML"
+            />
+            <aside
+              class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted"
+            >
+              <h2 class="text-magma-text text-base m-0 mb-2.5">
+                {m.settings_system()}
+              </h2>
+              <p>{@html m.settings_system_desc()}</p>
               <Label class="grid gap-2 mt-4">
                 <span class="text-magma-accent text-xs font-bold uppercase"
-                  >{m.settings_cell_width()}</span
+                  >Title</span
                 >
                 <Input
-                  type="number"
-                  min="1"
-                  value={cellWidth}
+                  value={title}
+                  placeholder="Magma"
                   class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
                   oninput={(event: Event) =>
-                    updateSystemGridField(
-                      'cellWidth',
-                      inputValue(event)
-                    )}
+                    updateSystemTitle(inputValue(event))}
                 />
               </Label>
-              <Label class="grid gap-2 mt-4">
-                <span class="text-magma-accent text-xs font-bold uppercase"
-                  >{m.settings_cell_height()}</span
-                >
-                <Input
-                  type="number"
-                  min="1"
-                  value={cellHeight}
-                  class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
-                  oninput={(event: Event) =>
-                    updateSystemGridField(
-                      'cellHeight',
-                      inputValue(event)
-                    )}
-                />
-              </Label>
-              <Label class="grid col-span-2 gap-2 mt-4">
-                <span class="text-magma-accent text-xs font-bold uppercase"
-                  >{m.settings_bg_image()}</span
-                >
-                <Input
-                  value={backgroundImage}
-                  placeholder="/bg.jpg"
-                  class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
-                  oninput={(event: Event) =>
-                    updateBackgroundImage(inputValue(event))}
-                />
-              </Label>
-              <Label class="grid col-span-2 gap-2 mt-4">
-                <span class="text-magma-accent text-xs font-bold uppercase"
-                  >{m.settings_language()}</span
-                >
-                <select
-                  class="flex h-9 w-full rounded-md border border-magma-line bg-magma-panel px-3 py-1 text-sm text-magma-text shadow-sm cursor-pointer outline-0"
-                  value={language}
-                  onchange={(event: Event) => {
-                    language = inputValue(event)
-                    updateSystemLanguage(inputValue(event))
-                  }}
-                >
-                  <option value="en">English</option>
-                  <option value="vi">Tiếng Việt</option>
-                </select>
-              </Label>
-            </div>
-          </aside>
-        </section>
-      </Tabs.Content>
+              <div class="grid grid-cols-2 gap-3">
+                <Label class="grid gap-2 mt-4">
+                  <span class="text-magma-accent text-xs font-bold uppercase"
+                    >{m.settings_cell_width()}</span
+                  >
+                  <Input
+                    type="number"
+                    min="1"
+                    value={cellWidth}
+                    class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                    oninput={(event: Event) =>
+                      updateSystemGridField(
+                        'cellWidth',
+                        inputValue(event)
+                      )}
+                  />
+                </Label>
+                <Label class="grid gap-2 mt-4">
+                  <span class="text-magma-accent text-xs font-bold uppercase"
+                    >{m.settings_cell_height()}</span
+                  >
+                  <Input
+                    type="number"
+                    min="1"
+                    value={cellHeight}
+                    class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                    oninput={(event: Event) =>
+                      updateSystemGridField(
+                        'cellHeight',
+                        inputValue(event)
+                      )}
+                  />
+                </Label>
+                <Label class="grid col-span-2 gap-2 mt-4">
+                  <span class="text-magma-accent text-xs font-bold uppercase"
+                    >{m.settings_bg_image()}</span
+                  >
+                  <Input
+                    value={backgroundImage}
+                    placeholder="/bg.jpg"
+                    class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                    oninput={(event: Event) =>
+                      updateBackgroundImage(inputValue(event))}
+                  />
+                </Label>
+                <Label class="grid col-span-2 gap-2 mt-4">
+                  <span class="text-magma-accent text-xs font-bold uppercase"
+                    >{m.settings_language()}</span
+                  >
+                  <select
+                    class="flex h-9 w-full rounded-md border border-magma-line bg-magma-panel px-3 py-1 text-sm text-magma-text shadow-sm cursor-pointer outline-0"
+                    value={language}
+                    onchange={(event: Event) => {
+                      language = inputValue(event)
+                      updateSystemLanguage(inputValue(event))
+                    }}
+                  >
+                    <option value="en">English</option>
+                    <option value="vi">Tiếng Việt</option>
+                  </select>
+                </Label>
+              </div>
+            </aside>
+          </section>
+        </Tabs.Content>
 
-      <Tabs.Content value="dashboard">
-        <section
-          class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mt-2 max-lg:grid-cols-1"
-        >
-          <CodeEditor
-            bind:value={dashboardYaml}
-            highlighted={highlightedDashboardYaml}
-            label="Dashboard YAML"
-          />
-          <aside
-            class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted"
+        <Tabs.Content value="dashboard">
+          <section
+            class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mt-2 max-lg:grid-cols-1"
           >
-            <h2 class="text-magma-text text-base m-0 mb-2.5">
-              {m.settings_dashboard()}
-            </h2>
-            <p>{@html m.settings_dashboard_desc()}</p>
-          </aside>
-        </section>
-      </Tabs.Content>
+            <CodeEditor
+              bind:value={dashboardYaml}
+              highlighted={highlightedDashboardYaml}
+              label="Dashboard YAML"
+            />
+            <aside
+              class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted"
+            >
+              <h2 class="text-magma-text text-base m-0 mb-2.5">
+                {m.settings_dashboard()}
+              </h2>
+              <p>{@html m.settings_dashboard_desc()}</p>
+            </aside>
+          </section>
+        </Tabs.Content>
 
-      <Tabs.Content value="css">
-        <section
-          class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mt-2 max-lg:grid-cols-1"
-        >
-          <CodeEditor
-            bind:value={customCss}
-            highlighted={highlightedCss}
-            label="Override CSS"
-            placeholder={`:root {\n  --magma-accent: #fabd2f;\n}\n\n.button-widget {\n  border-radius: 10px;\n}`}
-          />
-          <aside
-            class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted"
+        <Tabs.Content value="css">
+          <section
+            class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mt-2 max-lg:grid-cols-1"
           >
-            <h2 class="text-magma-text text-base m-0 mb-2.5">{m.settings_css()}</h2>
-            <p>{@html m.settings_css_desc()}</p>
-          </aside>
-        </section>
-      </Tabs.Content>
-    </Tabs.Root>
+            <CodeEditor
+              bind:value={customCss}
+              highlighted={highlightedCss}
+              label="Override CSS"
+              placeholder={`:root {\n  --magma-accent: #fabd2f;\n}\n\n.button-widget {\n  border-radius: 10px;\n}`}
+            />
+            <aside
+              class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted"
+            >
+              <h2 class="text-magma-text text-base m-0 mb-2.5">{m.settings_css()}</h2>
+              <p>{@html m.settings_css_desc()}</p>
+            </aside>
+          </section>
+        </Tabs.Content>
+
+        <Tabs.Content value="security">
+          <section class="mt-2">
+            <aside class="border border-magma-line rounded-lg bg-magma-panel shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-magma-muted">
+              <h2 class="text-magma-text text-base m-0 mb-2.5">Security</h2>
+              <p class="mb-4">Manage your passkeys. Passkeys use biometrics (Face ID, Touch ID, Windows Hello) to verify your identity before allowing edit mode and settings access.</p>
+              <PasskeySetup onPasskeyChanged={handlePasskeyChanged} />
+            </aside>
+          </section>
+        </Tabs.Content>
+      </Tabs.Root>
+    {/if}
   </div>
 </main>
