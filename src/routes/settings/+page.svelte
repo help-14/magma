@@ -60,6 +60,17 @@
       .replaceAll('"', '&quot;')
   }
 
+  function base64urlToBufferSource(base64url: string): BufferSource {
+    const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/')
+    const padding = '='.repeat((4 - (base64.length % 4)) % 4)
+    const binary = atob(base64 + padding)
+    const bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i)
+    }
+    return bytes as BufferSource
+  }
+
   function highlightYaml(source: string) {
     return source
       .split('\n')
@@ -268,8 +279,17 @@
       const origin = window.location.origin
       const rpID = window.location.hostname
       const { challengeId, options } = await authenticateBegin({ origin, rpID })
+      const publicKey = {
+        ...options,
+        challenge: base64urlToBufferSource(options.challenge),
+        allowCredentials: options.allowCredentials?.map((cred: any) => ({
+          ...cred,
+          id: base64urlToBufferSource(cred.id)
+        }))
+      } as PublicKeyCredentialRequestOptions
+
       const assertion = await navigator.credentials.get({
-        publicKey: options as unknown as PublicKeyCredentialRequestOptions,
+        publicKey,
       }) as PublicKeyCredential | null
       if (!assertion) throw new Error('Cancelled')
       const response = await fetch('/api/auth/complete', {

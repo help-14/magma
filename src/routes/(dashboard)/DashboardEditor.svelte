@@ -29,7 +29,7 @@
   let {
     initialConfig,
     isAuthenticated = false,
-    passkeyCount = 0,
+    passkeyCount = 0
   }: {
     initialConfig: any
     isAuthenticated?: boolean
@@ -254,13 +254,7 @@
     if (!canvasElement) return
     const canvas = canvasElement
     event.preventDefault()
-    const start = cellFromEvent(
-      event,
-      canvas,
-      pageCenter,
-      cellSize,
-      cellHeight
-    )
+    const start = cellFromEvent(event, canvas, pageCenter, cellSize, cellHeight)
     const original = { x: widget.x, y: widget.y }
     draftWidget = widget.id
     gridActive = true
@@ -296,13 +290,7 @@
     if (!canvasElement) return
     const canvas = canvasElement
     event.preventDefault()
-    const start = cellFromEvent(
-      event,
-      canvas,
-      pageCenter,
-      cellSize,
-      cellHeight
-    )
+    const start = cellFromEvent(event, canvas, pageCenter, cellSize, cellHeight)
     const original = { w: widget.w, h: widget.h }
     draftWidget = widget.id
     gridActive = true
@@ -371,7 +359,9 @@
       return
     }
 
-    config.dashboard.widgets = widgets.filter((item: any) => item.id !== widget.id)
+    config.dashboard.widgets = widgets.filter(
+      (item: any) => item.id !== widget.id
+    )
     if (selected?.id === widget.id) selected = null
     dirty = true
     toast.info(m.editor_widget_deleted())
@@ -380,11 +370,15 @@
   function getSelectedWidget() {
     if (!selected) return null
     const currentSelection = selected
-    const parent = widgets.find((widget: any) => widget.id === currentSelection.id)
+    const parent = widgets.find(
+      (widget: any) => widget.id === currentSelection.id
+    )
     if (!parent) return null
     if (!currentSelection.childId) return parent
     return (
-      parent.children?.find((child: any) => child.id === currentSelection.childId) || null
+      parent.children?.find(
+        (child: any) => child.id === currentSelection.childId
+      ) || null
     )
   }
 
@@ -406,7 +400,9 @@
         return {
           ...widget,
           children: (widget.children || []).map((child: any) =>
-            child.id === currentSelection.childId ? { ...child, ...patch } : child
+            child.id === currentSelection.childId
+              ? { ...child, ...patch }
+              : child
           )
         }
       })
@@ -414,7 +410,9 @@
       return
     }
 
-    const current = widgets.find((widget: any) => widget.id === currentSelection.id)
+    const current = widgets.find(
+      (widget: any) => widget.id === currentSelection.id
+    )
     if (!current) return
     const next = { ...current, ...patch }
     if (!canPlace(next, widgets, currentSelection.id)) {
@@ -455,7 +453,9 @@
       toast.success(m.editor_dashboard_saved())
       return true
     } catch (saveError) {
-      toast.error(saveError instanceof Error ? saveError.message : String(saveError))
+      toast.error(
+        saveError instanceof Error ? saveError.message : String(saveError)
+      )
       return false
     } finally {
       saving = false
@@ -511,19 +511,24 @@
       title={m.editor_settings()}
       aria-label={m.editor_settings()}><Settings size={20} /></Button
     >
-    <Button variant="magma" aria-pressed={editMode} onclick={toggleEditMode}>
-      {#if editMode}
-        <Save size={18} /> {m.editor_save()}
-      {:else}
-        <Pencil size={18} /> {m.editor_edit()}
-      {/if}
-    </Button>
     {#if editMode}
       <Button variant="magma" onclick={() => (drawerOpen = true)}>
         <Plus size={18} />
         {m.editor_add_widget()}
       </Button>
     {/if}
+    <Button
+      variant="magma"
+      class="aspect-square"
+      aria-pressed={editMode}
+      onclick={toggleEditMode}
+    >
+      {#if editMode}
+        <Save size={18} /> {m.editor_save()}
+      {:else}
+        <Pencil size={18} />
+      {/if}
+    </Button>
   </nav>
 
   <div
@@ -602,7 +607,8 @@
           {#if editMode}
             <Button
               class={`absolute right-1 bottom-1 z-4 grid size-7 text-magma-text cursor-nwse-resize focus-visible:opacity-100 ${editMode ? 'opacity-100' : 'opacity-0'}`}
-              onpointerdown={(event: PointerEvent) => startResize(event, widget)}
+              onpointerdown={(event: PointerEvent) =>
+                startResize(event, widget)}
               variant="ghost"
             >
               <ArrowDownRight size={14} />

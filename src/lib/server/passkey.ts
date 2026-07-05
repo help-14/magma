@@ -24,6 +24,7 @@ export async function beginRegistration(origin: string, rpID: string) {
 		rpName: 'Magma',
 		rpID,
 		userName: 'Admin',
+		userID: Buffer.from('admin'),
 		attestationType: 'none',
 		excludeCredentials: existing.map((pk: PasskeyEntry) => ({
 			id: pk.id,

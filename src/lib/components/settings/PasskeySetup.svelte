@@ -31,6 +31,17 @@
     }
   }
 
+  function base64urlToBufferSource(base64url: string): BufferSource {
+    const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/')
+    const padding = '='.repeat((4 - (base64.length % 4)) % 4)
+    const binary = atob(base64 + padding)
+    const bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i)
+    }
+    return bytes as BufferSource
+  }
+
   async function handleAdd() {
     if (registering) return
     registering = true
@@ -39,8 +50,18 @@
       const rpID = window.location.hostname
       const { challengeId, options } = await registerBegin({ origin, rpID })
 
+      // Convert base64url strings from the server to Uint8Array for the browser API
+      const publicKey = {
+        ...options,
+        challenge: base64urlToBufferSource(options.challenge),
+        user: {
+          ...options.user,
+          id: base64urlToBufferSource(options.user.id),
+        },
+      } as PublicKeyCredentialCreationOptions
+
       const credential = await navigator.credentials.create({
-        publicKey: options as unknown as PublicKeyCredentialCreationOptions,
+        publicKey,
       })
       if (!credential) throw new Error('Passkey creation cancelled')
 

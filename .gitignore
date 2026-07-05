@@ -36,3 +36,6 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Config
+config/passkey.yaml

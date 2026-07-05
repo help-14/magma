@@ -16,6 +16,17 @@
 
   let authenticating = $state(false)
 
+  function base64urlToBufferSource(base64url: string): BufferSource {
+    const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/')
+    const padding = '='.repeat((4 - (base64.length % 4)) % 4)
+    const binary = atob(base64 + padding)
+    const bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i)
+    }
+    return bytes as BufferSource
+  }
+
   async function handleAuthenticate() {
     if (authenticating) return
     authenticating = true
@@ -24,8 +35,18 @@
       const rpID = window.location.hostname
       const { challengeId, options } = await authenticateBegin({ origin, rpID })
 
+      // Convert base64url strings from the server to BufferSource for the browser API
+      const publicKey = {
+        ...options,
+        challenge: base64urlToBufferSource(options.challenge),
+        allowCredentials: options.allowCredentials?.map((cred: any) => ({
+          ...cred,
+          id: base64urlToBufferSource(cred.id),
+        })),
+      } as PublicKeyCredentialRequestOptions
+
       const assertion = await navigator.credentials.get({
-        publicKey: options as unknown as PublicKeyCredentialRequestOptions,
+        publicKey,
       }) as PublicKeyCredential | null
       if (!assertion) throw new Error('Passkey authentication cancelled')
 
