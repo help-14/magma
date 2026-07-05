@@ -26,6 +26,7 @@
   let cellHeight = $state(
     data.systemConfig.system?.dashboardGrid?.cellHeight || 100
   )
+  let mobileScale = $state(initialMobileScale())
   let dashboardYaml = $state(data.yaml)
   let backgroundImage = $state(data.config.theme?.backgroundImage || '/bg.jpg')
   let customCss = $state(data.customCss || '')
@@ -50,6 +51,10 @@
 
   function inputValue(event: Event) {
     return (event.currentTarget as HTMLInputElement | HTMLSelectElement).value
+  }
+
+  function initialMobileScale() {
+    return data.systemConfig.system?.dashboardGrid?.mobileScale || 0.75
   }
 
   function escapeHtml(value: string) {
@@ -144,16 +149,21 @@
     systemYaml = lines.join('\n')
   }
 
-  function updateSystemGridField(key: 'cellWidth' | 'cellHeight', value: string) {
-    const numberValue = Number.parseInt(value || '100', 10)
+  function updateSystemGridField(key: 'cellWidth' | 'cellHeight' | 'mobileScale', value: string) {
+    const fallback = key === 'mobileScale' ? '0.75' : '100'
+    const numberValue = key === 'mobileScale'
+      ? Number.parseFloat(value || fallback)
+      : Number.parseInt(value || fallback, 10)
     if (key === 'cellWidth') cellWidth = numberValue
     if (key === 'cellHeight') cellHeight = numberValue
+    if (key === 'mobileScale') mobileScale = numberValue
 
     const lines = systemYaml.split('\n')
     const fieldIndex = lines.findIndex((line: string) =>
       new RegExp(`^\\s+${key}:`).test(line)
     )
-    const nextLine = `    ${key}: ${Number.isFinite(numberValue) ? numberValue : 100}`
+    const nextValue = Number.isFinite(numberValue) ? numberValue : Number(fallback)
+    const nextLine = `    ${key}: ${nextValue}`
     if (fieldIndex === -1) {
       const gridIndex = lines.findIndex((line: string) =>
         /^\s+dashboardGrid:\s*$/.test(line)
@@ -251,6 +261,8 @@
           result.systemConfig.system?.dashboardGrid?.cellWidth || cellWidth
         cellHeight =
           result.systemConfig.system?.dashboardGrid?.cellHeight || cellHeight
+        mobileScale =
+          result.systemConfig.system?.dashboardGrid?.mobileScale || mobileScale
         backgroundImage =
           result.systemConfig.theme?.backgroundImage || backgroundImage
         title = result.systemConfig.title || 'Magma'
@@ -421,6 +433,24 @@
                     oninput={(event: Event) =>
                       updateSystemGridField(
                         'cellHeight',
+                        inputValue(event)
+                      )}
+                  />
+                </Label>
+                <Label class="grid col-span-2 gap-2 mt-4">
+                  <span class="text-magma-accent text-xs font-bold uppercase"
+                    >Mobile scale</span
+                  >
+                  <Input
+                    type="number"
+                    min="0.4"
+                    max="1"
+                    step="0.05"
+                    value={mobileScale}
+                    class="w-full min-h-9 border-magma-line rounded-lg bg-[rgb(20_18_16/48%)] text-magma-text px-2.5 outline-none transition-all duration-140 hover:border-magma-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-magma-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                    oninput={(event: Event) =>
+                      updateSystemGridField(
+                        'mobileScale',
                         inputValue(event)
                       )}
                   />

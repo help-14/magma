@@ -1,11 +1,12 @@
 import YAML from 'yaml'
 import { createHash } from 'node:crypto'
 import * as db from './db.js'
+import { defaultDashboardGrid, mergeDashboardGrid, validateDashboardGrid } from './config-grid.js'
 
 export { setConfigStore } from './db.js'
 
 type ConfigObject = Record<string, any>
-type GridConfig = { columns: number; rows: number; cellWidth?: number; cellHeight?: number }
+type GridConfig = { columns: number; rows: number; cellWidth?: number; cellHeight?: number; mobileScale?: number }
 type WidgetLike = { id: string; type: string; title: string; x: number; y: number; w: number; h: number; children?: WidgetLike[]; [key: string]: any }
 
 function isNodeError(error: unknown): error is NodeJS.ErrnoException {
@@ -221,12 +222,7 @@ export function defaultSystemConfig(): ConfigObject {
 		version: 1,
 		language: 'en',
 		system: {
-			dashboardGrid: {
-				columns: 12,
-				rows: 6,
-				cellWidth: 20,
-				cellHeight: 20
-			}
+			dashboardGrid: defaultDashboardGrid()
 		},
 		theme: {
 			backgroundImage: '/bg.jpg'
@@ -238,14 +234,9 @@ export function mergeDashboardWithSystem(config: ConfigObject, systemConfig: Con
 	const systemGrid = systemConfig.system?.dashboardGrid || {}
 	return {
 		...config,
-		dashboard: {
+			dashboard: {
 			...config?.dashboard,
-			grid: {
-				columns: systemGrid.columns ?? 12,
-				rows: systemGrid.rows ?? 8,
-				cellWidth: systemGrid.cellWidth,
-				cellHeight: systemGrid.cellHeight
-			}
+			grid: mergeDashboardGrid(systemGrid)
 		},
 		theme: {
 			...config?.theme,
@@ -262,18 +253,7 @@ export function validateSystemConfig(config: any) {
 	}
 	const grid = config.system?.dashboardGrid
 	if (grid && typeof grid === 'object') {
-		if (grid.columns !== undefined && (!Number.isInteger(grid.columns) || grid.columns < 1)) {
-			throw new Error('system.dashboardGrid.columns must be a positive integer.')
-		}
-		if (grid.rows !== undefined && (!Number.isInteger(grid.rows) || grid.rows < 1)) {
-			throw new Error('system.dashboardGrid.rows must be a positive integer.')
-		}
-		if (grid.cellWidth !== undefined && (!Number.isInteger(grid.cellWidth) || grid.cellWidth < 1)) {
-			throw new Error('system.dashboardGrid.cellWidth must be a positive integer.')
-		}
-		if (grid.cellHeight !== undefined && (!Number.isInteger(grid.cellHeight) || grid.cellHeight < 1)) {
-			throw new Error('system.dashboardGrid.cellHeight must be a positive integer.')
-		}
+		validateDashboardGrid(grid, 'system.dashboardGrid')
 	}
 	const backgroundImage = config.theme?.backgroundImage
 	if (backgroundImage !== undefined && typeof backgroundImage !== 'string') {

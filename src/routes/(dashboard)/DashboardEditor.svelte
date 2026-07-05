@@ -21,7 +21,9 @@
     cellFromEvent,
     canPlace,
     findNearestFreePosition,
-    overlaps
+    overlaps,
+    getWidgetBounds,
+    mobileCanvasMetrics
   } from '$lib/dashboard/grid-utils.js'
   import { resizePatchForDirection } from '$lib/dashboard/resize-utils.js'
   import type { ResizeDirection } from '$lib/dashboard/resize-utils.js'
@@ -51,6 +53,7 @@
   let selected: { id: string; childId?: string } | null = $state(null)
   let draggingTemplateType: string | null = $state(null)
   let draggingWidgetId: string | null = $state(null)
+  let didCenterMobileCanvas = false
 
   let grid = $derived(config.dashboard.grid)
   let widgets: any[] = $derived(config.dashboard.widgets)
@@ -70,20 +73,51 @@
     return () => window.removeEventListener('resize', handler)
   })
 
-  let cellSize = $derived(
+  let baseCellWidth = $derived(
     grid.cellWidth || Math.max(viewWidth / (grid.columns || 12), 1)
   )
-  let cellHeight = $derived(
+  let baseCellHeight = $derived(
     grid.cellHeight || Math.max(viewHeight / (grid.rows || 8), 1)
   )
-  let pageCenter = $derived(viewWidth / 2)
+  let isMobileCanvas = $derived(viewWidth < 768)
+  let mobileScale = $derived(
+    Math.min(1, Math.max(0.4, Number(grid.mobileScale ?? 0.75)))
+  )
+  let cellSize = $derived(baseCellWidth * (isMobileCanvas ? mobileScale : 1))
+  let cellHeight = $derived(baseCellHeight * (isMobileCanvas ? mobileScale : 1))
+  let widgetBounds = $derived(getWidgetBounds(widgets))
+  let mobileMetrics = $derived(
+    mobileCanvasMetrics({
+      bounds: widgetBounds,
+      cellWidth: cellSize,
+      cellHeight,
+      viewWidth,
+      viewHeight,
+      paddingCells: 2
+    })
+  )
+  let pageCenter = $derived(isMobileCanvas ? mobileMetrics.pageCenter : viewWidth / 2)
 
   let gridRows = $derived(
     (() => {
       return Math.max(8, ...widgets.map((w: any) => w.y + w.h - 1))
     })()
   )
-  let gridVisualHeight = $derived(Math.max(gridRows * cellHeight, viewHeight))
+  let gridVisualHeight = $derived(
+    isMobileCanvas ? mobileMetrics.height : Math.max(gridRows * cellHeight, viewHeight)
+  )
+  let gridVisualWidth = $derived(isMobileCanvas ? mobileMetrics.width : viewWidth)
+
+  $effect(() => {
+    if (!browser || !isMobileCanvas || didCenterMobileCanvas) return
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        left: Math.max(0, pageCenter - viewWidth / 2),
+        top: window.scrollY
+      })
+      didCenterMobileCanvas = true
+    })
+  })
 
   // widgetStyle and makeId moved to $lib/dashboard/grid-utils.js
 
@@ -508,7 +542,7 @@
 </script>
 
 <section
-  class="relative min-h-screen p-6 text-magma-text max-sm:p-4.5"
+    class="relative min-h-screen p-6 text-magma-text max-sm:p-4.5 max-sm:overflow-x-auto"
   style={`--magma-accent: ${config.theme?.accentColor || '#fabd2f'}; --magma-bg: url('${config.theme?.backgroundImage || '/bg.jpg'}');`}
 >
   <div class="background"></div>
@@ -548,12 +582,12 @@
     bind:this={canvasElement}
     class:edit-mode={editMode}
     class:grid-active={editMode}
-    class="dashboard-grid relative z-1 w-screen -ml-6 border-0 rounded-none bg-transparent overflow-visible"
+    class={`dashboard-grid relative z-1 border-0 rounded-none bg-transparent overflow-visible ${isMobileCanvas ? 'ml-0' : 'w-screen -ml-6'}`}
     role="application"
     aria-label={m.editor_settings()}
     ondrop={onDrop}
     ondragover={onDragOver}
-    style={`--columns: ${grid.columns}; --cell-size-x: ${cellSize}px; --cell-size-y: ${cellHeight}px; min-height: ${gridVisualHeight}px; background-position: ${pageCenter % cellSize}px 0;`}
+    style={`--columns: ${grid.columns}; --cell-size-x: ${cellSize}px; --cell-size-y: ${cellHeight}px; width: ${gridVisualWidth}px; min-height: ${gridVisualHeight}px; background-position: ${pageCenter % cellSize}px 0;`}
   >
     {#if browser}
       {#each widgets as widget (widget.id)}

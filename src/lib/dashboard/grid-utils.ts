@@ -2,6 +2,8 @@ type GridRect = { x: number; y: number; w: number; h: number }
 type GridWidget = GridRect & { id: string }
 type DropCell = { x: number; y: number }
 type WidgetTemplate = { w: number; h: number; config?: unknown; children?: unknown[] }
+export type WidgetBounds = { minX: number; maxX: number; maxY: number }
+export type MobileCanvasMetrics = { width: number; height: number; pageCenter: number }
 
 export function cellFromEvent(
   event: MouseEvent | PointerEvent | DragEvent,
@@ -10,11 +12,11 @@ export function cellFromEvent(
   cellSize: number,
   cellHeight: number
 ): DropCell {
-  const rect = canvasElement.getBoundingClientRect()
-  return {
-    x: Math.floor((event.clientX - pageCenter) / cellSize),
-    y: Math.max(1, Math.floor((event.clientY - rect.top) / cellHeight) + 1)
-  }
+	const rect = canvasElement.getBoundingClientRect()
+	return {
+		x: Math.floor((event.clientX - rect.left - pageCenter) / cellSize),
+		y: Math.max(1, Math.floor((event.clientY - rect.top) / cellHeight) + 1)
+	}
 }
 
 export function overlaps(a: GridRect, b: GridRect): boolean {
@@ -43,6 +45,44 @@ export function widgetStyle(widget: GridRect, pageCenter: number, cellSize: numb
     `width: ${widget.w * cellSize}px`,
     `height: ${widget.h * cellHeight}px`
   ].join(';')
+}
+
+export function getWidgetBounds(widgets: GridRect[]): WidgetBounds {
+  if (widgets.length === 0) return { minX: 0, maxX: 0, maxY: 1 }
+
+  return {
+    minX: Math.min(...widgets.map((widget) => widget.x)),
+    maxX: Math.max(...widgets.map((widget) => widget.x + widget.w)),
+    maxY: Math.max(...widgets.map((widget) => widget.y + widget.h - 1))
+  }
+}
+
+export function mobileCanvasMetrics({
+  bounds,
+  cellWidth,
+  cellHeight,
+  viewWidth,
+  viewHeight,
+  paddingCells = 2
+}: {
+  bounds: WidgetBounds
+  cellWidth: number
+  cellHeight: number
+  viewWidth: number
+  viewHeight: number
+  paddingCells?: number
+}): MobileCanvasMetrics {
+  const width = Math.max(
+    viewWidth,
+    (bounds.maxX - bounds.minX + paddingCells * 2) * cellWidth
+  )
+  const height = Math.max(
+    viewHeight,
+    (bounds.maxY + paddingCells * 2) * cellHeight
+  )
+  const pageCenter = (-bounds.minX + paddingCells) * cellWidth
+
+  return { width, height, pageCenter }
 }
 
 export function makeId(type: string): string {

@@ -3,6 +3,7 @@ export interface Grid {
 	rows: number
 	cellWidth?: number
 	cellHeight?: number
+	mobileScale?: number
 }
 
 export interface Selection {
