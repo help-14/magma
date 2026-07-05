@@ -3,6 +3,7 @@
   import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import WidgetRenderer from '../WidgetRenderer.svelte'
+  import { buildStackGridStyle } from './stack-grid-style.js'
   import type { StackWidgetProps } from '$lib/types/widget.js'
 
   let {
@@ -26,10 +27,7 @@
   let gap = $derived(widget.config?.gap ?? 12)
 
   let gridStyle = $derived.by(() => {
-    if (flow === 'horizontal' && rows > 0) {
-      return `display: grid; grid-template-rows: repeat(${rows}, auto); grid-auto-flow: column; gap: ${gap}px;`
-    }
-    return `display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: ${gap}px;`
+    return buildStackGridStyle({ flow, cols, rows, gap })
   })
 </script>
 

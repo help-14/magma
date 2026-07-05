@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { cn } from "$lib/utils.js";
+	import { selectTextOnDoubleClick } from "../select-text-on-double-click.js";
 
 	let {
 		ref = $bindable(null),
@@ -8,6 +9,7 @@
 		files = $bindable(),
 		class: className,
 		"data-slot": dataSlot = "input",
+		ondblclick,
 		...restProps
 	}: Record<string, any> = $props();
 </script>
@@ -35,6 +37,7 @@
 		)}
 		{type}
 		bind:value
+		ondblclick={(event) => selectTextOnDoubleClick(event, ondblclick)}
 		{...restProps}
 	/>
 {/if}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Search } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
+  import { selectTextOnDoubleClick } from '$lib/components/ui/select-text-on-double-click.js'
   import { tick } from 'svelte'
   import type { SearchWidgetProps } from '$lib/types/widget.js'
 
@@ -47,5 +48,6 @@
     placeholder={widget.config?.placeholder || m.search_placeholder()}
     autocomplete="off"
     class="w-full min-w-0 border-0 outline-0 bg-transparent text-magma-text"
+    ondblclick={selectTextOnDoubleClick}
   />
 </form>

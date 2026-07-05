@@ -31,7 +31,7 @@
       type: 'rss',
       title: 'RSS',
       w: 6,
-      h: 8,
+      h: 6,
       config: {
         feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"}]',
         style: 'vertical-list',
@@ -53,14 +53,14 @@
     {
       type: 'search',
       title: 'Search',
-      w: 8,
+      w: 4,
       h: 2,
       config: { provider: 'google' }
     },
     {
       type: 'stack',
       title: 'Stack',
-      w: 10,
+      w: 4,
       h: 6,
       config: { flow: 'horizontal', cols: 2, rows: 0, gap: 12 },
       children: []
@@ -78,7 +78,7 @@
       type: 'youtube-live',
       title: 'YouTube',
       w: 6,
-      h: 8,
+      h: 6,
       config: { mode: 'uploads', channels: '', limit: 10 }
     },
     {
