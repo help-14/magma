@@ -2,11 +2,18 @@
 
 ## Project
 
-Magma is a SvelteKit dashboard app migrated from the legacy Cloudflare/SolidJS Magma app.
+Magma is a SvelteKit dashboard app.
 
 - Package manager: `pnpm`
-- Framework: SvelteKit with Svelte 5 runes
+- Framework: SvelteKit with Svelte 5 runes and TypeScript
 - Styling: Tailwind 4, local shadcn-svelte components, Geist, lucide icons
+
+## TypeScript Rules
+
+- Source files are TypeScript-first. Use `.ts` for modules, server code, remotes, and shared utilities.
+- Svelte components should use `<script lang="ts">` unless there is a concrete reason not to.
+- Keep SvelteKit/Vite import specifiers using `.js` for local TypeScript modules, e.g. import from `$lib/server/config.js` even though the source file is `config.ts`.
+- Do not add new JSDoc typedef-only `.js` modules for app code; define and export real TypeScript types instead.
 
 ## UI Rules
 
@@ -24,9 +31,9 @@ Magma is a SvelteKit dashboard app migrated from the legacy Cloudflare/SolidJS M
 ## Server Calls
 
 - Prefer SvelteKit remote functions for app server calls.
-- Remote functions live in `src/lib/remotes/*.remote.js`.
+- Remote functions live in `src/lib/remotes/*.remote.ts`.
 - Keep legacy REST routes only when useful for compatibility or direct endpoint checks.
-- Server-owned files are read/written through `src/lib/server/config.js`.
+- Server-owned files are read/written through `src/lib/server/config.ts`.
 
 ## Config Files
 
@@ -54,39 +61,37 @@ Magma is a SvelteKit dashboard app migrated from the legacy Cloudflare/SolidJS M
 
 A widget requires changes in **6 files** spread across types, remote, component, and registration:
 
-### 1. `src/lib/types/config.js` — Config typedef
+### 1. `src/lib/types/config.ts` — Config type
 
-Add a `@typedef` for the widget's config object with all configurable properties:
+Add an exported TypeScript type for the widget's config object with all configurable properties:
 
-```js
-/**
- * @typedef {Object} MyWidgetConfig
- * @property {string} [apiKey]
- * @property {number} [refreshInterval]
- */
+```ts
+export type MyWidgetConfig = {
+  apiKey?: string
+  refreshInterval?: number
+}
 ```
 
-### 2. `src/lib/types/widget.js` — Widget type & props typedef
+### 2. `src/lib/types/widget.ts` — Widget type & props type
 
-Add the widget name to the `WidgetType` union and create a props typedef:
+Add the widget name to the `WidgetType` union and create a props type:
 
-```js
+```ts
 // Add to the WidgetType union:
-@typedef {'...'|'my-widget'} WidgetType
+export type WidgetType = '...' | 'my-widget'
 
-// Add props typedef:
-/**
- * @typedef {Object} MyWidgetWidgetProps
- * @property {Omit<Widget, 'config'> & { config?: MyWidgetConfig }} widget
- * @property {boolean} [compact]
- */
+// Add props type:
+export type MyWidgetWidgetProps = {
+  widget: Omit<Widget, 'config'> & { config?: MyWidgetConfig }
+  compact?: boolean
+}
 ```
 
-### 3. `src/lib/types/widget-config-fields.js` — Property panel fields
+### 3. `src/lib/types/widget-config-fields.ts` — Property panel fields
 
 Add a `widgetConfigFields` entry so the property panel renders correctly:
 
-```js
+```ts
 'my-widget': [
   { key: 'apiKey', label: 'API Key', type: 'text', default: '' },
   { key: 'refreshInterval', label: 'Refresh (s)', type: 'number', default: 300 }
@@ -95,32 +100,31 @@ Add a `widgetConfigFields` entry so the property panel renders correctly:
 
 Supported field types: `text`, `number`, `color`, `icon-picker`, `checkbox`, `select`, `textarea`, `password`.
 
-### 4. `src/lib/remotes/*.remote.js` — Server remote
+### 4. `src/lib/remotes/*.remote.ts` — Server remote
 
 Create a remote function using SvelteKit's `query` with valibot validation. Add an in-memory cache if calling an external API:
 
-```js
-// @ts-nocheck
+```ts
 import { query } from '$app/server'
 import * as v from 'valibot'
 
-const cache = new Map()
+const cache = new Map<string, { data: unknown; ts: number }>()
 const CACHE_TTL = 60_000
 
-function getCached(key) {
+function getCached<T>(key: string): T | null {
   const entry = cache.get(key)
-  if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data
+  if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data as T
   return null
 }
 
-function setCache(key, data) {
+function setCache(key: string, data: unknown) {
   cache.set(key, { data, ts: Date.now() })
 }
 
 export const fetchMyData = query(
   v.object({ param: v.string() }),
   async ({ param }) => {
-    const cached = getCached(param)
+    const cached = getCached<unknown>(param)
     if (cached) return cached
     const response = await fetch(`https://api.example.com/${param}`)
     if (!response.ok)
@@ -132,23 +136,24 @@ export const fetchMyData = query(
 )
 ```
 
-Cache GET requests only — skip caching for POST/PUT/DELETE. Do NOT cache `docker.remote.js` (local API).
+Cache GET requests only — skip caching for POST/PUT/DELETE. Do NOT cache `docker.remote.ts` (local API).
 
 ### 5. `src/lib/components/dashboard/widgets/Widget*.svelte` — Widget component
 
 Place the Svelte 5 component in this directory. Use `$props`, `$state`, `$derived`, and `$effect` (not `onMount` — `$effect` re-fetches when config changes):
 
 ```svelte
-<script>
+<script lang="ts">
   import { RefreshCw } from '@lucide/svelte'
   import { fetchMyData } from '$lib/remotes/my-widget.remote.js'
   import { Button } from '$lib/components/ui/button/index.js'
+  import type { MyWidgetWidgetProps } from '$lib/types/widget.js'
 
-  let { widget, compact = false } = $props()
+  let { widget, compact = false }: MyWidgetWidgetProps = $props()
 
-  let state = $state('idle')
+  let state = $state<'idle' | 'loading' | 'content' | 'error'>('idle')
   let errorMsg = $state('')
-  let data = $state([])
+  let data = $state<unknown[]>([])
 
   let refreshInterval = $derived(widget.config?.refreshInterval ?? 300)
   let hasConfig = $derived((widget.config?.apiKey || '').trim().length > 0)
@@ -159,11 +164,11 @@ Place the Svelte 5 component in this directory. Use `$props`, `$state`, `$derive
     errorMsg = ''
     try {
       const result = await fetchMyData({ param: widget.config?.apiKey || '' })
-      data = result
+      data = Array.isArray(result) ? result : []
       state = 'content'
     } catch (err) {
       state = 'error'
-      errorMsg = err.message || String(err)
+      errorMsg = err instanceof Error ? err.message : String(err)
     }
   }
 
@@ -213,15 +218,15 @@ Place the Svelte 5 component in this directory. Use `$props`, `$state`, `$derive
 
 **a. `src/lib/components/dashboard/WidgetRenderer.svelte`** — Add import and map entry:
 
-```js
+```ts
 import WidgetMyWidget from './widgets/WidgetMyWidget.svelte'
 // in the map object:
 'my-widget': WidgetMyWidget,
 ```
 
-**b. `src/lib/server/config.js`** — Add to `knownWidgetTypes` set:
+**b. `src/lib/server/config.ts`** — Add to `knownWidgetTypes` set:
 
-```js
+```ts
 const knownWidgetTypes = new Set([
   // ...
   'my-widget'
@@ -230,7 +235,7 @@ const knownWidgetTypes = new Set([
 
 **c. `src/routes/(dashboard)/DashboardEditor.svelte`** — Add a template for the Add Widget palette:
 
-```js
+```ts
 const templates = [
   // ...
   { type: 'my-widget', title: 'My Widget', w: 4, h: 4, config: { ... } },
@@ -267,8 +272,10 @@ Use `widget.w` and `widget.h` (grid units, default 100px each) to adapt layout a
 ### Pattern
 
 ```svelte
-<script>
-  let { widget, compact = false } = $props()
+<script lang="ts">
+  import type { WidgetProps } from '$lib/types/widget.js'
+
+  let { widget, compact = false }: WidgetProps = $props()
 
   let size = $derived(
     compact ? 'small' :

@@ -1,7 +1,6 @@
 <script lang="ts">
   import {
     GripHorizontal,
-    ArrowDownRight,
     Pencil,
     Save,
     Plus,
@@ -24,6 +23,8 @@
     findNearestFreePosition,
     overlaps
   } from '$lib/dashboard/grid-utils.js'
+  import { resizePatchForDirection } from '$lib/dashboard/resize-utils.js'
+  import type { ResizeDirection } from '$lib/dashboard/resize-utils.js'
   import PasskeyModal from '$lib/components/dashboard/PasskeyModal.svelte'
 
   let {
@@ -287,13 +288,18 @@
     window.addEventListener('pointerup', stop)
   }
 
-  function startResize(event: PointerEvent, widget: any) {
+  function startResize(
+    event: PointerEvent,
+    widget: any,
+    direction: ResizeDirection
+  ) {
     if (!editMode) return
     if (!canvasElement) return
     const canvas = canvasElement
     event.preventDefault()
+    event.stopPropagation()
     const start = cellFromEvent(event, canvas, pageCenter, cellSize, cellHeight)
-    const original = { w: widget.w, h: widget.h }
+    const original = { x: widget.x, y: widget.y, w: widget.w, h: widget.h }
     draftWidget = widget.id
     gridActive = true
 
@@ -305,10 +311,14 @@
         cellSize,
         cellHeight
       )
-      updateWidget(widget.id, {
-        w: Math.max(1, original.w + cell.x - start.x),
-        h: Math.max(1, original.h + cell.y - start.y)
-      })
+      updateWidget(
+        widget.id,
+        resizePatchForDirection(
+          original,
+          { dx: cell.x - start.x, dy: cell.y - start.y },
+          direction
+        )
+      )
     }
 
     function stop() {
@@ -609,13 +619,29 @@
           </div>
           {#if editMode}
             <Button
-              class={`absolute right-1 bottom-1 z-4 grid size-7 text-magma-text cursor-nwse-resize focus-visible:opacity-100 ${editMode ? 'opacity-100' : 'opacity-0'}`}
+              class="absolute top-10 bottom-2 left-0 z-4 h-auto w-3 min-h-0 cursor-ew-resize rounded-none border-0 bg-transparent p-0 text-transparent hover:bg-magma-accent/16 focus-visible:opacity-100"
+              aria-label="Resize widget from left edge"
+              title="Resize widget from left edge"
               onpointerdown={(event: PointerEvent) =>
-                startResize(event, widget)}
+                startResize(event, widget, 'left')}
               variant="ghost"
-            >
-              <ArrowDownRight size={14} />
-            </Button>
+            ></Button>
+            <Button
+              class="absolute top-10 right-0 bottom-2 z-4 h-auto w-3 min-h-0 cursor-ew-resize rounded-none border-0 bg-transparent p-0 text-transparent hover:bg-magma-accent/16 focus-visible:opacity-100"
+              aria-label="Resize widget from right edge"
+              title="Resize widget from right edge"
+              onpointerdown={(event: PointerEvent) =>
+                startResize(event, widget, 'right')}
+              variant="ghost"
+            ></Button>
+            <Button
+              class="absolute right-2 bottom-0 left-2 z-4 h-3 min-h-0 cursor-ns-resize rounded-none border-0 bg-transparent p-0 text-transparent hover:bg-magma-accent/16 focus-visible:opacity-100"
+              aria-label="Resize widget from bottom edge"
+              title="Resize widget from bottom edge"
+              onpointerdown={(event: PointerEvent) =>
+                startResize(event, widget, 'bottom')}
+              variant="ghost"
+            ></Button>
           {/if}
         </div>
       {/each}
