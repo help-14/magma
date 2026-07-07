@@ -103,7 +103,7 @@
                 >{progressValue}%</span
               >
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent side="bottom">
               {tooltipText}
             </TooltipContent>
           </Tooltip>
