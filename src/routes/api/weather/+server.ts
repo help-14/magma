@@ -1,6 +1,7 @@
 import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { store } from '$lib/server/config.js';
 
 export const GET: RequestHandler = async ({ url, fetch }) => {
 	const latitude = url.searchParams.get('latitude');
@@ -10,7 +11,10 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 		return json({ message: 'latitude and longitude are required' }, { status: 400 });
 	}
 
-	if (!env.WEATHER_API) {
+	const systemConfig = await store.readSystemConfig();
+	const apiKey = systemConfig.system?.weatherApiKey || env.WEATHER_API;
+
+	if (!apiKey) {
 		return json(fallbackWeather(latitude, longitude));
 	}
 
@@ -18,7 +22,7 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 	weatherUrl.searchParams.set('lat', latitude);
 	weatherUrl.searchParams.set('lon', longitude);
 	weatherUrl.searchParams.set('limit', '1');
-	weatherUrl.searchParams.set('appid', env.WEATHER_API);
+	weatherUrl.searchParams.set('appid', apiKey);
 
 	const response = await fetch(weatherUrl);
 	if (!response.ok) {

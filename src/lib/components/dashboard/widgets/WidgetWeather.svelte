@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { MapPin } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
   import { getWeather } from '$lib/remotes/weather.remote.js'
-  import * as Popover from '$lib/components/ui/popover/index.js'
+  import * as Tooltip from '$lib/components/ui/tooltip/index.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import { getWeatherIcon } from '$lib/assets/weather-icons.js'
   import type { WeatherWidgetProps } from '$lib/types/widget.js'
 
-  let { widget, locations = {}, compact = false }: WeatherWidgetProps = $props()
+  let { widget, compact = false }: WeatherWidgetProps = $props()
   let weather = $state<any>(null)
 
   let w = $derived(widget.w ?? 0)
@@ -28,32 +27,38 @@
 
   let stats = $derived(weather ? [
     { label: m.weather_feels_like(), value: toCelsius(weather.main?.feels_like) },
-    { label: m.weather_min(), value: toCelsius(weather.main?.temp_min) },
-    { label: m.weather_max(), value: toCelsius(weather.main?.temp_max) },
+    ...(weather.main?.temp_min != null ? [{ label: m.weather_min(), value: toCelsius(weather.main?.temp_min) }] : []),
+    ...(weather.main?.temp_max != null ? [{ label: m.weather_max(), value: toCelsius(weather.main?.temp_max) }] : []),
     { label: m.weather_humidity(), value: `${weather.main?.humidity ?? '--'}%` },
     { label: m.weather_wind(), value: formatWind(weather.wind?.speed, weather.wind?.deg) },
     { label: m.weather_sky(), value: weather.weather?.[0]?.main || '' },
-    { label: m.weather_visibility(), value: formatVisibility(weather.visibility) },
+    ...(weather.visibility != null ? [{ label: m.weather_visibility(), value: formatVisibility(weather.visibility) }] : [])
   ] : [])
 
   $effect(() => {
-    const location = locations[widget.config?.locationRef || 'default']
-    if (!location) return
+    const cfg = widget.config || {}
+    const lat = cfg.latitude ?? 0
+    const lon = cfg.longitude ?? 0
+    if (lat === 0 && lon === 0 && !cfg.cityName) return
     let cancelled = false
-    getWeather({ latitude: location.latitude, longitude: location.longitude })
-      .then((data) => {
-        if (!cancelled) weather = data
-      })
-      .catch(() => {
-        if (!cancelled) weather = null
-      })
-    return () => {
-      cancelled = true
-    }
+    getWeather({
+      provider: cfg.provider || 'open-meteo',
+      apiKey: cfg.apiKey || '',
+      cityName: cfg.cityName || '',
+      latitude: lat,
+      longitude: lon,
+      cacheTtl: (cfg.cacheTtl || 900) * 1000
+    }).then((data) => {
+      if (!cancelled) weather = data
+    }).catch(() => {
+      if (!cancelled) weather = null
+    })
+    return () => { cancelled = true }
   })
 
   function toCelsius(value: number | null | undefined) {
-    return `${Math.floor((value || 0) - 273.15)}°C`
+    if (value == null) return '--°C'
+    return `${Math.floor(value - 273.15)}°C`
   }
 
   function formatHour(timestamp: number | null | undefined) {
@@ -71,101 +76,94 @@
     return `${meters}m`
   }
 
-  function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const loc = locations[widget.config?.locationRef || 'default']
-        if (!loc) return
-        loc.latitude = position.coords.latitude
-        loc.longitude = position.coords.longitude
-      })
-    }
-  }
-
   function formatWind(speed: number | null | undefined, deg: number | null | undefined) {
+    if (speed == null) return '--'
     const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
     const dir = directions[Math.round((deg || 0) / 45) % 8]
-    return `${speed ?? '--'}m/s · ${dir}`
+    return `${speed}m/s · ${dir}`
   }
 </script>
 
 {#if size === 'small'}
   <div class="relative flex flex-col justify-center p-4 pl-1 w-full min-w-0 min-h-0">
-    <Popover.Root>
-      <Popover.Trigger
-        class="flex flex-row items-center content-center justify-center gap-2 w-full cursor-pointer bg-transparent border-0 p-0 text-left"
-        title={m.weather_click()}
-      >
-        {#if weather}
-          <img
-            src={getWeatherIcon(weather.weather?.[0]?.id ?? 0)}
-            alt={weather.weather?.[0]?.description || m.weather_temperature()}
-            width={iconPx}
-            height={iconPx}
-            class="shrink-0"
-          />
-        {:else}
-          <div
-            class="shrink-0 rounded-full bg-magma-accent/20"
-            style="width: {iconPx}px; height: {iconPx}px"
-          ></div>
-        {/if}
-        <div>
-          <strong class="block text-2xl leading-none"
-            >{weather ? toCelsius(weather.main?.temp) : '--°C'}</strong
-          >
-          <span class="text-magma-muted text-xs"
-            >{weather?.name || 'Weather'} · {weather?.main?.humidity ??
-              '--'}%</span
-          >
-        </div>
-      </Popover.Trigger>
-      {#if weather}
-        <Popover.Content
-          side="right"
-          align="start"
-          sideOffset={12}
-          class="w-64 bg-magma-panel-strong border-magma-line shadow-[0_12px_40px_rgb(0_0_0/40%)] backdrop-blur-xl ring-0 text-xs leading-relaxed p-3"
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          class="flex flex-row items-center content-center justify-center gap-2 w-full cursor-pointer bg-transparent border-0 p-0 text-left"
+          title={m.weather_click()}
         >
-          <div class="flex items-center gap-2 mb-2">
-            <MapPin size={14} class="text-magma-accent shrink-0" />
-            <span class="font-bold"
-              >{weather.name}, {weather.sys?.country || ''}</span
+          {#if weather}
+            <img
+              src={getWeatherIcon(weather.weather?.[0]?.id ?? 0)}
+              alt={weather.weather?.[0]?.description || m.weather_temperature()}
+              width={iconPx}
+              height={iconPx}
+              class="shrink-0"
+            />
+          {:else}
+            <div
+              class="shrink-0 rounded-full bg-magma-accent/20"
+              style="width: {iconPx}px; height: {iconPx}px"
+            ></div>
+          {/if}
+          <div>
+            <strong class="block text-2xl leading-none"
+              >{weather ? toCelsius(weather.main?.temp) : '--°C'}</strong
+            >
+            <span class="text-magma-muted text-xs"
+              >{weather?.name || 'Weather'} · {weather?.main?.humidity ??
+                '--'}%</span
             >
           </div>
-          <hr class="border-magma-line/50 my-1.5" />
-          <div class="grid grid-cols-2 gap-x-3 gap-y-1">
-            <span class="text-magma-muted">{m.weather_temperature()}</span>
-            <span>{toCelsius(weather.main?.temp)}</span>
-            <span class="text-magma-muted">{m.weather_feels_like()}</span>
-            <span>{toCelsius(weather.main?.feels_like)}</span>
-            <span class="text-magma-muted">{m.weather_min()}</span>
-            <span>{toCelsius(weather.main?.temp_min)}</span>
-            <span class="text-magma-muted">{m.weather_max()}</span>
-            <span>{toCelsius(weather.main?.temp_max)}</span>
-            <span class="text-magma-muted">{m.weather_humidity()}</span>
-            <span>{weather.main?.humidity}%</span>
-            <span class="text-magma-muted">{m.weather_wind()}</span>
-            <span>{weather.wind?.speed}m/s at {weather.wind?.deg}°</span>
-            <span class="text-magma-muted">{m.weather_sky()}</span>
-            <span>{weather.weather?.[0]?.main || ''}</span>
-            <span class="text-magma-muted">{m.weather_visibility()}</span>
-            <span>{formatVisibility(weather.visibility)}</span>
-            <span class="text-magma-muted">{m.weather_sunrise()}</span>
-            <span>{formatHour(weather.sys?.sunrise)}</span>
-            <span class="text-magma-muted">{m.weather_sunset()}</span>
-            <span>{formatHour(weather.sys?.sunset)}</span>
-          </div>
-          <Button
-            variant="ghost"
-            class="mt-2 w-full py-1.5 rounded-md bg-magma-accent/14 text-magma-accent text-xs font-bold hover:bg-magma-accent/24"
-            onclick={getLocation}
+        </Tooltip.Trigger>
+        {#if weather}
+          <Tooltip.Content
+            side="right"
+            align="start"
+            sideOffset={12}
+            class="w-64 bg-magma-panel-strong border-magma-line shadow-[0_12px_40px_rgb(0_0_0/40%)] backdrop-blur-xl ring-0 text-xs leading-relaxed text-foreground p-3 flex flex-col items-stretch gap-0"
+            arrowClasses="bg-magma-panel-strong fill-magma-panel-strong border-magma-line"
           >
-            {m.weather_update_location()}
-          </Button>
-        </Popover.Content>
-      {/if}
-    </Popover.Root>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="font-bold">{weather.name}</span>
+            </div>
+            <hr class="border-magma-line/50 my-1.5" />
+            <div class="grid grid-cols-2 gap-x-3 gap-y-1">
+              <span class="text-magma-muted">{m.weather_temperature()}</span>
+              <span>{toCelsius(weather.main?.temp)}</span>
+              <span class="text-magma-muted">{m.weather_feels_like()}</span>
+              <span>{toCelsius(weather.main?.feels_like)}</span>
+              {#if weather.main?.temp_min != null}
+                <span class="text-magma-muted">{m.weather_min()}</span>
+                <span>{toCelsius(weather.main?.temp_min)}</span>
+              {/if}
+              {#if weather.main?.temp_max != null}
+                <span class="text-magma-muted">{m.weather_max()}</span>
+                <span>{toCelsius(weather.main?.temp_max)}</span>
+              {/if}
+              <span class="text-magma-muted">{m.weather_humidity()}</span>
+              <span>{weather.main?.humidity}%</span>
+              <span class="text-magma-muted">{m.weather_wind()}</span>
+              <span>{weather.wind?.speed}m/s at {weather.wind?.deg}°</span>
+              <span class="text-magma-muted">{m.weather_sky()}</span>
+              <span>{weather.weather?.[0]?.main || ''}</span>
+              {#if weather.visibility != null}
+                <span class="text-magma-muted">{m.weather_visibility()}</span>
+                <span>{formatVisibility(weather.visibility)}</span>
+              {/if}
+              {#if weather.sys?.sunrise}
+                <span class="text-magma-muted">{m.weather_sunrise()}</span>
+                <span>{formatHour(weather.sys?.sunrise)}</span>
+              {/if}
+              {#if weather.sys?.sunset}
+                <span class="text-magma-muted">{m.weather_sunset()}</span>
+                <span>{formatHour(weather.sys?.sunset)}</span>
+              {/if}
+            </div>
+          </Tooltip.Content>
+        {/if}
+      </Tooltip.Root>
+    </Tooltip.Provider>
   </div>
 {:else if weather}
   <div class="relative flex flex-col h-full overflow-hidden p-3 gap-2">
@@ -191,18 +189,17 @@
     </div>
 
     {#if size === 'large'}
-      <hr class="border-magma-line/50 my-0.5" />
-      <div class="flex items-center justify-between text-xs">
-        <span class="text-magma-muted">{m.weather_sunrise()} {formatHour(weather.sys?.sunrise)}</span>
-        <span class="text-magma-muted">{m.weather_sunset()} {formatHour(weather.sys?.sunset)}</span>
-      </div>
-      <Button
-        variant="ghost"
-        class="w-full py-1.5 rounded-md bg-magma-accent/14 text-magma-accent text-xs font-bold hover:bg-magma-accent/24"
-        onclick={getLocation}
-      >
-        {m.weather_update_location()}
-      </Button>
+      {#if weather.sys?.sunrise || weather.sys?.sunset}
+        <hr class="border-magma-line/50 my-0.5" />
+        <div class="flex items-center justify-between text-xs">
+          {#if weather.sys?.sunrise}
+            <span class="text-magma-muted">{m.weather_sunrise()} {formatHour(weather.sys?.sunrise)}</span>
+          {/if}
+          {#if weather.sys?.sunset}
+            <span class="text-magma-muted">{m.weather_sunset()} {formatHour(weather.sys?.sunset)}</span>
+          {/if}
+        </div>
+      {/if}
     {/if}
   </div>
 {/if}

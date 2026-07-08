@@ -11,7 +11,12 @@ export interface SearchConfig {
 }
 
 export interface WeatherConfig {
-	locationRef?: string
+	provider?: 'open-meteo' | 'weatherapi' | 'openweathermap'
+	apiKey?: string
+	cityName?: string
+	latitude?: number
+	longitude?: number
+	cacheTtl?: number
 }
 
 export interface DockerStatusConfig {

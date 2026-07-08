@@ -34,7 +34,22 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
 		}
 	],
 	weather: [
-		{ key: 'locationRef', label: 'Location ref', type: 'text', default: 'default' }
+		{
+			key: 'provider',
+			label: 'Provider',
+			type: 'select',
+			default: 'open-meteo',
+			options: [
+				{ label: 'Open-Meteo (free, no key)', value: 'open-meteo' },
+				{ label: 'WeatherAPI.com', value: 'weatherapi' },
+				{ label: 'OpenWeatherMap', value: 'openweathermap' }
+			]
+		},
+		{ key: 'apiKey', label: 'API Key', type: 'password', default: '' },
+		{ key: 'cityName', label: 'City name', type: 'text', default: '', placeholder: 'e.g. London' },
+		{ key: 'latitude', label: 'Latitude', type: 'number', default: 0 },
+		{ key: 'longitude', label: 'Longitude', type: 'number', default: 0 },
+		{ key: 'cacheTtl', label: 'Cache TTL (s)', type: 'number', default: 900 }
 	],
 	'docker-status': [
 		{

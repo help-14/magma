@@ -71,7 +71,7 @@
       title: 'Weather',
       w: 4,
       h: 4,
-      config: { locationRef: 'default' }
+      config: { provider: 'open-meteo', cityName: 'London' }
     },
     { type: 'website', title: 'Website', w: 8, h: 6, config: {} },
     {
