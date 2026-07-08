@@ -103,7 +103,11 @@
                 >{progressValue}%</span
               >
             </TooltipTrigger>
-            <TooltipContent side="bottom">
+            <TooltipContent
+              side="bottom"
+              class="bg-magma-panel-strong border-magma-line shadow-[0_12px_40px_rgb(0_0_0/40%)] backdrop-blur-xl ring-0 text-xs leading-relaxed text-foreground"
+              arrowClasses="bg-magma-panel-strong fill-magma-panel-strong border-magma-line"
+            >
               {tooltipText}
             </TooltipContent>
           </Tooltip>

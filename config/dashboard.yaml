@@ -17,7 +17,7 @@ dashboard:
       w: 3
       h: 2
       config:
-        cityName: London
+        cityName: Hanoi
     - id: search-main
       type: search
       title: Search
