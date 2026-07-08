@@ -55,11 +55,11 @@
 <button
   onclick={handleClick}
   disabled={navigating}
-  class="button-widget relative flex items-center justify-center gap-2.5 w-full h-full overflow-hidden p-3 rounded-lg text-magma-text text-center no-underline transition-all duration-150 hover:bg-magma-accent/14 hover:text-[#fff7df] hover:shadow-[0_10px_24px_rgb(0_0_0/20%)] active:bg-magma-accent/24 active:shadow-[0_4px_12px_rgb(0_0_0/20%)] active:scale-[0.985] focus-visible:outline-2 focus-visible:outline-magma-accent focus-visible:outline-offset-2 cursor-pointer"
+  class="button-widget relative flex items-center justify-center gap-2.5 w-full h-full overflow-hidden p-3 rounded-lg text-foreground text-center no-underline transition-all duration-150 hover:bg-accent/14 hover:text-[#fff7df] hover:shadow-[0_10px_24px_rgb(0_0_0/20%)] active:bg-accent/24 active:shadow-[0_4px_12px_rgb(0_0_0/20%)] active:scale-[0.985] focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 cursor-pointer"
 >
   {#if navigating}
     <RefreshCw
-      class="animate-spin text-magma-accent"
+      class="animate-spin text-accent"
       size={compact ? 20 : 26}
     />
   {:else}

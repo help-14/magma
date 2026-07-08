@@ -109,9 +109,9 @@
 
 <div>
   {#if loading}
-    <p class="text-magma-muted text-sm">Loading passkeys...</p>
+    <p class="text-muted-foreground text-sm">Loading passkeys...</p>
   {:else if passkeys.length === 0}
-    <div class="flex flex-col items-center gap-4 py-8 text-magma-muted">
+    <div class="flex flex-col items-center gap-4 py-8 text-muted-foreground">
       <KeyRound size={40} class="opacity-40" />
       <p class="text-sm">No passkeys registered</p>
       <Button variant="magma" onclick={handleAdd} disabled={registering}>
@@ -122,12 +122,12 @@
   {:else}
     <div class="flex flex-col gap-2">
       {#each passkeys as pk (pk.id)}
-        <div class="flex items-center justify-between gap-3 px-3 py-2 border border-magma-line rounded-lg bg-[rgb(20_18_16/48%)]">
+        <div class="flex items-center justify-between gap-3 px-3 py-2 border border-border rounded-lg bg-[rgb(20_18_16/48%)]">
           <div class="flex items-center gap-3 min-w-0">
-            <KeyRound size={18} class="shrink-0 text-magma-accent" />
+            <KeyRound size={18} class="shrink-0 text-accent" />
             <div class="min-w-0">
-              <p class="text-magma-text text-sm truncate">{pk.label}</p>
-              <p class="text-magma-muted text-xs">Created {formatDate(pk.created)}</p>
+              <p class="text-foreground text-sm truncate">{pk.label}</p>
+              <p class="text-muted-foreground text-xs">Created {formatDate(pk.created)}</p>
             </div>
           </div>
           <Button

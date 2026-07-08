@@ -78,15 +78,6 @@ export interface RssWidgetConfig {
 	refreshInterval?: number
 }
 
-export interface ServerStatusConfig {
-	sshCmd: string
-	showHostname?: boolean
-	showUptime?: boolean
-	showCpu?: boolean
-	showRam?: boolean
-	showDisk?: boolean
-}
-
 export interface GithubRepoConfig {
 	repo: string
 	showStars?: boolean

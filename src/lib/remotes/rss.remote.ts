@@ -1,7 +1,7 @@
 import { query } from '$app/server';
 import * as v from 'valibot';
 import { XMLParser } from 'fast-xml-parser';
-import { createCache } from '$lib/server/cache.js';
+import { createCache, stableCacheKey } from '$lib/server/cache.js';
 
 type Article = { title: string; link: string; pubDate: string; description: any; feedTitle: string; thumbnail: any; categories: string[] }
 type FeedConfig = { url: string; title?: string; headers?: Record<string, string>; limit?: number }
@@ -85,35 +85,31 @@ export const fetchRss = query(
 
 		for (const feed of feeds) {
 			try {
-				const feedKey = JSON.stringify({ url: feed.url, headers: feed.headers, limit: feed.limit });
-				const cached = cache.get(feedKey);
-				if (cached) {
-					allArticles.push(...cached);
-					continue;
-				}
-
 				const headers = feed.headers || {};
-				const response = await fetch(feed.url, { headers });
-				if (!response.ok) {
-					errors.push({ feedUrl: feed.url, message: `${response.status} ${response.statusText}` });
-					continue;
-				}
-				const xml = await response.text();
-				const { items, feedTitle } = parseFeed(xml);
-				const title = feed.title || feedTitle;
-				const feedLimit = feed.limit || Infinity;
-				let count = 0;
+				const feedKey = stableCacheKey({ url: feed.url, headers, limit: feed.limit });
+				const feedArticles = await cache.getOrSet(feedKey, async () => {
+					const response = await fetch(feed.url, { headers });
+					if (!response.ok) {
+						throw new Error(`${response.status} ${response.statusText}`);
+					}
 
-				const feedArticles = [];
-				for (const item of items) {
-					if (count >= feedLimit) break;
-					const article = extractArticle(item, title);
-					if (!article.title) continue;
-					feedArticles.push(article);
-					count++;
-				}
+					const xml = await response.text();
+					const { items, feedTitle } = parseFeed(xml);
+					const title = feed.title || feedTitle;
+					const feedLimit = feed.limit || Infinity;
+					let count = 0;
 
-				cache.set(feedKey, feedArticles);
+					const articles: Article[] = [];
+					for (const item of items) {
+						if (count >= feedLimit) break;
+						const article = extractArticle(item, title);
+						if (!article.title) continue;
+						articles.push(article);
+						count++;
+					}
+
+					return articles;
+				});
 				allArticles.push(...feedArticles);
 			} catch (err) {
 				errors.push({ feedUrl: feed.url, message: err instanceof Error ? err.message : 'Fetch failed' });

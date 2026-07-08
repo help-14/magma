@@ -115,11 +115,11 @@
             class="flex items-center px-2 py-1.5 rounded hover:bg-white/5 transition-colors"
           >
             <div class="flex-1 min-w-0">
-              <div class="text-magma-text text-xs font-medium truncate">
+              <div class="text-foreground text-xs font-medium truncate">
                 {stock.symbol}
               </div>
               {#if !compact && stock.name !== stock.symbol}
-                <div class="text-magma-muted text-[10px] truncate">
+                <div class="text-muted-foreground text-[10px] truncate">
                   {stock.name}
                 </div>
               {/if}
@@ -139,7 +139,7 @@
               </div>
             {/if}
             <div
-              class="text-right m-2 shrink-0 text-magma-text text-xs font-medium tabular-nums"
+              class="text-right m-2 shrink-0 text-foreground text-xs font-medium tabular-nums"
             >
               {formatPrice(stock.price)}
             </div>
@@ -175,19 +175,19 @@
                   </div>
                 {:else}
                   <div
-                    class="flex items-center gap-0.5 justify-end text-magma-muted"
+                    class="flex items-center gap-0.5 justify-end text-muted-foreground"
                   >
                     <Minus class="size-3" />
                     <span class="text-xs tabular-nums">0.00</span>
                   </div>
                   <div
-                    class="text-[10px] text-magma-muted tabular-nums text-right"
+                    class="text-[10px] text-muted-foreground tabular-nums text-right"
                   >
                     0.00%
                   </div>
                 {/if}
               {:else}
-                <div class="text-magma-muted text-xs">—</div>
+                <div class="text-muted-foreground text-xs">—</div>
               {/if}
             </div>
           </div>

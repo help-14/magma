@@ -32,12 +32,12 @@
 </script>
 
 <aside
-  class="fixed top-6 bottom-6 left-6 z-23 w-[min(340px,calc(100vw-48px))] p-4 overflow-auto border border-magma-line rounded-lg bg-[rgb(26_22_18/92%)] text-magma-text shadow-[0_30px_90px_rgb(0_0_0/45%)] backdrop-blur-xl max-sm:top-3 max-sm:left-3 max-sm:w-[calc(100vw-24px)] max-sm:bottom-auto max-sm:max-h-[calc(100vh-102px)]"
+  class="fixed top-6 bottom-6 left-6 z-23 w-[min(340px,calc(100vw-48px))] p-4 overflow-auto border border-border rounded-lg bg-[rgb(26_22_18/92%)] text-foreground shadow-[0_30px_90px_rgb(0_0_0/45%)] backdrop-blur-xl max-sm:top-3 max-sm:left-3 max-sm:w-[calc(100vw-24px)] max-sm:bottom-auto max-sm:max-h-[calc(100vh-102px)]"
   aria-label="Widget properties"
 >
   <div class="flex items-start justify-between gap-3.5 mb-4">
     <div>
-      <p class="text-magma-accent text-xs font-extrabold uppercase m-0 mb-1">
+      <p class="text-accent text-xs font-extrabold uppercase m-0 mb-1">
         {m.properties_title()}
       </p>
       <h2 class="m-0 text-lg leading-tight">{widget.title}</h2>
@@ -46,7 +46,7 @@
   </div>
 
   <Label class="grid gap-1.5 mt-3">
-    <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_title_field()}</span>
+    <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_title_field()}</span>
     <Input
       value={widget.title}
       oninput={(event: Event) => onUpdate({ title: inputValue(event) })}
@@ -54,19 +54,19 @@
   </Label>
 
   <Label class="grid gap-1.5 mt-3">
-    <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_id_field()}</span>
+    <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_id_field()}</span>
     <Input value={widget.id} readonly />
   </Label>
 
   <Label class="grid gap-1.5 mt-3">
-    <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_type_field()}</span>
+    <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_type_field()}</span>
     <Input value={widget.type} readonly />
   </Label>
 
   {#if !selected?.childId}
     <div class="grid grid-cols-4 gap-2">
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_x()}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_x()}</span>
         <Input
           type="number"
           value={widget.x}
@@ -74,7 +74,7 @@
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_y()}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_y()}</span>
         <Input
           type="number"
           min="1"
@@ -83,7 +83,7 @@
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_w()}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_w()}</span>
         <Input
           type="number"
           min="1"
@@ -93,7 +93,7 @@
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase">{m.properties_h()}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_h()}</span>
         <Input
           type="number"
           min="1"
@@ -108,7 +108,7 @@
   {#each fields as field (field.key)}
     {#if field.type === 'icon-picker'}
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase"
+        <span class="text-muted-foreground text-xs font-bold uppercase"
           >{field.label}</span
         >
         <IconPicker
@@ -118,7 +118,7 @@
       </Label>
     {:else if field.type === 'color'}
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase"
+        <span class="text-muted-foreground text-xs font-bold uppercase"
           >{field.label}</span
         >
         <div class="grid grid-cols-[44px_1fr] gap-2">
@@ -144,15 +144,15 @@
           checked={widget.config?.[field.key] ?? field.default}
           onchange={(event: Event) =>
             onUpdateConfig(field.key, inputChecked(event))}
-          class="accent-magma-accent"
+          class="accent-accent"
         />
-        <span class="text-magma-muted text-xs font-bold uppercase"
+        <span class="text-muted-foreground text-xs font-bold uppercase"
           >{field.label}</span
         >
       </Label>
     {:else if field.type === 'password'}
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase"
+        <span class="text-muted-foreground text-xs font-bold uppercase"
           >{field.label}</span
         >
         <Input
@@ -165,11 +165,11 @@
       </Label>
     {:else if field.type === 'select'}
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase"
+        <span class="text-muted-foreground text-xs font-bold uppercase"
           >{field.label}</span
         >
         <select
-          class="flex h-9 w-full rounded-md border border-magma-line bg-magma-panel px-3 py-1 text-sm text-magma-text shadow-sm cursor-pointer outline-0"
+          class="flex h-9 w-full rounded-md border border-border bg-card px-3 py-1 text-sm text-foreground shadow-sm cursor-pointer outline-0"
           value={widget.config?.[field.key] ?? field.default}
           onchange={(event: Event) =>
             onUpdateConfig(field.key, inputValue(event))}
@@ -181,7 +181,7 @@
       </Label>
     {:else if field.type === 'textarea'}
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase">{field.label}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase">{field.label}</span>
         <Textarea
           value={widget.config?.[field.key] ?? field.default}
           rows={field.rows || 4}
@@ -190,7 +190,7 @@
       </Label>
     {:else}
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-magma-muted text-xs font-bold uppercase"
+        <span class="text-muted-foreground text-xs font-bold uppercase"
           >{field.label}</span
         >
         <Input

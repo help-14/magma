@@ -121,7 +121,7 @@
             <div class="flex items-start gap-2">
               <div class="flex-1 min-w-0">
                 <div
-                  class="text-magma-text text-xs font-medium leading-tight {singleLineTitles
+                  class="text-foreground text-xs font-medium leading-tight {singleLineTitles
                     ? 'truncate'
                     : ''}"
                 >
@@ -129,7 +129,7 @@
                 </div>
                 {#if !compact && article.description}
                   <div
-                    class="text-magma-muted text-[10px] mt-0.5 line-clamp-2 leading-relaxed"
+                    class="text-muted-foreground text-[10px] mt-0.5 line-clamp-2 leading-relaxed"
                   >
                     {truncate(stripHtml(article.description), 120)}
                   </div>
@@ -137,19 +137,19 @@
                 <div class="flex items-center gap-1.5 mt-0.5">
                   {#if article.feedTitle}
                     <span
-                      class="text-[10px] text-magma-accent/70 truncate max-w-[100px]"
+                      class="text-[10px] text-accent/70 truncate max-w-[100px]"
                       >{article.feedTitle}</span
                     >
                   {/if}
                   {#if article.pubDate}
-                    <span class="text-[10px] text-magma-muted shrink-0"
+                    <span class="text-[10px] text-muted-foreground shrink-0"
                       >{timeAgo(article.pubDate)}</span
                     >
                   {/if}
                 </div>
               </div>
               <ExternalLink
-                class="size-3 text-magma-muted shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                class="size-3 text-muted-foreground shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
               />
             </div>
           </a>
@@ -160,7 +160,7 @@
           <Button
             onclick={() => (collapsed = !collapsed)}
             variant="ghost"
-            class="w-full text-xs text-magma-accent/70 h-6"
+            class="w-full text-xs text-accent/70 h-6"
           >
             {collapsed ? 'Show more' : 'Show less'}
             {#if collapsed}

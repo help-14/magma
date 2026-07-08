@@ -30,8 +30,8 @@
     {
       type: 'rss',
       title: 'RSS',
-      w: 6,
-      h: 6,
+      w: 4,
+      h: 4,
       config: {
         feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"}]',
         style: 'vertical-list',
@@ -60,8 +60,8 @@
     {
       type: 'stack',
       title: 'Stack',
-      w: 4,
-      h: 6,
+      w: 3,
+      h: 4,
       config: { flow: 'horizontal', cols: 2, rows: 0, gap: 12 },
       children: []
     },
@@ -77,29 +77,15 @@
     {
       type: 'youtube-live',
       title: 'YouTube',
-      w: 6,
-      h: 6,
-      config: { mode: 'uploads', channels: '', limit: 10 }
-    },
-    {
-      type: 'server-status',
-      title: 'Server Status',
       w: 4,
-      h: 6,
-      config: {
-        sshCmd: '',
-        showHostname: true,
-        showUptime: true,
-        showCpu: true,
-        showRam: true,
-        showDisk: true
-      }
+      h: 4,
+      config: { mode: 'uploads', channels: '', limit: 10 }
     },
     {
       type: 'github-repo',
       title: 'GitHub Repo',
-      w: 6,
-      h: 5,
+      w: 4,
+      h: 4,
       config: {
         repo: '',
         showStars: true,
@@ -159,7 +145,7 @@
 
 <aside
   bind:this={el}
-  class={`fixed z-21 w-[min(760px,calc(100vw-48px))] max-h-[min(520px,calc(100vh-120px))] p-4.5 border border-magma-line rounded-lg bg-[rgb(26_22_18/92%)] text-magma-text shadow-[0_30px_90px_rgb(0_0_0/45%)] backdrop-blur-xl overflow-auto max-sm:w-[calc(100vw-24px)] ${dragging ? 'shadow-[0_30px_90px_rgb(0_0_0/60%)] transition-none' : ''}`}
+  class={`fixed z-21 w-[min(760px,calc(100vw-48px))] max-h-[min(520px,calc(100vh-120px))] p-4.5 border border-border rounded-lg bg-[rgb(26_22_18/92%)] text-foreground shadow-[0_30px_90px_rgb(0_0_0/45%)] backdrop-blur-xl overflow-auto max-sm:w-[calc(100vw-24px)] ${dragging ? 'shadow-[0_30px_90px_rgb(0_0_0/60%)] transition-none' : ''}`}
   aria-label="Widget palette"
   style="left: {posX}px; top: {posY}px;"
 >
@@ -171,7 +157,7 @@
     onpointerdown={startDrag}
   >
     <div>
-      <p class="text-magma-accent text-xs font-bold uppercase m-0 mb-1">
+      <p class="text-accent text-xs font-bold uppercase m-0 mb-1">
         {m.palette_heading()}
       </p>
       <h2 class="m-0 text-xl leading-none">{m.palette_subtitle()}</h2>
@@ -193,7 +179,8 @@
         ondragend={onDragEnd}
       >
         <strong>{template.title}</strong>
-        <span class="text-magma-muted text-xs">{template.w} x {template.h}</span
+        <span class="text-muted-foreground text-xs"
+          >{template.w} x {template.h}</span
         >
       </Button>
     {/each}

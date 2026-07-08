@@ -6,7 +6,6 @@ import type {
 	GithubRepoConfig,
 	RssWidgetConfig,
 	SearchConfig,
-	ServerStatusConfig,
 	StackConfig,
 	StockConfig,
 	WeatherConfig,
@@ -32,7 +31,6 @@ export type WidgetType =
 	| 'stack'
 	| 'rss'
 	| 'stock'
-	| 'server-status'
 	| 'github-repo'
 	| 'honeygain'
 
@@ -113,11 +111,6 @@ export interface StockWidgetProps {
 
 export interface RssWidgetProps {
 	widget: TypedWidget<RssWidgetConfig>
-	compact?: boolean
-}
-
-export interface ServerStatusWidgetProps {
-	widget: TypedWidget<ServerStatusConfig>
 	compact?: boolean
 }
 

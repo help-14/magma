@@ -41,13 +41,13 @@
   class="flex items-center gap-3 py-3 px-4 w-full min-w-0 min-h-0"
   onsubmit={search}
 >
-  <Search size={18} class="text-magma-accent shrink-0" />
+  <Search size={18} class="text-accent shrink-0" />
   <input
     bind:this={searchInput}
     name="query"
     placeholder={widget.config?.placeholder || m.search_placeholder()}
     autocomplete="off"
-    class="w-full min-w-0 border-0 outline-0 bg-transparent text-magma-text"
+    class="w-full min-w-0 border-0 outline-0 bg-transparent text-foreground"
     ondblclick={selectTextOnDoubleClick}
   />
 </form>

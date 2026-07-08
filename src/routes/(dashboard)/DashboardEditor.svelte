@@ -1,12 +1,5 @@
 <script lang="ts">
-  import {
-    GripHorizontal,
-    Pencil,
-    Save,
-    Plus,
-    Settings,
-    Trash2
-  } from '@lucide/svelte'
+  import { Pencil, Save, Plus, Settings } from '@lucide/svelte'
   import { m } from '$lib/paraglide/messages.js'
   import { toast } from 'svelte-sonner'
   import { browser } from '$app/environment'
@@ -14,6 +7,7 @@
   import { saveDashboardConfig } from '$lib/remotes/settings.remote.js'
   import WidgetPalette from '$lib/components/dashboard/WidgetPalette.svelte'
   import WidgetPropertyPanel from '$lib/components/dashboard/WidgetPropertyPanel.svelte'
+  import DashboardWidgetFrame from '$lib/components/dashboard/DashboardWidgetFrame.svelte'
   import WidgetRenderer from '$lib/components/dashboard/WidgetRenderer.svelte'
   import {
     widgetStyle,
@@ -542,8 +536,8 @@
 </script>
 
 <section
-    class="relative min-h-screen p-6 text-magma-text max-sm:p-4.5 max-sm:overflow-x-auto"
-  style={`--magma-accent: ${config.theme?.accentColor || '#fabd2f'}; --magma-bg: url('${config.theme?.backgroundImage || '/bg.jpg'}');`}
+    class="relative min-h-screen p-6 text-foreground max-sm:p-4.5 max-sm:overflow-x-auto"
+  style={`--accent: ${config.theme?.accentColor || '#fabd2f'}; --ring: ${config.theme?.accentColor || '#fabd2f'}; --magma-bg: url('${config.theme?.backgroundImage || '/bg.jpg'}');`}
 >
   <div class="background"></div>
 
@@ -591,93 +585,35 @@
   >
     {#if browser}
       {#each widgets as widget (widget.id)}
-        <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions, a11y_no_static_element_interactions -->
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div
-          class:dragging={draftWidget === widget.id}
-          class:selected={selected?.id === widget.id && !selected?.childId}
-          class="absolute p-1.5 animate-in fade-in duration-200"
-          draggable={editMode && widget.type === 'button'}
+        <DashboardWidgetFrame
+          {widget}
+          {editMode}
+          dragging={draftWidget === widget.id}
+          selected={selected?.id === widget.id && !selected?.childId}
           style={widgetStyle(widget, pageCenter, cellSize, cellHeight)}
-          onclick={(event: MouseEvent) => selectWidget(event, widget)}
-          onkeydown={(event: KeyboardEvent) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault()
-              selectWidget(event, widget)
-            }
+          onSelect={selectWidget}
+          onDragWidget={dragWidget}
+          onDragEnd={endTemplateDrag}
+          onStartMove={startMove}
+          onDelete={(event, target) => {
+            event.preventDefault()
+            event.stopPropagation()
+            deleteWidget(target)
           }}
-          ondragstart={(event: DragEvent) => dragWidget(event, widget)}
-          ondragend={endTemplateDrag}
-          tabindex={editMode ? 0 : -1}
+          onStartResize={startResize}
         >
-          {#if editMode}
-            <Button
-              class={`absolute top-1.5 left-1.5 right-1.5 z-3 flex items-center justify-center gap-1.5 h-7 border-0 rounded-t-lg text-xs font-extrabold cursor-grab transition-opacity duration-100 focus-visible:opacity-100 active:cursor-grabbing ${editMode ? 'opacity-100' : 'opacity-0'}`}
-              draggable={widget.type === 'button'}
-              ondragstart={(event: DragEvent) => dragWidget(event, widget)}
-              ondragend={endTemplateDrag}
-              onpointerdown={(event: PointerEvent) => startMove(event, widget)}
-            >
-              <GripHorizontal size={16} />
-            </Button>
-            <Button
-              class={`absolute top-1.5 right-1.5 z-5 grid size-7 ${editMode ? 'opacity-100' : 'opacity-0'}`}
-              aria-label={m.editor_delete_widget()}
-              variant="ghost"
-              title={m.editor_delete_widget()}
-              onclick={(event: MouseEvent) => {
-                event.preventDefault()
-                event.stopPropagation()
-                deleteWidget(widget)
-              }}
-            >
-              <Trash2 size={14} />
-            </Button>
-          {/if}
-          <div
-            class={`flex w-full h-full min-w-0 min-h-0 overflow-hidden border border-magma-line rounded-lg backdrop-blur-md ${editMode ? 'bg-magma-panel-strong shadow-[0_0_0_1px_rgb(250_189_47/24%),0_18px_46px_rgb(0_0_0/26%)]' : 'bg-magma-panel shadow-[0_12px_34px_rgb(0_0_0/16%)]'}`}
-          >
-            <WidgetRenderer
-              {widget}
-              locations={config.locations || {}}
-              {editMode}
-              selectedChildId={selected?.id === widget.id
-                ? selected?.childId
-                : null}
-              onSelectChild={(event, child) =>
-                selectWidget(event, widget, child.id)}
-              onDeleteChild={(event, child) => deleteWidget(widget, child.id)}
-              onDropChild={(event) => dropIntoStack(event, widget)}
-              onDragOverChild={dragOverStack}
-            />
-          </div>
-          {#if editMode}
-            <Button
-              class="absolute top-10 bottom-2 left-0 z-4 h-auto w-3 min-h-0 cursor-ew-resize rounded-none border-0 bg-transparent p-0 text-transparent hover:bg-magma-accent/16 focus-visible:opacity-100"
-              aria-label="Resize widget from left edge"
-              title="Resize widget from left edge"
-              onpointerdown={(event: PointerEvent) =>
-                startResize(event, widget, 'left')}
-              variant="ghost"
-            ></Button>
-            <Button
-              class="absolute top-10 right-0 bottom-2 z-4 h-auto w-3 min-h-0 cursor-ew-resize rounded-none border-0 bg-transparent p-0 text-transparent hover:bg-magma-accent/16 focus-visible:opacity-100"
-              aria-label="Resize widget from right edge"
-              title="Resize widget from right edge"
-              onpointerdown={(event: PointerEvent) =>
-                startResize(event, widget, 'right')}
-              variant="ghost"
-            ></Button>
-            <Button
-              class="absolute right-2 bottom-0 left-2 z-4 h-3 min-h-0 cursor-ns-resize rounded-none border-0 bg-transparent p-0 text-transparent hover:bg-magma-accent/16 focus-visible:opacity-100"
-              aria-label="Resize widget from bottom edge"
-              title="Resize widget from bottom edge"
-              onpointerdown={(event: PointerEvent) =>
-                startResize(event, widget, 'bottom')}
-              variant="ghost"
-            ></Button>
-          {/if}
-        </div>
+          <WidgetRenderer
+            {widget}
+            locations={config.locations || {}}
+            {editMode}
+            selectedChildId={selected?.id === widget.id ? selected?.childId : null}
+            onSelectChild={(event, child) =>
+              selectWidget(event, widget, child.id)}
+            onDeleteChild={(event, child) => deleteWidget(widget, child.id)}
+            onDropChild={(event) => dropIntoStack(event, widget)}
+            onDragOverChild={dragOverStack}
+          />
+        </DashboardWidgetFrame>
       {/each}
     {/if}
   </div>

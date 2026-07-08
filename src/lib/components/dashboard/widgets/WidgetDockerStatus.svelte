@@ -145,10 +145,10 @@
 
   {#if widgetState === 'idle'}
     <div
-      class="flex flex-col justify-center items-center gap-2 p-4 text-magma-muted"
+      class="flex flex-col justify-center items-center gap-2 p-4 text-muted-foreground"
     >
-      <Container size={28} class="text-magma-accent shrink-0" />
-      <span class="text-magma-muted text-center"
+      <Container size={28} class="text-accent shrink-0" />
+      <span class="text-muted-foreground text-center"
         >{m.docker_configure_host()}</span
       >
     </div>
@@ -156,15 +156,15 @@
     <div class="flex flex-wrap gap-2 p-3 w-full">
       {#each Array(6) as _, i (i)}
         <div
-          class="flex-1 min-w-24 h-14 rounded-lg bg-magma-accent/8 animate-pulse"
+          class="flex-1 min-w-24 h-14 rounded-lg bg-accent/8 animate-pulse"
         ></div>
       {/each}
     </div>
   {:else if widgetState === 'error'}
     <div
-      class="flex flex-col justify-center h-full items-center gap-1 p-4 text-magma-muted text-xs"
+      class="flex flex-col justify-center h-full items-center gap-1 p-4 text-muted-foreground text-xs"
     >
-      <Container size={24} class="text-magma-accent shrink-0" />
+      <Container size={24} class="text-accent shrink-0" />
       <span>{m.docker_connection_error()}</span>
       <span class="text-xs opacity-60">{errorMsg}</span>
     </div>
@@ -194,13 +194,13 @@
                   </span>
                   {#if containerUrl(c)}
                     <span
-                      class="flex items-center gap-1 text-magma-accent text-xs"
+                      class="flex items-center gap-1 text-accent text-xs"
                     >
                       <ExternalLink size={10} />
                       {portSummary(c)}
                     </span>
                   {:else}
-                    <span class="text-magma-muted/60 text-xs">{shortId(c)}</span
+                    <span class="text-muted-foreground/60 text-xs">{shortId(c)}</span
                     >
                   {/if}
                 </Button>
@@ -221,13 +221,13 @@
                   </span>
                   {#if containerUrl(c)}
                     <span
-                      class="flex items-center gap-1 text-magma-accent text-xs"
+                      class="flex items-center gap-1 text-accent text-xs"
                     >
                       <ExternalLink size={10} />
                       {portSummary(c)}
                     </span>
                   {:else}
-                    <span class="text-magma-muted/60 text-xs">{shortId(c)}</span
+                    <span class="text-muted-foreground/60 text-xs">{shortId(c)}</span
                     >
                   {/if}
                 </Button>
@@ -258,7 +258,7 @@
           </ContextMenu>
         {/each}
         {#if filtered.length === 0}
-          <span class="w-full text-center text-magma-muted text-xs py-4"
+          <span class="w-full text-center text-muted-foreground text-xs py-4"
             >{m.docker_no_containers()}</span
           >
         {/if}

@@ -17,13 +17,13 @@
 
 {#if state === 'idle'}
   <div
-    class="flex items-center justify-center h-full text-magma-muted text-xs p-4"
+    class="flex items-center justify-center h-full text-muted-foreground text-xs p-4"
   >
     {idleMessage}
   </div>
 {:else if state === 'loading'}
   <div class="flex items-center justify-center h-full">
-    <RefreshCw class="animate-spin text-magma-muted" size={24} />
+    <RefreshCw class="animate-spin text-muted-foreground" size={24} />
   </div>
 {:else if state === 'error'}
   <div

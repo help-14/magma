@@ -91,9 +91,9 @@
   </div>
 {:else if size === 'medium'}
   <div class="flex flex-col justify-center w-full min-w-0 min-h-0 h-full p-4 gap-1">
-    <span class="text-magma-muted text-sm leading-snug">{mediumDateTimeStr}</span>
+    <span class="text-muted-foreground text-sm leading-snug">{mediumDateTimeStr}</span>
     {#if (widget.config?.showGreeting ?? true)}
-      <strong class="text-[clamp(1.4rem,3vw,2.65rem)] leading-[1.05] text-magma-accent">
+      <strong class="text-[clamp(1.4rem,3vw,2.65rem)] leading-[1.05] text-accent">
         {greetingStr}
       </strong>
     {/if}
@@ -105,20 +105,20 @@
     </span>
 
     {#if dateStr}
-      <span class="text-magma-muted text-sm leading-snug">
+      <span class="text-muted-foreground text-sm leading-snug">
         {dateStr}
       </span>
     {/if}
 
     {#if (widget.config?.showGreeting ?? true)}
-      <span class="text-magma-accent text-xs leading-snug">
+      <span class="text-accent text-xs leading-snug">
         {greetingStr}
         {#if tzStr}
-          <span class="text-magma-muted"> · {tzStr}</span>
+          <span class="text-muted-foreground"> · {tzStr}</span>
         {/if}
       </span>
     {:else if tzStr}
-      <span class="text-magma-muted text-xs leading-snug">{tzStr}</span>
+      <span class="text-muted-foreground text-xs leading-snug">{tzStr}</span>
     {/if}
   </div>
 {/if}

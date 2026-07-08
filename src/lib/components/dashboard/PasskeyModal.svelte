@@ -87,7 +87,7 @@
   >
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="relative border border-magma-line rounded-xl bg-magma-panel shadow-[0_24px_80px_rgb(0_0_0/32%)] backdrop-blur-xl p-8 max-w-sm w-full mx-4 text-center"
+      class="relative border border-border rounded-xl bg-card shadow-[0_24px_80px_rgb(0_0_0/32%)] backdrop-blur-xl p-8 max-w-sm w-full mx-4 text-center"
       onclick={(e) => e.stopPropagation()}
       onkeydown={() => {}}
       role="dialog"
@@ -97,16 +97,16 @@
     >
       <Button
         variant="ghost"
-        class="absolute top-3 right-3 text-magma-muted hover:text-magma-text"
+        class="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
         onclick={onClose}
       >
         <X size={18} />
       </Button>
 
-      <Fingerprint size={64} class="mx-auto text-magma-accent mb-4" />
+      <Fingerprint size={64} class="mx-auto text-accent mb-4" />
 
-      <h2 class="text-magma-text text-lg font-bold mb-2">Verify your identity</h2>
-      <p class="text-magma-muted text-sm mb-6">
+      <h2 class="text-foreground text-lg font-bold mb-2">Verify your identity</h2>
+      <p class="text-muted-foreground text-sm mb-6">
         Use your passkey to continue
       </p>
 

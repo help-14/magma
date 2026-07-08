@@ -148,14 +148,6 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
     { key: 'preserveOrder', label: 'Preserve feed order', type: 'checkbox', default: false },
     { key: 'refreshInterval', label: 'Refresh (s)', type: 'number', default: 600 }
   ],
-  'server-status': [
-    { key: 'sshCmd', label: 'SSH Command', type: 'text', default: '', placeholder: 'ssh user@host' },
-    { key: 'showHostname', label: 'Show Hostname', type: 'checkbox', default: true },
-    { key: 'showUptime', label: 'Show Uptime', type: 'checkbox', default: true },
-    { key: 'showCpu', label: 'Show CPU', type: 'checkbox', default: true },
-    { key: 'showRam', label: 'Show RAM', type: 'checkbox', default: true },
-    { key: 'showDisk', label: 'Show Disk', type: 'checkbox', default: true },
-  ],
   'github-repo': [
     { key: 'repo', label: 'Repository (owner/repo)', type: 'text', default: '' },
     { key: 'showStars', label: 'Show Stars', type: 'checkbox', default: true },

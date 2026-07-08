@@ -49,7 +49,6 @@ export const knownWidgetTypes = new Set([
 	'deepseek',
 	'rss',
 	'stock',
-	'server-status',
 	'github-repo'
 ])
 

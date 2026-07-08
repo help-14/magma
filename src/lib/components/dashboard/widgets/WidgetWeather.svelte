@@ -102,7 +102,7 @@
             />
           {:else}
             <div
-              class="shrink-0 rounded-full bg-magma-accent/20"
+              class="shrink-0 rounded-full bg-accent/20"
               style="width: {iconPx}px; height: {iconPx}px"
             ></div>
           {/if}
@@ -110,7 +110,7 @@
             <strong class="block text-2xl leading-none"
               >{weather ? toCelsius(weather.main?.temp) : '--°C'}</strong
             >
-            <span class="text-magma-muted text-xs"
+            <span class="text-muted-foreground text-xs"
               >{weather?.name || 'Weather'} · {weather?.main?.humidity ??
                 '--'}%</span
             >
@@ -121,42 +121,42 @@
             side="right"
             align="start"
             sideOffset={12}
-            class="w-64 bg-magma-panel-strong border-magma-line shadow-[0_12px_40px_rgb(0_0_0/40%)] backdrop-blur-xl ring-0 text-xs leading-relaxed text-foreground p-3 flex flex-col items-stretch gap-0"
-            arrowClasses="bg-magma-panel-strong fill-magma-panel-strong border-magma-line"
+            class="w-64 bg-popover border-border shadow-[0_12px_40px_rgb(0_0_0/40%)] backdrop-blur-xl ring-0 text-xs leading-relaxed text-foreground p-3 flex flex-col items-stretch gap-0"
+            arrowClasses="bg-popover fill-popover border-border"
           >
             <div class="flex items-center gap-2 mb-2">
               <span class="font-bold">{weather.name}</span>
             </div>
-            <hr class="border-magma-line/50 my-1.5" />
+            <hr class="border-border/50 my-1.5" />
             <div class="grid grid-cols-2 gap-x-3 gap-y-1">
-              <span class="text-magma-muted">{m.weather_temperature()}</span>
+              <span class="text-muted-foreground">{m.weather_temperature()}</span>
               <span>{toCelsius(weather.main?.temp)}</span>
-              <span class="text-magma-muted">{m.weather_feels_like()}</span>
+              <span class="text-muted-foreground">{m.weather_feels_like()}</span>
               <span>{toCelsius(weather.main?.feels_like)}</span>
               {#if weather.main?.temp_min != null}
-                <span class="text-magma-muted">{m.weather_min()}</span>
+                <span class="text-muted-foreground">{m.weather_min()}</span>
                 <span>{toCelsius(weather.main?.temp_min)}</span>
               {/if}
               {#if weather.main?.temp_max != null}
-                <span class="text-magma-muted">{m.weather_max()}</span>
+                <span class="text-muted-foreground">{m.weather_max()}</span>
                 <span>{toCelsius(weather.main?.temp_max)}</span>
               {/if}
-              <span class="text-magma-muted">{m.weather_humidity()}</span>
+              <span class="text-muted-foreground">{m.weather_humidity()}</span>
               <span>{weather.main?.humidity}%</span>
-              <span class="text-magma-muted">{m.weather_wind()}</span>
+              <span class="text-muted-foreground">{m.weather_wind()}</span>
               <span>{weather.wind?.speed}m/s at {weather.wind?.deg}°</span>
-              <span class="text-magma-muted">{m.weather_sky()}</span>
+              <span class="text-muted-foreground">{m.weather_sky()}</span>
               <span>{weather.weather?.[0]?.main || ''}</span>
               {#if weather.visibility != null}
-                <span class="text-magma-muted">{m.weather_visibility()}</span>
+                <span class="text-muted-foreground">{m.weather_visibility()}</span>
                 <span>{formatVisibility(weather.visibility)}</span>
               {/if}
               {#if weather.sys?.sunrise}
-                <span class="text-magma-muted">{m.weather_sunrise()}</span>
+                <span class="text-muted-foreground">{m.weather_sunrise()}</span>
                 <span>{formatHour(weather.sys?.sunrise)}</span>
               {/if}
               {#if weather.sys?.sunset}
-                <span class="text-magma-muted">{m.weather_sunset()}</span>
+                <span class="text-muted-foreground">{m.weather_sunset()}</span>
                 <span>{formatHour(weather.sys?.sunset)}</span>
               {/if}
             </div>
@@ -177,26 +177,26 @@
       />
       <div>
         <strong class="block text-2xl leading-none">{toCelsius(weather.main?.temp)}</strong>
-        <span class="text-magma-muted text-xs">{weather.name || 'Weather'} · {weather.main?.humidity ?? '--'}%</span>
+        <span class="text-muted-foreground text-xs">{weather.name || 'Weather'} · {weather.main?.humidity ?? '--'}%</span>
       </div>
     </div>
 
     <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-xs leading-snug">
       {#each stats as stat (stat.label)}
-        <span class="text-magma-muted whitespace-nowrap">{stat.label}</span>
+        <span class="text-muted-foreground whitespace-nowrap">{stat.label}</span>
         <span>{stat.value}</span>
       {/each}
     </div>
 
     {#if size === 'large'}
       {#if weather.sys?.sunrise || weather.sys?.sunset}
-        <hr class="border-magma-line/50 my-0.5" />
+        <hr class="border-border/50 my-0.5" />
         <div class="flex items-center justify-between text-xs">
           {#if weather.sys?.sunrise}
-            <span class="text-magma-muted">{m.weather_sunrise()} {formatHour(weather.sys?.sunrise)}</span>
+            <span class="text-muted-foreground">{m.weather_sunrise()} {formatHour(weather.sys?.sunrise)}</span>
           {/if}
           {#if weather.sys?.sunset}
-            <span class="text-magma-muted">{m.weather_sunset()} {formatHour(weather.sys?.sunset)}</span>
+            <span class="text-muted-foreground">{m.weather_sunset()} {formatHour(weather.sys?.sunset)}</span>
           {/if}
         </div>
       {/if}

@@ -1,6 +1,6 @@
 import { query } from '$app/server';
 import * as v from 'valibot';
-import { createCache } from '$lib/server/cache.js';
+import { createCache, stableCacheKey } from '$lib/server/cache.js';
 
 type FetchResult = { ok: boolean; status: number; statusText: string; responseText: string }
 
@@ -16,12 +16,6 @@ export const fetchUrl = query(
 	async ({ url, method, headers, body }) => {
 		try {
 			const parsedHeaders = JSON.parse(headers);
-			const getCacheKey = method === 'GET' ? JSON.stringify({ url, headers: parsedHeaders }) : null;
-
-			if (getCacheKey) {
-				const cached = cache.get(getCacheKey);
-				if (cached) return cached;
-			}
 
 			const headerMap: Record<string, string> = {};
 			if (Array.isArray(parsedHeaders)) {
@@ -29,20 +23,25 @@ export const fetchUrl = query(
 					if (h.key && h.value) headerMap[h.key] = h.value;
 				}
 			}
+
+			const getCacheKey = method === 'GET' ? stableCacheKey({ url, headers: headerMap }) : null;
 			const opts: RequestInit = { method, headers: headerMap };
 			if (body && (method === 'POST' || method === 'PUT')) {
 				opts.body = body;
 			}
-			const response = await fetch(url, opts);
-			const responseText = await response.text();
-			const result = {
+
+			const load = async () => {
+				const response = await fetch(url, opts);
+				const responseText = await response.text();
+				return {
 				ok: response.ok,
 				status: response.status,
 				statusText: response.statusText,
 				responseText
 			};
-			if (getCacheKey) cache.set(getCacheKey, result);
-			return result;
+			};
+
+			return getCacheKey ? cache.getOrSet(getCacheKey, load) : load();
 		} catch (err) {
 			return {
 				ok: false,

@@ -1,11 +1,12 @@
 import { query } from '$app/server';
 import * as v from 'valibot';
+import { createCache, stableCacheKey } from '$lib/server/cache.js';
 
 type ParsedStock = { symbol: string; name: string }
 type StockResult = { symbol: string; name: string; price: number; change: number; changePercent: number; marketState: string; chart: number[] }
 type StockListResult = { stocks: StockResult[]; errors: { symbol: string; message: string }[] }
 
-const listCache = new Map<string, { data: StockListResult; ts: number }>();
+const listCache = createCache<StockListResult>(300_000, 50);
 
 const headers = {
 	'User-Agent': 'Mozilla/5.0'
@@ -86,42 +87,37 @@ export const fetchStocks = query(
 			return { stocks: [], errors: [{ symbol: '', message: 'No stocks configured' }] };
 		}
 
-		const cacheKey = `${stocksText}::${sortBy}::${cacheTime}`;
-		const cached = listCache.get(cacheKey);
-		if (cached && Date.now() - cached.ts < cacheTime * 1000) {
-			return cached.data;
-		}
+		const cacheKey = stableCacheKey({ stocks: stocksText, sortBy });
+		return listCache.getOrSet(cacheKey, async () => {
+			const results = await Promise.allSettled(
+				parsed.map(async (entry: ParsedStock) => {
+					const nameOverride = entry.name !== entry.symbol ? entry.name : null;
+					const stock = await fetchSingle(entry.symbol);
+					if (nameOverride) stock.name = nameOverride;
+					return stock;
+				})
+			);
 
-		const results = await Promise.allSettled(
-			parsed.map(async (entry: ParsedStock) => {
-				const nameOverride = entry.name !== entry.symbol ? entry.name : null;
-				const stock = await fetchSingle(entry.symbol);
-				if (nameOverride) stock.name = nameOverride;
-				return stock;
-			})
-		);
-
-		const stocks: StockResult[] = [];
-		const errors: { symbol: string; message: string }[] = [];
-		for (const result of results) {
-			if (result.status === 'fulfilled') {
-				stocks.push(result.value);
-			} else {
-				errors.push({
-					symbol: 'unknown',
-					message: result.reason?.message || 'Unknown error'
-				});
+			const stocks: StockResult[] = [];
+			const errors: { symbol: string; message: string }[] = [];
+			for (const result of results) {
+				if (result.status === 'fulfilled') {
+					stocks.push(result.value);
+				} else {
+					errors.push({
+						symbol: 'unknown',
+						message: result.reason?.message || 'Unknown error'
+					});
+				}
 			}
-		}
 
-		if (sortBy === 'change') {
-			stocks.sort((a, b) => (b.changePercent || 0) - (a.changePercent || 0));
-		} else if (sortBy === 'absolute-change') {
-			stocks.sort((a, b) => Math.abs(b.changePercent || 0) - Math.abs(a.changePercent || 0));
-		}
+			if (sortBy === 'change') {
+				stocks.sort((a, b) => (b.changePercent || 0) - (a.changePercent || 0));
+			} else if (sortBy === 'absolute-change') {
+				stocks.sort((a, b) => Math.abs(b.changePercent || 0) - Math.abs(a.changePercent || 0));
+			}
 
-		const data = { stocks, errors };
-		listCache.set(cacheKey, { data, ts: Date.now() });
-		return data;
+			return { stocks, errors };
+		}, cacheTime * 1000);
 	}
 );

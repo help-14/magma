@@ -5,7 +5,7 @@
 </script>
 
 <div
-  class="flex items-center gap-2 text-magma-accent text-sm font-extrabold px-3 pt-2 pb-1 shrink-0"
+  class="flex items-center gap-2 text-accent text-sm font-extrabold px-3 pt-2 pb-1 shrink-0"
 >
   {#if icon}
     <span class="shrink-0">{@render icon()}</span>

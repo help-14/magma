@@ -102,7 +102,7 @@
         class={[
           'py-1 rounded-lg',
           !day.active && 'opacity-30',
-          day.today && 'bg-magma-accent/20 text-magma-accent font-bold'
+          day.today && 'bg-accent/20 text-accent font-bold'
         ]
           .filter(Boolean)
           .join(' ')}

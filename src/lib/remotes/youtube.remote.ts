@@ -47,18 +47,15 @@ export const getYoutubeUploads = query(
 			const results = await Promise.allSettled(
 				channels.map(async (channelId) => {
 					const cacheKey = `uploads:${channelId}`;
-					const cached = uploadsCache.get(cacheKey);
-					if (cached) return cached;
-
-					const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-					const response = await fetch(url);
-					if (!response.ok) throw new Error(`HTTP ${response.status} for channel ${channelId}`);
-					const xml = await response.text();
-					const parsed = parseFeedXml(xml);
-					if (parsed.length === 0) throw new Error(`No entries for channel ${channelId}`);
-
-					uploadsCache.set(cacheKey, parsed);
-					return parsed;
+					return uploadsCache.getOrSet(cacheKey, async () => {
+						const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+						const response = await fetch(url);
+						if (!response.ok) throw new Error(`HTTP ${response.status} for channel ${channelId}`);
+						const xml = await response.text();
+						const parsed = parseFeedXml(xml);
+						if (parsed.length === 0) throw new Error(`No entries for channel ${channelId}`);
+						return parsed;
+					});
 				})
 			);
 
@@ -90,48 +87,43 @@ export const getYoutubeLivestreams = query(
 			const results = await Promise.allSettled(
 				channels.map(async (channelId) => {
 					const cacheKey = `live:${channelId}`;
-					const cached = livestreamCache.get(cacheKey);
-					if (cached) return cached;
+					return livestreamCache.getOrSet(cacheKey, async () => {
+						const liveUrl = `https://www.youtube.com/channel/${channelId}/live`;
+						const response = await fetch(liveUrl);
+						const videoMatch = response.url.match(/[?&]v=([^&]+)/);
+						const videoId = videoMatch ? videoMatch[1] : null;
 
-					const liveUrl = `https://www.youtube.com/channel/${channelId}/live`;
-					const response = await fetch(liveUrl);
-					const videoMatch = response.url.match(/[?&]v=([^&]+)/);
-					const videoId = videoMatch ? videoMatch[1] : null;
-
-					if (!videoId) {
-						let channelName = channelId;
-						try {
-							const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-							const feedRes = await fetch(feedUrl);
-							if (feedRes.ok) {
-								const feedXml = await feedRes.text();
-								const feedVideos = parseFeedXml(feedXml);
-								if (feedVideos.length > 0 && feedVideos[0].channelName) {
-									channelName = feedVideos[0].channelName;
+						if (!videoId) {
+							let channelName = channelId;
+							try {
+								const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+								const feedRes = await fetch(feedUrl);
+								if (feedRes.ok) {
+									const feedXml = await feedRes.text();
+									const feedVideos = parseFeedXml(feedXml);
+									if (feedVideos.length > 0 && feedVideos[0].channelName) {
+										channelName = feedVideos[0].channelName;
+									}
 								}
-							}
-						} catch {}
-						const result = { channelId, isLive: false, channelName };
-						livestreamCache.set(cacheKey, result);
-						return result;
-					}
+							} catch {}
+							return { channelId, isLive: false, channelName };
+						}
 
-					const oembedRes = await fetch(
-						`https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}&format=json`
-					);
-					const info = oembedRes.ok ? await oembedRes.json() : null;
+						const oembedRes = await fetch(
+							`https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}&format=json`
+						);
+						const info = oembedRes.ok ? await oembedRes.json() : null;
 
-					const result = {
-						channelId,
-						isLive: true,
-						videoId,
-						title: info?.title || '',
-						thumbnail: info?.thumbnail_url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-						channelName: info?.author_name || '',
-						videoUrl: `https://www.youtube.com/watch?v=${videoId}`
-					};
-					livestreamCache.set(cacheKey, result);
-					return result;
+						return {
+							channelId,
+							isLive: true,
+							videoId,
+							title: info?.title || '',
+							thumbnail: info?.thumbnail_url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+							channelName: info?.author_name || '',
+							videoUrl: `https://www.youtube.com/watch?v=${videoId}`
+						};
+					});
 				})
 			);
 

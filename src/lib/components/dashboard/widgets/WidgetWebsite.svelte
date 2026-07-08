@@ -28,7 +28,7 @@
   {/if}
   {#if !target}
     <div
-      class="flex items-center justify-center h-full text-magma-muted text-xs p-4"
+      class="flex items-center justify-center h-full text-muted-foreground text-xs p-4"
     >
       Configure URL in properties
     </div>

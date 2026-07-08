@@ -1,11 +1,12 @@
 import { query } from '$app/server';
 import * as v from 'valibot';
-import { createCache } from '$lib/server/cache.js';
+import { createCache, stableCacheKey } from '$lib/server/cache.js';
 
 const cache = createCache(900_000, 50);
 
 const weatherProviders = ['open-meteo', 'weatherapi', 'openweathermap'] as const;
 type WeatherProvider = (typeof weatherProviders)[number];
+type GeocodedCity = { name: string; latitude: number; longitude: number };
 
 function isWeatherProvider(v: string): v is WeatherProvider {
 	return weatherProviders.includes(v as WeatherProvider);
@@ -25,12 +26,14 @@ export const getWeather = query(
 
 		let lat = latitude;
 		let lon = longitude;
+		let displayName = cityName.trim();
 
 		if (lat === 0 && lon === 0 && cityName) {
 			const geo = await geocodeCity(cityName);
 			if (geo) {
 				lat = geo.latitude;
 				lon = geo.longitude;
+				displayName = geo.name;
 			}
 		}
 
@@ -38,29 +41,23 @@ export const getWeather = query(
 			return mockWeather('Home');
 		}
 
-		const cacheKey = `${provider}:${lat}:${lon}`;
-		const cached = cache.get(cacheKey);
-		if (cached) return cached;
+		const cacheKey = stableCacheKey({ provider, lat, lon, displayName });
+		return cache.getOrSet(cacheKey, async () => {
+			if (provider === 'open-meteo') return fetchOpenMeteo(lat, lon, displayName);
+			if (provider === 'weatherapi') {
+				if (!apiKey) return mockWeather('Home');
+				return fetchWeatherApi(lat, lon, apiKey);
+			}
 
-		let data: any;
-		if (provider === 'open-meteo') {
-			data = await fetchOpenMeteo(lat, lon);
-		} else if (provider === 'weatherapi') {
 			if (!apiKey) return mockWeather('Home');
-			data = await fetchWeatherApi(lat, lon, apiKey);
-		} else {
-			if (!apiKey) return mockWeather('Home');
-			data = await fetchOpenWeatherMap(lat, lon, apiKey);
-		}
-
-		cache.set(cacheKey, data, cacheTtl);
-		return data;
+			return fetchOpenWeatherMap(lat, lon, apiKey);
+		}, cacheTtl);
 	}
 );
 
 // ── Geocoding ──────────────────────────────────────────────────────────
 
-async function geocodeCity(name: string): Promise<{ latitude: number; longitude: number } | null> {
+async function geocodeCity(name: string): Promise<GeocodedCity | null> {
 	try {
 		const url = new URL('https://geocoding-api.open-meteo.com/v1/search');
 		url.searchParams.set('name', name);
@@ -72,7 +69,7 @@ async function geocodeCity(name: string): Promise<{ latitude: number; longitude:
 		const json = await res.json();
 		const result = json.results?.[0];
 		if (!result) return null;
-		return { latitude: result.latitude, longitude: result.longitude };
+		return { name: result.name || name, latitude: result.latitude, longitude: result.longitude };
 	} catch {
 		return null;
 	}
@@ -80,7 +77,7 @@ async function geocodeCity(name: string): Promise<{ latitude: number; longitude:
 
 // ── Open-Meteo ─────────────────────────────────────────────────────────
 
-async function fetchOpenMeteo(lat: number, lon: number) {
+async function fetchOpenMeteo(lat: number, lon: number, displayName = '') {
 	const url = new URL('https://api.open-meteo.com/v1/forecast');
 	url.searchParams.set('latitude', String(lat));
 	url.searchParams.set('longitude', String(lon));
@@ -96,7 +93,7 @@ async function fetchOpenMeteo(lat: number, lon: number) {
 	const day = raw.daily ?? {};
 
 	return {
-		name: extractNameFromTimezone(raw.timezone) || 'Home',
+		name: displayName || extractNameFromTimezone(raw.timezone) || 'Home',
 		weather: [{
 			id: wmoToOwm(cur.weather_code ?? 0),
 			main: weatherCodeMain(cur.weather_code ?? 0),

@@ -64,7 +64,7 @@
           href={data.htmlUrl}
           target="_blank"
           rel="noreferrer"
-          class="text-magma-muted hover:text-magma-accent"
+          class="text-muted-foreground hover:text-accent"
         >
           <ExternalLink class="size-3" />
         </a>
@@ -80,14 +80,14 @@
     {#snippet children()}
       {#if data}
         {#if data.description}
-          <div class="px-3 pb-1 text-xs text-magma-muted truncate">
+          <div class="px-3 pb-1 text-xs text-muted-foreground truncate">
             {data.description}
           </div>
         {/if}
         {#if data.language}
           <div class="px-3 pb-2">
             <span
-              class="inline-block px-2 py-0.5 text-xs rounded-full bg-magma-surface text-magma-foreground"
+              class="inline-block px-2 py-0.5 text-xs rounded-full bg-secondary text-foreground"
             >
               {data.language}
             </span>
@@ -96,20 +96,20 @@
         <div class="flex items-center gap-2 px-2 pb-2 shrink-0">
           {#if showStars}
             <div
-              class="flex items-center gap-1 bg-magma-surface rounded-lg px-2.5 py-1.5"
+              class="flex items-center gap-1 bg-secondary rounded-lg px-2.5 py-1.5"
             >
               <Star class="size-3.5 text-yellow-500" />
-              <span class="text-xs font-bold text-magma-foreground"
+              <span class="text-xs font-bold text-foreground"
                 >{data.stars}</span
               >
             </div>
           {/if}
           {#if showForks}
             <div
-              class="flex items-center gap-1 bg-magma-surface rounded-lg px-2.5 py-1.5"
+              class="flex items-center gap-1 bg-secondary rounded-lg px-2.5 py-1.5"
             >
-              <GitFork class="size-3.5 text-magma-accent" />
-              <span class="text-xs font-bold text-magma-foreground"
+              <GitFork class="size-3.5 text-accent" />
+              <span class="text-xs font-bold text-foreground"
                 >{data.forks}</span
               >
             </div>
@@ -118,31 +118,31 @@
         <div class="flex-1 overflow-y-auto min-h-0 px-2 pb-2 space-y-1.5">
           {#if showPrs && data.pulls?.length > 0}
             <div
-              class="flex items-center gap-1.5 text-xs font-bold text-magma-foreground mb-1"
+              class="flex items-center gap-1.5 text-xs font-bold text-foreground mb-1"
             >
               <GitPullRequest class="size-3.5 text-green-400" />
               <span>Pull Requests</span>
-              <span class="text-magma-muted font-normal">({data.openPrs})</span>
+              <span class="text-muted-foreground font-normal">({data.openPrs})</span>
             </div>
             {#each data.pulls.slice(0, 5) as pr (pr.htmlUrl)}
               <a
                 href={pr.htmlUrl}
                 target="_blank"
                 rel="noreferrer"
-                class="flex items-start gap-1.5 px-2 py-1 rounded hover:bg-magma-surface text-xs text-magma-foreground no-underline"
+                class="flex items-start gap-1.5 px-2 py-1 rounded hover:bg-secondary text-xs text-foreground no-underline"
               >
-                <ChevronRight class="size-3 text-magma-muted mt-0.5 shrink-0" />
+                <ChevronRight class="size-3 text-muted-foreground mt-0.5 shrink-0" />
                 <span class="line-clamp-1">{pr.title}</span>
               </a>
             {/each}
           {/if}
           {#if showIssues && data.issues?.length > 0}
             <div
-              class="flex items-center gap-1.5 text-xs font-bold text-magma-foreground mb-1 mt-2"
+              class="flex items-center gap-1.5 text-xs font-bold text-foreground mb-1 mt-2"
             >
               <CircleAlert class="size-3.5 text-orange-400" />
               <span>Issues</span>
-              <span class="text-magma-muted font-normal"
+              <span class="text-muted-foreground font-normal"
                 >({data.openIssues})</span
               >
             </div>
@@ -151,16 +151,16 @@
                 href={issue.htmlUrl}
                 target="_blank"
                 rel="noreferrer"
-                class="flex items-start gap-1.5 px-2 py-1 rounded hover:bg-magma-surface text-xs text-magma-foreground no-underline"
+                class="flex items-start gap-1.5 px-2 py-1 rounded hover:bg-secondary text-xs text-foreground no-underline"
               >
-                <ChevronRight class="size-3 text-magma-muted mt-0.5 shrink-0" />
+                <ChevronRight class="size-3 text-muted-foreground mt-0.5 shrink-0" />
                 <span class="line-clamp-1">{issue.title}</span>
               </a>
             {/each}
           {/if}
           {#if showPrs && data.pulls?.length === 0 && showIssues && data.issues?.length === 0}
             <div
-              class="flex items-center justify-center h-full text-magma-muted text-xs"
+              class="flex items-center justify-center h-full text-muted-foreground text-xs"
             >
               No open PRs or issues
             </div>

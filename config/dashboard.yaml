@@ -18,6 +18,7 @@ dashboard:
       h: 2
       config:
         cityName: Hanoi
+        provider: open-meteo
     - id: search-main
       type: search
       title: Search

@@ -99,14 +99,14 @@
               class="flex items-center gap-2 w-full cursor-default"
             >
               <Progress value={progressValue} class="h-2 flex-1" />
-              <span class="text-xs text-magma-muted tabular-nums w-8 text-right"
+              <span class="text-xs text-muted-foreground tabular-nums w-8 text-right"
                 >{progressValue}%</span
               >
             </TooltipTrigger>
             <TooltipContent
               side="bottom"
-              class="bg-magma-panel-strong border-magma-line shadow-[0_12px_40px_rgb(0_0_0/40%)] backdrop-blur-xl ring-0 text-xs leading-relaxed text-foreground"
-              arrowClasses="bg-magma-panel-strong fill-magma-panel-strong border-magma-line"
+              class="bg-popover border-border shadow-[0_12px_40px_rgb(0_0_0/40%)] backdrop-blur-xl ring-0 text-xs leading-relaxed text-foreground"
+              arrowClasses="bg-popover fill-popover border-border"
             >
               {tooltipText}
             </TooltipContent>

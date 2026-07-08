@@ -82,9 +82,9 @@
     href={item.videoUrl}
     target="_blank"
     rel="noreferrer"
-    class="group relative rounded-lg overflow-hidden border border-magma-line/30 no-underline w-48"
+    class="group relative rounded-lg overflow-hidden border border-border/30 no-underline w-48"
   >
-    <div class="aspect-video bg-magma-muted/20">
+    <div class="aspect-video bg-muted/20">
       <img
         src={item.thumbnail}
         alt={item.title}
@@ -110,9 +110,9 @@
 
 {#snippet channelNameLabel(name: string)}
   <div
-    class="flex items-center justify-center rounded-lg border border-magma-line/20 bg-magma-panel-strong/30 p-3 w-48"
+    class="flex items-center justify-center rounded-lg border border-border/20 bg-popover/30 p-3 w-48"
   >
-    <span class="text-xs text-magma-muted text-center leading-tight">
+    <span class="text-xs text-muted-foreground text-center leading-tight">
       {name}
     </span>
   </div>
@@ -122,7 +122,7 @@
   <WidgetTitleBar title={widget.title}>
     {#snippet trailing()}
       {#if mode === 'livestream'}
-        <Radio size={12} class="text-magma-accent" />
+        <Radio size={12} class="text-accent" />
       {/if}
     {/snippet}
   </WidgetTitleBar>

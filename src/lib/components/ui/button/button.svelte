@@ -3,22 +3,22 @@
   import { tv } from 'tailwind-variants'
 
   export const buttonVariants = tv({
-    base: "rounded-lg border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px [&_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 focus-visible:outline-2 focus-visible:outline-magma-accent focus-visible:outline-offset-2 transition-colors",
+    base: "rounded-lg border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px [&_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 transition-colors",
     variants: {
       variant: {
         default:
-          'border-magma-line bg-magma-panel text-magma-text backdrop-blur-md hover:border-magma-accent/48 hover:bg-magma-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] aria-pressed:border-magma-accent/48 aria-pressed:bg-magma-accent/88',
+          'border-border bg-card text-foreground backdrop-blur-md hover:border-accent/48 hover:bg-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] aria-pressed:border-accent/48 aria-pressed:bg-accent/88',
         outline:
-          'border-magma-line bg-transparent text-magma-text backdrop-blur-md hover:border-magma-accent/48 hover:bg-magma-accent/12 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]',
+          'border-border bg-transparent text-foreground backdrop-blur-md hover:border-accent/48 hover:bg-accent/12 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]',
         secondary:
-          'border-magma-line bg-magma-panel-strong text-magma-text backdrop-blur-md hover:border-magma-accent/48 hover:bg-magma-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] aria-pressed:border-magma-accent/48 aria-pressed:bg-magma-accent/88',
+          'border-border bg-popover text-foreground backdrop-blur-md hover:border-accent/48 hover:bg-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] aria-pressed:border-accent/48 aria-pressed:bg-accent/88',
         magma:
-          'border-magma-line bg-magma-panel text-magma-text backdrop-blur-md min-h-11 gap-2 hover:border-magma-accent/48 hover:bg-magma-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] aria-pressed:border-magma-accent/48 aria-pressed:bg-magma-accent/88',
+          'border-border bg-card text-foreground backdrop-blur-md min-h-11 gap-2 hover:border-accent/48 hover:bg-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] aria-pressed:border-accent/48 aria-pressed:bg-accent/88',
         ghost:
-          'border-transparent bg-transparent text-magma-text hover:bg-white/10 ',
+          'border-transparent bg-transparent text-foreground hover:bg-white/10 ',
         destructive:
-          'border-red-400/30 bg-red-400/10 text-magma-text backdrop-blur-md hover:border-red-400/50 bg-red-800 hover:bg-red-400 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]',
-        link: 'border-transparent bg-transparent text-magma-accent underline-offset-4 hover:underline hover:text-magma-accent/80'
+          'border-red-400/30 bg-red-400/10 text-foreground backdrop-blur-md hover:border-red-400/50 bg-red-800 hover:bg-red-400 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]',
+        link: 'border-transparent bg-transparent text-accent underline-offset-4 hover:underline hover:text-accent/80'
       },
       size: {
         default:
