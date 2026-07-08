@@ -57,22 +57,26 @@ export const getWeather = query(
 
 // ── Geocoding ──────────────────────────────────────────────────────────
 
+const geocodeCache = createCache<GeocodedCity | null>(28_800_000, 100);
+
 async function geocodeCity(name: string): Promise<GeocodedCity | null> {
-	try {
-		const url = new URL('https://geocoding-api.open-meteo.com/v1/search');
-		url.searchParams.set('name', name);
-		url.searchParams.set('count', '1');
-		url.searchParams.set('language', 'en');
-		url.searchParams.set('format', 'json');
-		const res = await fetch(url);
-		if (!res.ok) return null;
-		const json = await res.json();
-		const result = json.results?.[0];
-		if (!result) return null;
-		return { name: result.name || name, latitude: result.latitude, longitude: result.longitude };
-	} catch {
-		return null;
-	}
+	return geocodeCache.getOrSet(name.trim().toLowerCase(), async () => {
+		try {
+			const url = new URL('https://geocoding-api.open-meteo.com/v1/search');
+			url.searchParams.set('name', name);
+			url.searchParams.set('count', '1');
+			url.searchParams.set('language', 'en');
+			url.searchParams.set('format', 'json');
+			const res = await fetch(url);
+			if (!res.ok) return null;
+			const json = await res.json();
+			const result = json.results?.[0];
+			if (!result) return null;
+			return { name: result.name || name, latitude: result.latitude, longitude: result.longitude };
+		} catch {
+			return null;
+		}
+	});
 }
 
 // ── Open-Meteo ─────────────────────────────────────────────────────────
