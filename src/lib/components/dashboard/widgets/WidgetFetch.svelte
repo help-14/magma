@@ -42,11 +42,14 @@
         widgetState = 'content'
       } catch (scriptErr) {
         widgetState = 'error'
-        errorMsg = 'Script error: ' + (scriptErr instanceof Error ? scriptErr.message : String(scriptErr))
+        errorMsg =
+          'Script error: ' +
+          (scriptErr instanceof Error ? scriptErr.message : String(scriptErr))
       }
     } catch (err) {
       widgetState = 'error'
-      errorMsg = 'Request failed: ' + (err instanceof Error ? err.message : String(err))
+      errorMsg =
+        'Request failed: ' + (err instanceof Error ? err.message : String(err))
     }
   }
 

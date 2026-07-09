@@ -1,7 +1,7 @@
 <script lang="ts">
-  import DashboardEditor from "./DashboardEditor.svelte";
+  import DashboardEditor from './DashboardEditor.svelte'
 
-  let { data } = $props();
+  let { data } = $props()
 </script>
 
 <DashboardEditor

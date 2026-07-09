@@ -32,5 +32,5 @@ const configDir = process.env.CONFIG_DIR || 'config'
 export let store: ConfigStore = new FileConfigStore(configDir)
 
 export function setConfigStore(customStore: ConfigStore) {
-	store = customStore
+  store = customStore
 }

@@ -25,7 +25,11 @@
     widgetState = 'loading'
     errorMsg = ''
     try {
-      const result = await fetchStocks({ stocks: stocksText, sortBy: sortBy as any, cacheTime })
+      const result = await fetchStocks({
+        stocks: stocksText,
+        sortBy: sortBy as any,
+        cacheTime
+      })
       stocks = result.stocks || []
       feedErrors = result.errors || []
       widgetState = 'content'
@@ -99,7 +103,9 @@
       {#if feedErrors.length > 0}
         <span
           class="text-amber-400 text-xs shrink-0 cursor-help"
-          title={feedErrors.map((e: any) => `${e.symbol}: ${e.message}`).join('\n')}
+          title={feedErrors
+            .map((e: any) => `${e.symbol}: ${e.message}`)
+            .join('\n')}
         >
           ⚠
         </span>
@@ -107,7 +113,11 @@
     {/snippet}
   </WidgetTitleBar>
 
-  <WidgetStateWrapper state={widgetState} {errorMsg} idleMessage="Add stocks in properties">
+  <WidgetStateWrapper
+    state={widgetState}
+    {errorMsg}
+    idleMessage="Add stocks in properties"
+  >
     {#snippet children()}
       <div class="flex-1 overflow-y-auto min-h-0 px-1 pb-1">
         {#each stocks as stock (stock.symbol)}

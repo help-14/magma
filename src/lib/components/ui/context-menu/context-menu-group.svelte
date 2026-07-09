@@ -1,7 +1,11 @@
 <script lang="ts">
-	import { ContextMenu as ContextMenuPrimitive } from "bits-ui";
+  import { ContextMenu as ContextMenuPrimitive } from 'bits-ui'
 
-	let { ref = $bindable(null), ...restProps }: Record<string, any> = $props();
+  let { ref = $bindable(null), ...restProps }: Record<string, any> = $props()
 </script>
 
-<ContextMenuPrimitive.Group bind:ref data-slot="context-menu-group" {...restProps} />
+<ContextMenuPrimitive.Group
+  bind:ref
+  data-slot="context-menu-group"
+  {...restProps}
+/>

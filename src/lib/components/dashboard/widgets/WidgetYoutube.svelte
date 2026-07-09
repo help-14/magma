@@ -70,7 +70,7 @@
   }
 
   $effect(() => {
-    channelList
+    void channelList
     doFetch()
     const id = setInterval(doFetch, refreshInterval * 1000)
     return () => clearInterval(id)
@@ -133,10 +133,7 @@
     idleMessage="Add channel IDs in properties"
   >
     {#snippet children()}
-      <ScrollArea
-        class="flex-1 min-h-0 w-full"
-        orientation={scrollOrientation}
-      >
+      <ScrollArea class="flex-1 min-h-0 w-full" orientation={scrollOrientation}>
         <div class="grid gap-2 pt-2 justify-center" style={gridStyle}>
           {#if mode === 'uploads'}
             {#each data.videos as video (video.videoId)}

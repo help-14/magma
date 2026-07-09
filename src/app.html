@@ -1,20 +1,18 @@
 <!doctype html>
 <html lang="%lang%" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="text-scale" content="scale" />
+    <link rel="preconnect" href="https://api.openweathermap.org" />
+    <link rel="preconnect" href="https://query1.finance.yahoo.com" />
+    <link rel="preconnect" href="https://api.github.com" />
+    <link rel="preconnect" href="https://api.iconify.design" />
+    <link rel="preconnect" href="https://www.youtube.com" />
+    %sveltekit.head%
+  </head>
 
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta name="text-scale" content="scale" />
-	<link rel="preconnect" href="https://api.openweathermap.org">
-	<link rel="preconnect" href="https://query1.finance.yahoo.com">
-	<link rel="preconnect" href="https://api.github.com">
-	<link rel="preconnect" href="https://api.iconify.design">
-	<link rel="preconnect" href="https://www.youtube.com">
-	%sveltekit.head%
-</head>
-
-<body data-sveltekit-preload-data="hover">
-	<div style="display: contents">%sveltekit.body%</div>
-</body>
-
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
 </html>

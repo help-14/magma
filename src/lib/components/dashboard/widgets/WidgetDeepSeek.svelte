@@ -99,7 +99,8 @@
               class="flex items-center gap-2 w-full cursor-default"
             >
               <Progress value={progressValue} class="h-2 flex-1" />
-              <span class="text-xs text-muted-foreground tabular-nums w-8 text-right"
+              <span
+                class="text-xs text-muted-foreground tabular-nums w-8 text-right"
                 >{progressValue}%</span
               >
             </TooltipTrigger>

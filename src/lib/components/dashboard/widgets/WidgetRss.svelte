@@ -96,7 +96,9 @@
       {#if feedErrors.length > 0}
         <span
           class="text-amber-400 text-xs shrink-0 cursor-help"
-          title={feedErrors.map((e: any) => `${e.feedUrl}: ${e.message}`).join('\n')}
+          title={feedErrors
+            .map((e: any) => `${e.feedUrl}: ${e.message}`)
+            .join('\n')}
         >
           ⚠
         </span>

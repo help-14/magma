@@ -71,7 +71,7 @@
   }
 
   $effect(() => {
-    dockerHost
+    void dockerHost
     doFetch()
     const id = setInterval(doFetch, refreshInterval * 1000)
     return () => clearInterval(id)
@@ -120,7 +120,10 @@
         toast.error(m.docker_operation_failed({ operation }))
       }
     } catch (e) {
-      toast.error(m.docker_operation_failed({ operation }) + `: ${e instanceof Error ? e.message : String(e)}`)
+      toast.error(
+        m.docker_operation_failed({ operation }) +
+          `: ${e instanceof Error ? e.message : String(e)}`
+      )
     }
   }
 
@@ -193,14 +196,13 @@
                     {displayName(c)}
                   </span>
                   {#if containerUrl(c)}
-                    <span
-                      class="flex items-center gap-1 text-accent text-xs"
-                    >
+                    <span class="flex items-center gap-1 text-accent text-xs">
                       <ExternalLink size={10} />
                       {portSummary(c)}
                     </span>
                   {:else}
-                    <span class="text-muted-foreground/60 text-xs">{shortId(c)}</span
+                    <span class="text-muted-foreground/60 text-xs"
+                      >{shortId(c)}</span
                     >
                   {/if}
                 </Button>
@@ -220,14 +222,13 @@
                     {displayName(c)}
                   </span>
                   {#if containerUrl(c)}
-                    <span
-                      class="flex items-center gap-1 text-accent text-xs"
-                    >
+                    <span class="flex items-center gap-1 text-accent text-xs">
                       <ExternalLink size={10} />
                       {portSummary(c)}
                     </span>
                   {:else}
-                    <span class="text-muted-foreground/60 text-xs">{shortId(c)}</span
+                    <span class="text-muted-foreground/60 text-xs"
+                      >{shortId(c)}</span
                     >
                   {/if}
                 </Button>

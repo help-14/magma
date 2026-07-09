@@ -57,7 +57,9 @@ export function getWeatherIcon(weatherCode: number): string {
       case 221:
       case 231:
       case 232:
-        return isDay ? thunderstormsDayExtremeRain : thunderstormsNightExtremeRain
+        return isDay
+          ? thunderstormsDayExtremeRain
+          : thunderstormsNightExtremeRain
       default:
         return thunderstorms
     }

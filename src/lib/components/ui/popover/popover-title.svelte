@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { cn } from "$lib/utils.js";
+  import { cn } from '$lib/utils.js'
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		children,
-		...restProps
-	}: Record<string, any> = $props();
+  let {
+    ref = $bindable(null),
+    class: className,
+    children,
+    ...restProps
+  }: Record<string, any> = $props()
 </script>
 
 <div
-	bind:this={ref}
-	data-slot="popover-title"
-	class={cn("font-medium", className)}
-	{...restProps}
+  bind:this={ref}
+  data-slot="popover-title"
+  class={cn('font-medium', className)}
+  {...restProps}
 >
-	{@render children?.()}
+  {@render children?.()}
 </div>

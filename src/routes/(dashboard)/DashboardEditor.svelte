@@ -90,7 +90,9 @@
       paddingCells: 2
     })
   )
-  let pageCenter = $derived(isMobileCanvas ? mobileMetrics.pageCenter : viewWidth / 2)
+  let pageCenter = $derived(
+    isMobileCanvas ? mobileMetrics.pageCenter : viewWidth / 2
+  )
 
   let gridRows = $derived(
     (() => {
@@ -98,9 +100,13 @@
     })()
   )
   let gridVisualHeight = $derived(
-    isMobileCanvas ? mobileMetrics.height : Math.max(gridRows * cellHeight, viewHeight)
+    isMobileCanvas
+      ? mobileMetrics.height
+      : Math.max(gridRows * cellHeight, viewHeight)
   )
-  let gridVisualWidth = $derived(isMobileCanvas ? mobileMetrics.width : viewWidth)
+  let gridVisualWidth = $derived(
+    isMobileCanvas ? mobileMetrics.width : viewWidth
+  )
 
   $effect(() => {
     if (!browser || !isMobileCanvas || didCenterMobileCanvas) return
@@ -536,7 +542,7 @@
 </script>
 
 <section
-    class="relative min-h-screen p-6 text-foreground max-sm:p-4.5 max-sm:overflow-x-auto"
+  class="relative min-h-screen p-6 text-foreground max-sm:p-4.5 max-sm:overflow-x-auto"
   style={`--accent: ${config.theme?.accentColor || '#fabd2f'}; --ring: ${config.theme?.accentColor || '#fabd2f'}; --magma-bg: url('${config.theme?.backgroundImage || '/bg.jpg'}');`}
 >
   <div class="background"></div>
@@ -606,7 +612,9 @@
             {widget}
             locations={config.locations || {}}
             {editMode}
-            selectedChildId={selected?.id === widget.id ? selected?.childId : null}
+            selectedChildId={selected?.id === widget.id
+              ? selected?.childId
+              : null}
             onSelectChild={(event, child) =>
               selectWidget(event, widget, child.id)}
             onDeleteChild={(event, child) => deleteWidget(widget, child.id)}

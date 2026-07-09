@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "plugins": ["eslint", "typescript", "oxc"],
+  "ignorePatterns": [
+    ".svelte-kit/**",
+    "build/**",
+    "dist/**",
+    "node_modules/**",
+    "src/lib/paraglide/**"
+  ]
+}

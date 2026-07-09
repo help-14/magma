@@ -184,13 +184,19 @@ Place the Svelte 5 component in this directory. Use `$props`, `$state`, `$derive
   })
 </script>
 
-<div class="relative flex flex-col w-full min-w-0 min-h-0 h-full overflow-hidden">
-  <div class="flex items-center gap-2 text-magma-accent text-sm font-extrabold px-3 p-2 pb-1 shrink-0">
+<div
+  class="relative flex flex-col w-full min-w-0 min-h-0 h-full overflow-hidden"
+>
+  <div
+    class="flex items-center gap-2 text-magma-accent text-sm font-extrabold px-3 p-2 pb-1 shrink-0"
+  >
     <span class="truncate">{widget.title}</span>
   </div>
 
   {#if state === 'idle'}
-    <div class="flex items-center justify-center h-full text-magma-muted text-xs p-4">
+    <div
+      class="flex items-center justify-center h-full text-magma-muted text-xs p-4"
+    >
       Configure in properties
     </div>
   {:else if state === 'loading'}
@@ -198,17 +204,21 @@ Place the Svelte 5 component in this directory. Use `$props`, `$state`, `$derive
       <RefreshCw class="animate-spin text-magma-muted" size={24} />
     </div>
   {:else if state === 'error'}
-    <div class="flex items-center justify-center h-full text-red-400 text-xs p-4 text-center">
+    <div
+      class="flex items-center justify-center h-full text-red-400 text-xs p-4 text-center"
+    >
       {errorMsg}
     </div>
   {:else if state === 'content'}
-    <div class="flex-1 overflow-y-auto min-h-0 px-1 pb-1">
-      ...
-    </div>
+    <div class="flex-1 overflow-y-auto min-h-0 px-1 pb-1">...</div>
   {/if}
 
-  <Button onclick={doFetch} variant="ghost"
-    class="absolute top-1 right-1 p-1 rounded text-sm aspect-square" title="Refresh">
+  <Button
+    onclick={doFetch}
+    variant="ghost"
+    class="absolute top-1 right-1 p-1 rounded text-sm aspect-square"
+    title="Refresh"
+  >
     <RefreshCw class="size-3" />
   </Button>
 </div>
@@ -278,17 +288,16 @@ Use `widget.w` and `widget.h` (grid units, default 100px each) to adapt layout a
   let { widget, compact = false }: WidgetProps = $props()
 
   let size = $derived(
-    compact ? 'small' :
-    widget.w <= 2 && widget.h <= 2 ? 'small' :
-    widget.w >= 4 && widget.h >= 4 ? 'large' :
-    'medium'
+    compact
+      ? 'small'
+      : widget.w <= 2 && widget.h <= 2
+        ? 'small'
+        : widget.w >= 4 && widget.h >= 4
+          ? 'large'
+          : 'medium'
   )
 
-  let iconPx = $derived(
-    size === 'small' ? 36 :
-    size === 'medium' ? 48 :
-    64
-  )
+  let iconPx = $derived(size === 'small' ? 36 : size === 'medium' ? 48 : 64)
 </script>
 
 {#if size === 'small'}

@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "trailingComma": "none",
+  "singleQuote": true,
+  "printWidth": 80,
+  "svelte": true,
+  "ignorePatterns": [
+    ".svelte-kit/**",
+    "build/**",
+    "dist/**",
+    "node_modules/**",
+    "src/lib/paraglide/**",
+    ".agents/**",
+  ],
+}

@@ -20,10 +20,17 @@
     onUpdateNumber = () => {}
   }: PropertyPanelProps = $props()
 
-  let fields: ConfigFieldDescriptor[] = $derived(widgetConfigFields[widget.type] || [])
+  let fields: ConfigFieldDescriptor[] = $derived(
+    widgetConfigFields[widget.type] || []
+  )
 
   function inputValue(event: Event) {
-    return (event.currentTarget as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value
+    return (
+      event.currentTarget as
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | HTMLSelectElement
+    ).value
   }
 
   function inputChecked(event: Event) {
@@ -42,11 +49,15 @@
       </p>
       <h2 class="m-0 text-lg leading-tight">{widget.title}</h2>
     </div>
-    <Button variant="outline" type="button" onclick={onClose}>{m.properties_close()}</Button>
+    <Button variant="outline" type="button" onclick={onClose}
+      >{m.properties_close()}</Button
+    >
   </div>
 
   <Label class="grid gap-1.5 mt-3">
-    <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_title_field()}</span>
+    <span class="text-muted-foreground text-xs font-bold uppercase"
+      >{m.properties_title_field()}</span
+    >
     <Input
       value={widget.title}
       oninput={(event: Event) => onUpdate({ title: inputValue(event) })}
@@ -54,19 +65,25 @@
   </Label>
 
   <Label class="grid gap-1.5 mt-3">
-    <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_id_field()}</span>
+    <span class="text-muted-foreground text-xs font-bold uppercase"
+      >{m.properties_id_field()}</span
+    >
     <Input value={widget.id} readonly />
   </Label>
 
   <Label class="grid gap-1.5 mt-3">
-    <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_type_field()}</span>
+    <span class="text-muted-foreground text-xs font-bold uppercase"
+      >{m.properties_type_field()}</span
+    >
     <Input value={widget.type} readonly />
   </Label>
 
   {#if !selected?.childId}
     <div class="grid grid-cols-4 gap-2">
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_x()}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase"
+          >{m.properties_x()}</span
+        >
         <Input
           type="number"
           value={widget.x}
@@ -74,7 +91,9 @@
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_y()}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase"
+          >{m.properties_y()}</span
+        >
         <Input
           type="number"
           min="1"
@@ -83,7 +102,9 @@
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_w()}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase"
+          >{m.properties_w()}</span
+        >
         <Input
           type="number"
           min="1"
@@ -93,7 +114,9 @@
         />
       </Label>
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-muted-foreground text-xs font-bold uppercase">{m.properties_h()}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase"
+          >{m.properties_h()}</span
+        >
         <Input
           type="number"
           min="1"
@@ -181,11 +204,14 @@
       </Label>
     {:else if field.type === 'textarea'}
       <Label class="grid gap-1.5 mt-3">
-        <span class="text-muted-foreground text-xs font-bold uppercase">{field.label}</span>
+        <span class="text-muted-foreground text-xs font-bold uppercase"
+          >{field.label}</span
+        >
         <Textarea
           value={widget.config?.[field.key] ?? field.default}
           rows={field.rows || 4}
-          oninput={(event: Event) => onUpdateConfig(field.key, inputValue(event))}
+          oninput={(event: Event) =>
+            onUpdateConfig(field.key, inputValue(event))}
         />
       </Label>
     {:else}

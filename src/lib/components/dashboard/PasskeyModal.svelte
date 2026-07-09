@@ -7,7 +7,7 @@
   let {
     open = false,
     onSuccess,
-    onClose,
+    onClose
   }: {
     open?: boolean
     onSuccess: () => void
@@ -41,13 +41,13 @@
         challenge: base64urlToBufferSource(options.challenge),
         allowCredentials: options.allowCredentials?.map((cred: any) => ({
           ...cred,
-          id: base64urlToBufferSource(cred.id),
-        })),
+          id: base64urlToBufferSource(cred.id)
+        }))
       } as PublicKeyCredentialRequestOptions
 
-      const assertion = await navigator.credentials.get({
-        publicKey,
-      }) as PublicKeyCredential | null
+      const assertion = (await navigator.credentials.get({
+        publicKey
+      })) as PublicKeyCredential | null
       if (!assertion) throw new Error('Passkey authentication cancelled')
 
       const response = await fetch('/api/auth/complete', {
@@ -57,8 +57,8 @@
           challengeId,
           credential: assertion.toJSON(),
           origin,
-          rpID,
-        }),
+          rpID
+        })
       })
 
       if (!response.ok) {
@@ -69,7 +69,11 @@
       toast.success('Verified with passkey')
       onSuccess()
     } catch (err) {
-      if (err instanceof Error && err.message === 'Passkey authentication cancelled') return
+      if (
+        err instanceof Error &&
+        err.message === 'Passkey authentication cancelled'
+      )
+        return
       toast.error(err instanceof Error ? err.message : 'Failed to authenticate')
     } finally {
       authenticating = false
@@ -105,7 +109,9 @@
 
       <Fingerprint size={64} class="mx-auto text-accent mb-4" />
 
-      <h2 class="text-foreground text-lg font-bold mb-2">Verify your identity</h2>
+      <h2 class="text-foreground text-lg font-bold mb-2">
+        Verify your identity
+      </h2>
       <p class="text-muted-foreground text-sm mb-6">
         Use your passkey to continue
       </p>

@@ -13,27 +13,62 @@
   let h = $derived(widget.h ?? 0)
 
   let size = $derived(
-    compact ? 'small' :
-    w <= 3 && h <= 2 ? 'small' :
-    w >= 4 && h >= 4 ? 'large' :
-    'medium'
+    compact
+      ? 'small'
+      : w <= 3 && h <= 2
+        ? 'small'
+        : w >= 4 && h >= 4
+          ? 'large'
+          : 'medium'
   )
 
   let iconPx = $derived(
-    size === 'small' ? (compact ? 36 : 52) :
-    size === 'medium' ? 48 :
-    64
+    size === 'small' ? (compact ? 36 : 52) : size === 'medium' ? 48 : 64
   )
 
-  let stats = $derived(weather ? [
-    { label: m.weather_feels_like(), value: toCelsius(weather.main?.feels_like) },
-    ...(weather.main?.temp_min != null ? [{ label: m.weather_min(), value: toCelsius(weather.main?.temp_min) }] : []),
-    ...(weather.main?.temp_max != null ? [{ label: m.weather_max(), value: toCelsius(weather.main?.temp_max) }] : []),
-    { label: m.weather_humidity(), value: `${weather.main?.humidity ?? '--'}%` },
-    { label: m.weather_wind(), value: formatWind(weather.wind?.speed, weather.wind?.deg) },
-    { label: m.weather_sky(), value: weather.weather?.[0]?.main || '' },
-    ...(weather.visibility != null ? [{ label: m.weather_visibility(), value: formatVisibility(weather.visibility) }] : [])
-  ] : [])
+  let stats = $derived(
+    weather
+      ? [
+          {
+            label: m.weather_feels_like(),
+            value: toCelsius(weather.main?.feels_like)
+          },
+          ...(weather.main?.temp_min != null
+            ? [
+                {
+                  label: m.weather_min(),
+                  value: toCelsius(weather.main?.temp_min)
+                }
+              ]
+            : []),
+          ...(weather.main?.temp_max != null
+            ? [
+                {
+                  label: m.weather_max(),
+                  value: toCelsius(weather.main?.temp_max)
+                }
+              ]
+            : []),
+          {
+            label: m.weather_humidity(),
+            value: `${weather.main?.humidity ?? '--'}%`
+          },
+          {
+            label: m.weather_wind(),
+            value: formatWind(weather.wind?.speed, weather.wind?.deg)
+          },
+          { label: m.weather_sky(), value: weather.weather?.[0]?.main || '' },
+          ...(weather.visibility != null
+            ? [
+                {
+                  label: m.weather_visibility(),
+                  value: formatVisibility(weather.visibility)
+                }
+              ]
+            : [])
+        ]
+      : []
+  )
 
   $effect(() => {
     const cfg = widget.config || {}
@@ -48,12 +83,16 @@
       latitude: lat,
       longitude: lon,
       cacheTtl: (cfg.cacheTtl || 900) * 1000
-    }).then((data) => {
-      if (!cancelled) weather = data
-    }).catch(() => {
-      if (!cancelled) weather = null
     })
-    return () => { cancelled = true }
+      .then((data) => {
+        if (!cancelled) weather = data
+      })
+      .catch(() => {
+        if (!cancelled) weather = null
+      })
+    return () => {
+      cancelled = true
+    }
   })
 
   function toCelsius(value: number | null | undefined) {
@@ -76,7 +115,10 @@
     return `${meters}m`
   }
 
-  function formatWind(speed: number | null | undefined, deg: number | null | undefined) {
+  function formatWind(
+    speed: number | null | undefined,
+    deg: number | null | undefined
+  ) {
     if (speed == null) return '--'
     const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
     const dir = directions[Math.round((deg || 0) / 45) % 8]
@@ -85,7 +127,9 @@
 </script>
 
 {#if size === 'small'}
-  <div class="relative flex flex-col justify-center p-4 pl-1 w-full min-w-0 min-h-0">
+  <div
+    class="relative flex flex-col justify-center p-4 pl-1 w-full min-w-0 min-h-0"
+  >
     <Tooltip.Provider>
       <Tooltip.Root>
         <Tooltip.Trigger
@@ -129,9 +173,12 @@
             </div>
             <hr class="border-border/50 my-1.5" />
             <div class="grid grid-cols-2 gap-x-3 gap-y-1">
-              <span class="text-muted-foreground">{m.weather_temperature()}</span>
+              <span class="text-muted-foreground"
+                >{m.weather_temperature()}</span
+              >
               <span>{toCelsius(weather.main?.temp)}</span>
-              <span class="text-muted-foreground">{m.weather_feels_like()}</span>
+              <span class="text-muted-foreground">{m.weather_feels_like()}</span
+              >
               <span>{toCelsius(weather.main?.feels_like)}</span>
               {#if weather.main?.temp_min != null}
                 <span class="text-muted-foreground">{m.weather_min()}</span>
@@ -148,7 +195,9 @@
               <span class="text-muted-foreground">{m.weather_sky()}</span>
               <span>{weather.weather?.[0]?.main || ''}</span>
               {#if weather.visibility != null}
-                <span class="text-muted-foreground">{m.weather_visibility()}</span>
+                <span class="text-muted-foreground"
+                  >{m.weather_visibility()}</span
+                >
                 <span>{formatVisibility(weather.visibility)}</span>
               {/if}
               {#if weather.sys?.sunrise}
@@ -176,14 +225,21 @@
         class="shrink-0"
       />
       <div>
-        <strong class="block text-2xl leading-none">{toCelsius(weather.main?.temp)}</strong>
-        <span class="text-muted-foreground text-xs">{weather.name || 'Weather'} · {weather.main?.humidity ?? '--'}%</span>
+        <strong class="block text-2xl leading-none"
+          >{toCelsius(weather.main?.temp)}</strong
+        >
+        <span class="text-muted-foreground text-xs"
+          >{weather.name || 'Weather'} · {weather.main?.humidity ?? '--'}%</span
+        >
       </div>
     </div>
 
-    <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-xs leading-snug">
+    <div
+      class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-xs leading-snug"
+    >
       {#each stats as stat (stat.label)}
-        <span class="text-muted-foreground whitespace-nowrap">{stat.label}</span>
+        <span class="text-muted-foreground whitespace-nowrap">{stat.label}</span
+        >
         <span>{stat.value}</span>
       {/each}
     </div>
@@ -193,10 +249,14 @@
         <hr class="border-border/50 my-0.5" />
         <div class="flex items-center justify-between text-xs">
           {#if weather.sys?.sunrise}
-            <span class="text-muted-foreground">{m.weather_sunrise()} {formatHour(weather.sys?.sunrise)}</span>
+            <span class="text-muted-foreground"
+              >{m.weather_sunrise()} {formatHour(weather.sys?.sunrise)}</span
+            >
           {/if}
           {#if weather.sys?.sunset}
-            <span class="text-muted-foreground">{m.weather_sunset()} {formatHour(weather.sys?.sunset)}</span>
+            <span class="text-muted-foreground"
+              >{m.weather_sunset()} {formatHour(weather.sys?.sunset)}</span
+            >
           {/if}
         </div>
       {/if}

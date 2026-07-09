@@ -30,7 +30,11 @@
     onDragEnd?: (event: DragEvent) => void
     onStartMove?: (event: PointerEvent, widget: Widget) => void
     onDelete?: (event: MouseEvent, widget: Widget) => void
-    onStartResize?: (event: PointerEvent, widget: Widget, direction: ResizeDirection) => void
+    onStartResize?: (
+      event: PointerEvent,
+      widget: Widget,
+      direction: ResizeDirection
+    ) => void
     children?: Snippet
   } = $props()
 </script>
@@ -91,21 +95,24 @@
       class="absolute top-10 bottom-2 left-0 z-4 h-auto w-3 min-h-0 cursor-ew-resize rounded-none border-0 bg-transparent p-0 text-transparent hover:bg-accent/16 focus-visible:opacity-100"
       aria-label="Resize widget from left edge"
       title="Resize widget from left edge"
-      onpointerdown={(event: PointerEvent) => onStartResize(event, widget, 'left')}
+      onpointerdown={(event: PointerEvent) =>
+        onStartResize(event, widget, 'left')}
       variant="ghost"
     ></Button>
     <Button
       class="absolute top-10 right-0 bottom-2 z-4 h-auto w-3 min-h-0 cursor-ew-resize rounded-none border-0 bg-transparent p-0 text-transparent hover:bg-accent/16 focus-visible:opacity-100"
       aria-label="Resize widget from right edge"
       title="Resize widget from right edge"
-      onpointerdown={(event: PointerEvent) => onStartResize(event, widget, 'right')}
+      onpointerdown={(event: PointerEvent) =>
+        onStartResize(event, widget, 'right')}
       variant="ghost"
     ></Button>
     <Button
       class="absolute right-2 bottom-0 left-2 z-4 h-3 min-h-0 cursor-ns-resize rounded-none border-0 bg-transparent p-0 text-transparent hover:bg-accent/16 focus-visible:opacity-100"
       aria-label="Resize widget from bottom edge"
       title="Resize widget from bottom edge"
-      onpointerdown={(event: PointerEvent) => onStartResize(event, widget, 'bottom')}
+      onpointerdown={(event: PointerEvent) =>
+        onStartResize(event, widget, 'bottom')}
       variant="ghost"
     ></Button>
   {/if}

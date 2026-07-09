@@ -1,7 +1,11 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
-  let { title, icon, trailing }: { title: string; icon?: Snippet; trailing?: Snippet } = $props()
+  let {
+    title,
+    icon,
+    trailing
+  }: { title: string; icon?: Snippet; trailing?: Snippet } = $props()
 </script>
 
 <div

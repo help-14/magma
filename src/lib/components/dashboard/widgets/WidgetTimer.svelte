@@ -10,10 +10,13 @@
   let h = $derived(widget.h ?? 0)
 
   let size = $derived(
-    compact ? 'small' :
-    w <= 2 && h <= 1 ? 'small' :
-    w >= 4 && h >= 4 ? 'large' :
-    'medium'
+    compact
+      ? 'small'
+      : w <= 2 && h <= 1
+        ? 'small'
+        : w >= 4 && h >= 4
+          ? 'large'
+          : 'medium'
   )
 
   function greeting() {
@@ -28,7 +31,7 @@
     const opts: Intl.DateTimeFormatOptions = {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: widget.config?.hour12 ?? false,
+      hour12: widget.config?.hour12 ?? false
     }
     if (widget.config?.timezone) opts.timeZone = widget.config.timezone
     if (size !== 'small' && widget.config?.showSeconds) opts.second = '2-digit'
@@ -37,9 +40,10 @@
 
   function formatDate() {
     if (!(widget.config?.showDate ?? true) || size === 'small') return ''
-    const opts: Intl.DateTimeFormatOptions = size === 'large'
-      ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-      : { weekday: 'short', month: 'short', day: 'numeric' }
+    const opts: Intl.DateTimeFormatOptions =
+      size === 'large'
+        ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+        : { weekday: 'short', month: 'short', day: 'numeric' }
     if (widget.config?.timezone) opts.timeZone = widget.config.timezone
     return now.toLocaleDateString('en-US', opts)
   }
@@ -62,17 +66,24 @@
     const tz = widget.config?.timezone || undefined
     if (showDate) {
       const datePart = now.toLocaleDateString('en-US', {
-        weekday: 'short', month: 'short', day: 'numeric', timeZone: tz
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        timeZone: tz
       })
       const timePart = now.toLocaleTimeString('en-US', {
-        hour: '2-digit', minute: '2-digit',
-        hour12: widget.config?.hour12 ?? false, timeZone: tz
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: widget.config?.hour12 ?? false,
+        timeZone: tz
       })
       return `${datePart} · ${timePart}`
     }
     return now.toLocaleTimeString('en-US', {
-      hour: '2-digit', minute: '2-digit',
-      hour12: widget.config?.hour12 ?? false, timeZone: tz
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: widget.config?.hour12 ?? false,
+      timeZone: tz
     })
   }
 
@@ -84,23 +95,37 @@
 </script>
 
 {#if size === 'small'}
-  <div class="flex items-center justify-center w-full h-full min-w-0 min-h-0 p-2">
-    <span class="text-white font-bold leading-none text-[clamp(2rem,10vw,5rem)]">
+  <div
+    class="flex items-center justify-center w-full h-full min-w-0 min-h-0 p-2"
+  >
+    <span
+      class="text-white font-bold leading-none text-[clamp(2rem,10vw,5rem)]"
+    >
       {timeStr}
     </span>
   </div>
 {:else if size === 'medium'}
-  <div class="flex flex-col justify-center w-full min-w-0 min-h-0 h-full p-4 gap-1">
-    <span class="text-muted-foreground text-sm leading-snug">{mediumDateTimeStr}</span>
-    {#if (widget.config?.showGreeting ?? true)}
-      <strong class="text-[clamp(1.4rem,3vw,2.65rem)] leading-[1.05] text-accent">
+  <div
+    class="flex flex-col justify-center w-full min-w-0 min-h-0 h-full p-4 gap-1"
+  >
+    <span class="text-muted-foreground text-sm leading-snug"
+      >{mediumDateTimeStr}</span
+    >
+    {#if widget.config?.showGreeting ?? true}
+      <strong
+        class="text-[clamp(1.4rem,3vw,2.65rem)] leading-[1.05] text-accent"
+      >
         {greetingStr}
       </strong>
     {/if}
   </div>
 {:else}
-  <div class="flex flex-col justify-center w-full min-w-0 min-h-0 h-full p-4 gap-1">
-    <span class="text-white font-bold leading-none text-[clamp(1.8rem,5vw,3rem)]">
+  <div
+    class="flex flex-col justify-center w-full min-w-0 min-h-0 h-full p-4 gap-1"
+  >
+    <span
+      class="text-white font-bold leading-none text-[clamp(1.8rem,5vw,3rem)]"
+    >
       {timeStr}
     </span>
 
@@ -110,7 +135,7 @@
       </span>
     {/if}
 
-    {#if (widget.config?.showGreeting ?? true)}
+    {#if widget.config?.showGreeting ?? true}
       <span class="text-accent text-xs leading-snug">
         {greetingStr}
         {#if tzStr}

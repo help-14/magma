@@ -99,8 +99,7 @@
               class="flex items-center gap-1 bg-secondary rounded-lg px-2.5 py-1.5"
             >
               <Star class="size-3.5 text-yellow-500" />
-              <span class="text-xs font-bold text-foreground"
-                >{data.stars}</span
+              <span class="text-xs font-bold text-foreground">{data.stars}</span
               >
             </div>
           {/if}
@@ -109,8 +108,7 @@
               class="flex items-center gap-1 bg-secondary rounded-lg px-2.5 py-1.5"
             >
               <GitFork class="size-3.5 text-accent" />
-              <span class="text-xs font-bold text-foreground"
-                >{data.forks}</span
+              <span class="text-xs font-bold text-foreground">{data.forks}</span
               >
             </div>
           {/if}
@@ -122,7 +120,9 @@
             >
               <GitPullRequest class="size-3.5 text-green-400" />
               <span>Pull Requests</span>
-              <span class="text-muted-foreground font-normal">({data.openPrs})</span>
+              <span class="text-muted-foreground font-normal"
+                >({data.openPrs})</span
+              >
             </div>
             {#each data.pulls.slice(0, 5) as pr (pr.htmlUrl)}
               <a
@@ -131,7 +131,9 @@
                 rel="noreferrer"
                 class="flex items-start gap-1.5 px-2 py-1 rounded hover:bg-secondary text-xs text-foreground no-underline"
               >
-                <ChevronRight class="size-3 text-muted-foreground mt-0.5 shrink-0" />
+                <ChevronRight
+                  class="size-3 text-muted-foreground mt-0.5 shrink-0"
+                />
                 <span class="line-clamp-1">{pr.title}</span>
               </a>
             {/each}
@@ -153,7 +155,9 @@
                 rel="noreferrer"
                 class="flex items-start gap-1.5 px-2 py-1 rounded hover:bg-secondary text-xs text-foreground no-underline"
               >
-                <ChevronRight class="size-3 text-muted-foreground mt-0.5 shrink-0" />
+                <ChevronRight
+                  class="size-3 text-muted-foreground mt-0.5 shrink-0"
+                />
                 <span class="line-clamp-1">{issue.title}</span>
               </a>
             {/each}

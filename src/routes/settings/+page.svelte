@@ -149,11 +149,15 @@
     systemYaml = lines.join('\n')
   }
 
-  function updateSystemGridField(key: 'cellWidth' | 'cellHeight' | 'mobileScale', value: string) {
+  function updateSystemGridField(
+    key: 'cellWidth' | 'cellHeight' | 'mobileScale',
+    value: string
+  ) {
     const fallback = key === 'mobileScale' ? '0.75' : '100'
-    const numberValue = key === 'mobileScale'
-      ? Number.parseFloat(value || fallback)
-      : Number.parseInt(value || fallback, 10)
+    const numberValue =
+      key === 'mobileScale'
+        ? Number.parseFloat(value || fallback)
+        : Number.parseInt(value || fallback, 10)
     if (key === 'cellWidth') cellWidth = numberValue
     if (key === 'cellHeight') cellHeight = numberValue
     if (key === 'mobileScale') mobileScale = numberValue
@@ -162,14 +166,18 @@
     const fieldIndex = lines.findIndex((line: string) =>
       new RegExp(`^\\s+${key}:`).test(line)
     )
-    const nextValue = Number.isFinite(numberValue) ? numberValue : Number(fallback)
+    const nextValue = Number.isFinite(numberValue)
+      ? numberValue
+      : Number(fallback)
     const nextLine = `    ${key}: ${nextValue}`
     if (fieldIndex === -1) {
       const gridIndex = lines.findIndex((line: string) =>
         /^\s+dashboardGrid:\s*$/.test(line)
       )
       if (gridIndex === -1) {
-        const systemIndex = lines.findIndex((line: string) => /^system:\s*$/.test(line))
+        const systemIndex = lines.findIndex((line: string) =>
+          /^system:\s*$/.test(line)
+        )
         if (systemIndex === -1) {
           systemYaml = `version: 1\nsystem:\n  dashboardGrid:\n${nextLine}\n`
         } else {
@@ -188,7 +196,9 @@
 
   function updateThemeField(key: string, value: string) {
     const lines = dashboardYaml.split('\n')
-    const themeIndex = lines.findIndex((line: string) => /^theme:\s*$/.test(line))
+    const themeIndex = lines.findIndex((line: string) =>
+      /^theme:\s*$/.test(line)
+    )
     if (themeIndex === -1) {
       dashboardYaml = `${dashboardYaml.trimEnd()}\n\ntheme:\n${formatThemeField(key, value)}\n`
       return
@@ -215,7 +225,9 @@
 
   function updateSystemThemeField(key: string, value: string) {
     const lines = systemYaml.split('\n')
-    const themeIndex = lines.findIndex((line: string) => /^theme:\s*$/.test(line))
+    const themeIndex = lines.findIndex((line: string) =>
+      /^theme:\s*$/.test(line)
+    )
     if (themeIndex === -1) {
       systemYaml = `${systemYaml.trimEnd()}\n\ntheme:\n${formatThemeField(key, value)}\n`
       return
@@ -274,11 +286,16 @@
       }
       if (typeof result.customCss === 'string') customCss = result.customCss
       toast.success('Saved settings')
-      if (activeTab === 'system' && result.systemConfig?.language !== data.language) {
+      if (
+        activeTab === 'system' &&
+        result.systemConfig?.language !== data.language
+      ) {
         window.location.reload()
       }
     } catch (saveError) {
-      toast.error(saveError instanceof Error ? saveError.message : String(saveError))
+      toast.error(
+        saveError instanceof Error ? saveError.message : String(saveError)
+      )
     } finally {
       saving = false
     }
@@ -300,14 +317,19 @@
         }))
       } as PublicKeyCredentialRequestOptions
 
-      const assertion = await navigator.credentials.get({
-        publicKey,
-      }) as PublicKeyCredential | null
+      const assertion = (await navigator.credentials.get({
+        publicKey
+      })) as PublicKeyCredential | null
       if (!assertion) throw new Error('Cancelled')
       const response = await fetch('/api/auth/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ challengeId, credential: assertion.toJSON(), origin, rpID }),
+        body: JSON.stringify({
+          challengeId,
+          credential: assertion.toJSON(),
+          origin,
+          rpID
+        })
       })
       if (!response.ok) throw new Error('Authentication failed')
       await invalidateAll()
@@ -335,7 +357,8 @@
     >
       <nav class="flex flex-row w-full">
         <Button href="/" variant="magma">
-          <ArrowLeft size={18} /> {m.settings_back()}
+          <ArrowLeft size={18} />
+          {m.settings_back()}
         </Button>
         <div class="grow"></div>
         <Button
@@ -353,8 +376,12 @@
     {#if showGate}
       <div class="flex flex-col items-center justify-center py-16 text-center">
         <Fingerprint size={64} class="text-accent mb-4" />
-        <h2 class="text-foreground text-lg font-bold mb-2">Verify your identity</h2>
-        <p class="text-muted-foreground text-sm mb-6">Use your passkey to access settings</p>
+        <h2 class="text-foreground text-lg font-bold mb-2">
+          Verify your identity
+        </h2>
+        <p class="text-muted-foreground text-sm mb-6">
+          Use your passkey to access settings
+        </p>
         <Button
           variant="magma"
           class="text-foreground!"
@@ -371,7 +398,7 @@
             <Tabs.Trigger
               value={tab.id}
               class="inline-flex items-center justify-center gap-2 min-h-10 px-3.5 border border-border rounded-lg bg-card text-foreground! backdrop-blur-md cursor-pointer transition-all duration-140 hover:border-accent/48 hover:bg-accent/18 hover:shadow-[0_10px_26px_rgb(0_0_0/24%),0_0_0_1px_rgb(250_189_47/14%)] hover:-translate-y-0.5 active:shadow-[0_4px_12px_rgb(0_0_0/22%)] active:translate-y-0 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 data-active:border-accent/48 data-active:bg-accent/40 data-active:hover:bg-accent/96"
-            >{tab.label}</Tabs.Trigger
+              >{tab.label}</Tabs.Trigger
             >
           {/each}
         </Tabs.List>
@@ -415,10 +442,7 @@
                     value={cellWidth}
                     class="w-full min-h-9 border-border rounded-lg bg-[rgb(20_18_16/48%)] text-foreground px-2.5 outline-none transition-all duration-140 hover:border-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
                     oninput={(event: Event) =>
-                      updateSystemGridField(
-                        'cellWidth',
-                        inputValue(event)
-                      )}
+                      updateSystemGridField('cellWidth', inputValue(event))}
                   />
                 </Label>
                 <Label class="grid gap-2 mt-4">
@@ -431,10 +455,7 @@
                     value={cellHeight}
                     class="w-full min-h-9 border-border rounded-lg bg-[rgb(20_18_16/48%)] text-foreground px-2.5 outline-none transition-all duration-140 hover:border-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
                     oninput={(event: Event) =>
-                      updateSystemGridField(
-                        'cellHeight',
-                        inputValue(event)
-                      )}
+                      updateSystemGridField('cellHeight', inputValue(event))}
                   />
                 </Label>
                 <Label class="grid col-span-2 gap-2 mt-4">
@@ -449,10 +470,7 @@
                     value={mobileScale}
                     class="w-full min-h-9 border-border rounded-lg bg-[rgb(20_18_16/48%)] text-foreground px-2.5 outline-none transition-all duration-140 hover:border-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
                     oninput={(event: Event) =>
-                      updateSystemGridField(
-                        'mobileScale',
-                        inputValue(event)
-                      )}
+                      updateSystemGridField('mobileScale', inputValue(event))}
                   />
                 </Label>
                 <Label class="grid col-span-2 gap-2 mt-4">
@@ -521,7 +539,9 @@
             <aside
               class="border border-border rounded-lg bg-card shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-muted-foreground"
             >
-              <h2 class="text-foreground text-base m-0 mb-2.5">{m.settings_css()}</h2>
+              <h2 class="text-foreground text-base m-0 mb-2.5">
+                {m.settings_css()}
+              </h2>
               <p>{@html m.settings_css_desc()}</p>
             </aside>
           </section>
@@ -529,9 +549,15 @@
 
         <Tabs.Content value="security">
           <section class="mt-2">
-            <aside class="border border-border rounded-lg bg-card shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-muted-foreground">
+            <aside
+              class="border border-border rounded-lg bg-card shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-muted-foreground"
+            >
               <h2 class="text-foreground text-base m-0 mb-2.5">Security</h2>
-              <p class="mb-4">Manage your passkeys. Passkeys use biometrics (Face ID, Touch ID, Windows Hello) to verify your identity before allowing edit mode and settings access.</p>
+              <p class="mb-4">
+                Manage your passkeys. Passkeys use biometrics (Face ID, Touch
+                ID, Windows Hello) to verify your identity before allowing edit
+                mode and settings access.
+              </p>
               <PasskeySetup onPasskeyChanged={handlePasskeyChanged} />
             </aside>
           </section>
