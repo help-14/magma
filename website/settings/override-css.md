@@ -1,6 +1,4 @@
 ---
-layout: layouts/doc.njk
-title: CSS Override
 description: Configure config/override.css.
 ---
 

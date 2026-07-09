@@ -1,6 +1,4 @@
 ---
-layout: layouts/doc.njk
-title: Dashboard Settings
 description: Configure config/dashboard.yaml.
 ---
 

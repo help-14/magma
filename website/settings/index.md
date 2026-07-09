@@ -1,6 +1,4 @@
 ---
-layout: layouts/doc.njk
-title: Settings
 description: Understand Magma configuration files.
 ---
 

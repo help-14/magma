@@ -1,6 +1,4 @@
 ---
-layout: layouts/doc.njk
-title: System Settings
 description: Configure config/system.yaml.
 ---
 
