@@ -43,4 +43,4 @@ config/passkey.yaml
 
 .DS_Store
 website/.vitepress/cache/
-!website/.vitepress/dist/
+website/.vitepress/dist/
