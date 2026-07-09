@@ -1,6 +1,0 @@
-[
-  { "label": "Home", "url": "/" },
-  { "label": "Getting Started", "url": "/getting-started/" },
-  { "label": "Widgets", "url": "/widgets/" },
-  { "label": "Settings", "url": "/settings/" }
-]
