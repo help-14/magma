@@ -55,6 +55,7 @@ export default defineConfig({
             { text: 'System Settings', link: '/settings/system' },
             { text: 'Dashboard Settings', link: '/settings/dashboard' },
             { text: 'CSS Override', link: '/settings/override-css' },
+            { text: 'Passkeys', link: '/settings/passkeys' },
           ]
         }
       ]

@@ -11,11 +11,16 @@ Magma stores durable configuration in the `config/` directory. In Docker deploym
 | `config/system.yaml` | App-level settings such as background image, language, and dashboard grid cell size. |
 | `config/dashboard.yaml` | Widgets, locations, search, network, theme, and integration references. |
 | `config/override.css` | Custom CSS loaded after built-in styles. |
+| `config/passkey.yaml` | Passkey credential storage. |
 
 Secrets should not be committed to YAML. Store credential values in environment variables and reference the variable names in config.
 
 ## Edit paths
 
 - Use the dashboard editor for widget placement and property changes.
-- Use Settings for system settings, dashboard YAML, and CSS override editing.
+- Use Settings for system settings, dashboard YAML, CSS override, and passkey editing.
 - Edit files directly when you want version control or bulk changes.
+
+## Security
+
+Under **Settings → Security** you can register and manage [passkeys](/settings/passkeys) that protect edit mode and settings access using biometrics (Face ID, Touch ID, Windows Hello).
