@@ -375,6 +375,21 @@
     })
   }
 
+  function reorderChildInStack(stackId: string, childId: string, targetIndex: number) {
+    config.dashboard.widgets = widgets.map((widget: any) => {
+      if (widget.id !== stackId) return widget
+      const children = widget.children || []
+      const fromIndex = children.findIndex((c: any) => c.id === childId)
+      if (fromIndex === -1 || fromIndex === targetIndex) return widget
+      const newChildren = [...children]
+      const [moved] = newChildren.splice(fromIndex, 1)
+      const adjustedTarget = targetIndex > fromIndex ? targetIndex - 1 : targetIndex
+      newChildren.splice(adjustedTarget, 0, moved)
+      return { ...widget, children: newChildren }
+    })
+    dirty = true
+  }
+
   function addChildToStack(stackId: string, child: any) {
     config.dashboard.widgets = widgets.map((widget: any) =>
       widget.id === stackId
@@ -620,6 +635,7 @@
             onDeleteChild={(event, child) => deleteWidget(widget, child.id)}
             onDropChild={(event) => dropIntoStack(event, widget)}
             onDragOverChild={dragOverStack}
+            onReorderChild={reorderChildInStack}
           />
         </DashboardWidgetFrame>
       {/each}
