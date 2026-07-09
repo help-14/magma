@@ -1,6 +1,4 @@
 ---
-layout: layouts/doc.njk
-title: Getting Started
 description: Install, run, configure, and deploy Magma.
 ---
 
@@ -54,10 +52,11 @@ The app listens on port `3000`. The `config/` directory is mounted into the cont
 
 ## Build this website
 
-This website is generated from markdown in `website/src` with Eleventy.
+This website is generated from markdown in `website/` with VitePress.
 
 ```sh
 pnpm website:build
 ```
 
-The static output is written to `website/_site`.
+The static output is written to `website/.vitepress/dist`.
+```
