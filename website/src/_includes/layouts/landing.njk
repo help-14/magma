@@ -1,0 +1,57 @@
+---
+layout: layouts/base.njk
+---
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Self-hosted dashboard</p>
+    <h1>{{ headline }}</h1>
+    <p class="lead">{{ subheadline }}</p>
+    <div class="actions">
+      <a class="button button-primary" href="{{ '/getting-started/' | url }}">Start building</a>
+      <a class="button" href="{{ '/widgets/' | url }}">Explore widgets</a>
+    </div>
+  </div>
+  <div class="hero-preview">
+    <img src="{{ '/assets/magma-preview.svg' | url }}" alt="Magma dashboard preview">
+  </div>
+</section>
+
+<section class="panel-grid">
+  {% for feature in features %}
+    <article class="panel">
+      <span>{{ feature.kicker }}</span>
+      <h2>{{ feature.title }}</h2>
+      <p>{{ feature.text }}</p>
+    </article>
+  {% endfor %}
+</section>
+
+<section class="section-heading">
+  <p class="eyebrow">Widget system</p>
+  <h2>Compose the dashboard around the information you actually use.</h2>
+  <p>Magma ships with live data widgets, launchers, embedded sites, feed readers, and stack containers. Every widget is configured from YAML or the dashboard property panel.</p>
+</section>
+
+<section class="widget-grid">
+  {% for widget in widgets.slice(0, 8) %}
+    <article class="widget-card">
+      <div class="widget-card__meta">{{ widget.size }}</div>
+      <h3><a href="{{ ('/widgets/' + widget.slug + '/') | url }}">{{ widget.title }}</a></h3>
+      <p>{{ widget.summary }}</p>
+      <span>{{ widget.configFields | join(' · ') }}</span>
+    </article>
+  {% endfor %}
+</section>
+
+<section class="cta-panel">
+  <div>
+    <p class="eyebrow">Markdown generated site</p>
+    <h2>Documentation and marketing pages live next to the app.</h2>
+    <p>Edit markdown in <code>website/src</code>, run <code>pnpm website:build</code>, and GitHub Pages publishes the static output.</p>
+  </div>
+  <a class="button button-primary" href="{{ '/settings/' | url }}">Read settings docs</a>
+</section>
+
+<article class="markdown-body landing-copy">
+  {{ content | safe }}
+</article>

@@ -10,6 +10,7 @@ app.config.timestamp_*.js
 .wrangler
 .pnpm-store
 /build
+/website/_site
 
 # Environment
 .env
@@ -39,3 +40,5 @@ vite.config.ts.timestamp-*
 
 # Config
 config/passkey.yaml
+
+.DS_Store
