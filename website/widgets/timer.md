@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Timer Widget
 description: Configure Magma timer and clock widgets.
 ---

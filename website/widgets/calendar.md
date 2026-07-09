@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Calendar Widget
 description: Configure Magma calendar widgets.
 ---

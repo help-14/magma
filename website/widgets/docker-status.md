@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Docker Status Widget
 description: Configure Magma Docker status widgets.
 ---

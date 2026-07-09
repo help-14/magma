@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Stock Widget
 description: Configure Magma Stock widgets.
 ---

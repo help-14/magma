@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Fetch Widget
 description: Configure Magma Fetch widgets.
 ---

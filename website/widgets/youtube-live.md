@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: YouTube Widget
 description: Configure Magma YouTube widgets.
 ---

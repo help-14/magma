@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Weather Widget
 description: Configure Magma weather widgets.
 ---

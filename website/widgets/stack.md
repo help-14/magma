@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Stack Widget
 description: Configure Magma stack widgets.
 ---

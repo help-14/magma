@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Website Widget
 description: Configure Magma Website widgets.
 ---

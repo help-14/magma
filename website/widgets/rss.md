@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: RSS Widget
 description: Configure Magma RSS widgets.
 ---

@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Button Widget
 description: Configure Magma button launcher widgets.
 ---

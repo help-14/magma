@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: DeepSeek Widget
 description: Configure Magma DeepSeek widgets.
 ---

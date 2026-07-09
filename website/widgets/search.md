@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: Search Widget
 description: Configure Magma search widgets.
 ---

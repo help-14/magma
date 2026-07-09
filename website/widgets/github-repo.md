@@ -1,5 +1,4 @@
 ---
-layout: layouts/doc.njk
 title: GitHub Repo Widget
 description: Configure Magma GitHub repository widgets.
 ---
