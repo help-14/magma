@@ -1,15 +1,10 @@
-name: Deploy Website to GitHub Pages
+name: Deploy website
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
-      - website/**
-      - package.json
-      - pnpm-lock.yaml
-      - .github/workflows/pages.yml
-  workflow_dispatch:
+      - 'website/**'
 
 permissions:
   contents: read
@@ -18,37 +13,28 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.10.0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 26
           cache: pnpm
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - run: pnpm install
+      - run: pnpm website:build
+      - run: mv website/.vitepress/dist website/_site
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build website
-        env:
-          BASE_PATH: /${{ github.event.repository.name }}/
-        run: pnpm website:build
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: website/_site
 
@@ -59,6 +45,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
