@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { flip } from 'svelte/animate'
   import WidgetRenderer from '../WidgetRenderer.svelte'
   import WidgetStackChildFrame from './WidgetStackChildFrame.svelte'
   import { buildStackGridStyle } from './stack-grid-style.js'
@@ -32,6 +33,19 @@
   let listRef = $state<HTMLElement | null>(null)
   let dragChildId = $state<string | null>(null)
   let dragOverIndex = $state<number | null>(null)
+
+  let displayChildren = $derived.by<any[]>(() => {
+    if (!dragChildId || dragOverIndex === null) return children as any[]
+    const filtered = children.filter((c) => c.id !== dragChildId)
+    const fromIndex = children.findIndex((c) => c.id === dragChildId)
+    const adjustedIndex = Math.min(
+      dragOverIndex > fromIndex ? dragOverIndex - 1 : dragOverIndex,
+      filtered.length
+    )
+    const result: any[] = [...filtered]
+    result.splice(adjustedIndex, 0, { id: `__shadow_${dragChildId}`, _shadow: true })
+    return result
+  })
 
   function onPointerDown(event: PointerEvent, child: any) {
     if (!editMode || !listRef) return
@@ -86,28 +100,34 @@
     aria-label={`${widget.title} children`}
     style={gridStyle}
   >
-    {#each children as child, i (child.id)}
-      <WidgetStackChildFrame
-        {child}
-        {editMode}
-        selected={selectedChildId === child.id}
-        dragOver={dragChildId !== child.id && dragOverIndex === i}
-        onSelect={onSelectChild}
-        onDelete={(event, target) => {
-          event.preventDefault()
-          event.stopPropagation()
-          onDeleteChild(event, target)
-        }}
-        onPointerDown={onPointerDown}
-      >
-        <WidgetRenderer widget={child} {locations} compact {editMode} />
-      </WidgetStackChildFrame>
+    {#each displayChildren as child, i (child.id)}
+      <div animate:flip={{ duration: 200 }}>
+        {#if '_shadow' in child}
+          <div
+            class="relative min-w-0 h-full overflow-hidden rounded-lg bg-white/6 border-2 border-dashed border-yellow-400/50"
+            role="listitem"
+            aria-label="Drop position"
+          ></div>
+        {:else}
+          <WidgetStackChildFrame
+            {child}
+            {editMode}
+            selected={selectedChildId === child.id}
+            onSelect={onSelectChild}
+            onDelete={(event, target) => {
+              event.preventDefault()
+              event.stopPropagation()
+              onDeleteChild(event, target)
+            }}
+            onPointerDown={onPointerDown}
+          >
+            <WidgetRenderer widget={child} {locations} compact {editMode} />
+          </WidgetStackChildFrame>
+        {/if}
+      </div>
     {/each}
   </div>
 </div>
 
 <style>
-  .stack-grid > * {
-    transition: transform 150ms ease, opacity 150ms ease;
-  }
 </style>

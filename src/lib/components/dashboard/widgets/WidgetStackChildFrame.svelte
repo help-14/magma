@@ -3,36 +3,31 @@
   import type { Snippet } from 'svelte'
   import { m } from '$lib/paraglide/messages.js'
   import { Button } from '$lib/components/ui/button/index.js'
-  import type { Widget } from '$lib/types/widget.js'
 
   let {
     child,
     editMode = false,
     selected = false,
-    dragOver = false,
     onSelect = () => {},
     onDelete = () => {},
     onPointerDown = () => {},
     children
   }: {
-    child: Widget
+    child: any
     editMode?: boolean
     selected?: boolean
-    dragOver?: boolean
-    onSelect?: (event: Event, child: Widget) => void
-    onDelete?: (event: MouseEvent, child: Widget) => void
-    onPointerDown?: (event: PointerEvent, child: Widget) => void
+    onSelect?: (event: Event, child: any) => void
+    onDelete?: (event: MouseEvent, child: any) => void
+    onPointerDown?: (event: PointerEvent, child: any) => void
     children?: Snippet
   } = $props()
 </script>
 
 <div
   class:selected
-  class:drag-over={dragOver}
   class={[
     'relative min-w-0 min-h-0 overflow-hidden rounded-lg bg-white/6',
-    selected && 'shadow-[0_0_0_2px_var(--accent),0_18px_46px_rgb(0_0_0/26%)]',
-    dragOver && 'before:absolute before:inset-x-0 before:h-0.5 before:bg-blue-400 before:z-10 before:shadow-[0_0_8px_#60a5fa]'
+    selected && 'shadow-[0_0_0_2px_var(--accent),0_18px_46px_rgb(0_0_0/26%)]'
   ]}
   role="listitem"
   onpointerdown={(event: PointerEvent) => {

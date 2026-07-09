@@ -66,7 +66,7 @@ dashboard:
           config:
             icon: material-symbols:house
             url: https://
-            iconColor: ''
+            iconColor: ""
     - id: media-stack
       type: stack
       title: Media
@@ -140,8 +140,7 @@ dashboard:
       w: 4
       h: 8
       config:
-        feeds:
-          '[{"url":"https://hnrss.org/frontpage","title":"HN"},{"url":"https://feeds.feedburner.com/TheHackersNews","title":"Threat
+        feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"},{"url":"https://feeds.feedburner.com/TheHackersNews","title":"Threat
           Intel"}]'
         style: vertical-list
         limit: 25
@@ -188,8 +187,8 @@ dashboard:
       config:
         url: https://jsonplaceholder.typicode.com/posts
         method: GET
-        headers: '[]'
-        body: ''
+        headers: "[]"
+        body: ""
         formatScript: |-
           const data = JSON.parse(responseText);
           return `<ul style="list-style:none;padding:0;margin:0;font-size:13px;color:#ebdbb2;">
@@ -224,7 +223,7 @@ network:
   localPingUrl: 10.0.0.1
   localPingTimeout: 300
 theme:
-  accentColor: '#fabd2f'
+  accentColor: "#fabd2f"
 integrations:
   weather:
     provider: openweather
