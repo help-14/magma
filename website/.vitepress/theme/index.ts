@@ -1,6 +1,4 @@
-import type { Theme } from 'vitepress'
+import { defineTheme } from 'vitepress/theme'
 import './custom.css'
 
-export default {
-  enhanceApp() {}
-} satisfies Theme
+export default defineTheme({})
