@@ -25,7 +25,6 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^3.1.2",
     "@fontsource-variable/geist": "^5.2.9",
     "@inlang/paraglide-js": "^2.20.2",
     "@internationalized/date": "^3.12.2",
@@ -38,7 +37,6 @@
     "@types/node": "^26.1.0",
     "bits-ui": "^2.18.1",
     "clsx": "^2.1.1",
-    "markdown-it-anchor": "^9.2.0",
     "mode-watcher": "^1.1.0",
     "oxfmt": "^0.58.0",
     "oxlint": "^1.73.0",
