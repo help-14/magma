@@ -42,3 +42,5 @@ vite.config.ts.timestamp-*
 config/passkey.yaml
 
 .DS_Store
+website/.vitepress/cache/
+!website/.vitepress/dist/

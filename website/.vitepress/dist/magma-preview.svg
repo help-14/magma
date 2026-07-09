@@ -1,0 +1,39 @@
+<svg width="960" height="620" viewBox="0 0 960 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="620" rx="42" fill="#15110d"/>
+  <circle cx="160" cy="120" r="180" fill="#fabd2f" fill-opacity="0.14"/>
+  <circle cx="780" cy="420" r="220" fill="#7c4a18" fill-opacity="0.18"/>
+  <g stroke="#fabd2f" stroke-opacity="0.11">
+    <path d="M0 150H960M0 250H960M0 350H960M0 450H960M0 550H960"/>
+    <path d="M180 0V620M280 0V620M380 0V620M480 0V620M580 0V620M680 0V620M780 0V620"/>
+  </g>
+  <path d="M480 40V580" stroke="#fabd2f" stroke-width="2" stroke-opacity="0.65"/>
+  <g filter="url(#shadow)">
+    <rect x="90" y="92" width="300" height="160" rx="24" fill="#241f1a" fill-opacity="0.82" stroke="#493722"/>
+    <text x="122" y="145" fill="#fabd2f" font-family="Arial" font-size="22" font-weight="700">Weather</text>
+    <text x="122" y="198" fill="#f4ead8" font-family="Arial" font-size="54" font-weight="800">24 deg</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="420" y="92" width="450" height="160" rx="24" fill="#241f1a" fill-opacity="0.82" stroke="#493722"/>
+    <text x="452" y="145" fill="#fabd2f" font-family="Arial" font-size="22" font-weight="700">Search</text>
+    <rect x="452" y="174" width="350" height="46" rx="23" fill="#15110d" stroke="#654b25"/>
+    <text x="480" y="204" fill="#b7a88f" font-family="Arial" font-size="18">Search with Google...</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="90" y="285" width="220" height="220" rx="24" fill="#241f1a" fill-opacity="0.82" stroke="#493722"/>
+    <text x="122" y="340" fill="#fabd2f" font-family="Arial" font-size="22" font-weight="700">RSS</text>
+    <path d="M122 380H260M122 420H238M122 460H275" stroke="#f4ead8" stroke-opacity="0.55" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="345" y="285" width="240" height="220" rx="24" fill="#241f1a" fill-opacity="0.82" stroke="#493722"/>
+    <text x="377" y="340" fill="#fabd2f" font-family="Arial" font-size="22" font-weight="700">Docker</text>
+    <circle cx="402" cy="398" r="10" fill="#6ee7a8"/><text x="426" y="405" fill="#f4ead8" font-family="Arial" font-size="20">magma</text>
+    <circle cx="402" cy="448" r="10" fill="#6ee7a8"/><text x="426" y="455" fill="#f4ead8" font-family="Arial" font-size="20">postgres</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="620" y="285" width="250" height="220" rx="24" fill="#241f1a" fill-opacity="0.82" stroke="#493722"/>
+    <text x="652" y="340" fill="#fabd2f" font-family="Arial" font-size="22" font-weight="700">Stocks</text>
+    <text x="652" y="397" fill="#f4ead8" font-family="Arial" font-size="28" font-weight="700">NVDA +2.8%</text>
+    <text x="652" y="447" fill="#f4ead8" font-family="Arial" font-size="28" font-weight="700">SPY +0.4%</text>
+  </g>
+  <defs><filter id="shadow" x="40" y="50" width="880" height="520" filterUnits="userSpaceOnUse"><feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#000" flood-opacity="0.35"/></filter></defs>
+</svg>
