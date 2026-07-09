@@ -58,5 +58,8 @@ This website is generated from markdown in `website/` with VitePress.
 pnpm website:build
 ```
 
-The static output is written to `website/.vitepress/dist`.
+The static output is written to `website/.vitepress/dist`..
+
+```
+
 ```
