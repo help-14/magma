@@ -1,4 +1,5 @@
 ---
+layout: home
 hero:
   name: Magma
   text: Build a dashboard that feels like your control room.
