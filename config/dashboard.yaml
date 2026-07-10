@@ -121,8 +121,8 @@ dashboard:
       type: deepseek
       title: DeepSeek
       x: 5
-      y: 1
-      w: 3
+      y: 9
+      w: 4
       h: 2
       config:
         authToken: null
@@ -139,7 +139,7 @@ dashboard:
       type: rss
       title: News
       x: 5
-      y: 9
+      y: 1
       w: 4
       h: 8
       config:
@@ -152,10 +152,10 @@ dashboard:
     - id: stocks-main
       type: stock
       title: Markets
-      x: 1
+      x: -1
       y: 15
       w: 4
-      h: 4
+      h: 3
       config:
         stocks: |-
           AAPL
@@ -183,10 +183,10 @@ dashboard:
     - id: fetch-posts
       type: fetch
       title: Latest Posts
-      x: 5
-      y: 3
-      w: 3
-      h: 6
+      x: -9
+      y: 1
+      w: 4
+      h: 8
       config:
         url: https://jsonplaceholder.typicode.com/posts
         method: GET
