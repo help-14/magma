@@ -2,7 +2,6 @@
   import { ExternalLink, ChevronDown, ChevronUp } from '@lucide/svelte'
   import { fetchRss } from '$lib/remotes/rss.remote.js'
   import { Button } from '$lib/components/ui/button/index.js'
-  import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
   import type { RssWidgetProps } from '$lib/types/widget.js'
@@ -91,27 +90,23 @@
 <div
   class="relative flex flex-col w-full min-w-0 min-h-0 h-full overflow-hidden"
 >
-  <WidgetTitleBar title={widget.title}>
-    {#snippet trailing()}
-      {#if feedErrors.length > 0}
-        <span
-          class="text-amber-400 text-xs shrink-0 cursor-help"
-          title={feedErrors
-            .map((e: any) => `${e.feedUrl}: ${e.message}`)
-            .join('\n')}
-        >
-          ⚠
-        </span>
-      {/if}
-    {/snippet}
-  </WidgetTitleBar>
-
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
     idleMessage="Configure feeds in properties"
   >
     {#snippet children()}
+      {#if feedErrors.length > 0}
+        <div
+          class="flex items-center gap-1 px-3 pt-1 pb-0 text-amber-400 text-xs cursor-help"
+          title={feedErrors
+            .map((e: any) => `${e.feedUrl}: ${e.message}`)
+            .join('\n')}
+        >
+          <span>⚠</span>
+          <span class="truncate">{feedErrors.length} feed error{feedErrors.length > 1 ? 's' : ''}</span>
+        </div>
+      {/if}
       <div class="flex-1 overflow-y-auto min-h-0 px-1 pb-1 space-y-0.5">
         {#each displayedArticles as article (article.link || article.title)}
           <a

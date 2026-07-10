@@ -25,7 +25,6 @@
     ContextMenuLabel,
     ContextMenuSeparator
   } from '$lib/components/ui/context-menu/index.js'
-  import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import type { DockerStatusWidgetProps } from '$lib/types/widget.js'
 
@@ -144,8 +143,6 @@
 </script>
 
 <div class="flex flex-col w-full min-w-0 min-h-0 h-full">
-  <WidgetTitleBar title={widget.title} />
-
   {#if widgetState === 'idle'}
     <div
       class="flex flex-col justify-center items-center gap-2 p-4 text-muted-foreground"

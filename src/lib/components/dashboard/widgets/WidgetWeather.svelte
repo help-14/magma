@@ -1,134 +1,135 @@
 <script lang="ts">
-  import { m } from '$lib/paraglide/messages.js'
-  import { getWeather } from '$lib/remotes/weather.remote.js'
-  import * as Tooltip from '$lib/components/ui/tooltip/index.js'
-  import { Button } from '$lib/components/ui/button/index.js'
-  import { getWeatherIcon } from '$lib/assets/weather-icons.js'
-  import type { WeatherWidgetProps } from '$lib/types/widget.js'
+  import { m } from "$lib/paraglide/messages.js";
+  import { getWeather } from "$lib/remotes/weather.remote.js";
+  import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+  import { Button } from "$lib/components/ui/button/index.js";
+  import { getWeatherIcon } from "$lib/assets/weather-icons.js";
+  import type { WeatherWidgetProps } from "$lib/types/widget.js";
 
-  let { widget, compact = false }: WeatherWidgetProps = $props()
-  let weather = $state<any>(null)
+  let { widget, compact = false }: WeatherWidgetProps = $props();
+  let weather = $state<any>(null);
 
-  let w = $derived(widget.w ?? 0)
-  let h = $derived(widget.h ?? 0)
+  let w = $derived(widget.w ?? 0);
+  let h = $derived(widget.h ?? 0);
 
   let size = $derived(
     compact
-      ? 'small'
+      ? "small"
       : w <= 3 && h <= 2
-        ? 'small'
+        ? "small"
         : w >= 4 && h >= 4
-          ? 'large'
-          : 'medium'
-  )
+          ? "large"
+          : "medium",
+  );
 
   let iconPx = $derived(
-    size === 'small' ? (compact ? 36 : 52) : size === 'medium' ? 48 : 64
-  )
+    size === "small" ? (compact ? 36 : 52) : size === "medium" ? 48 : 64,
+  );
 
   let stats = $derived(
     weather
       ? [
           {
             label: m.weather_feels_like(),
-            value: toCelsius(weather.main?.feels_like)
+            value: toCelsius(weather.main?.feels_like),
           },
           ...(weather.main?.temp_min != null
             ? [
                 {
                   label: m.weather_min(),
-                  value: toCelsius(weather.main?.temp_min)
-                }
+                  value: toCelsius(weather.main?.temp_min),
+                },
               ]
             : []),
           ...(weather.main?.temp_max != null
             ? [
                 {
                   label: m.weather_max(),
-                  value: toCelsius(weather.main?.temp_max)
-                }
+                  value: toCelsius(weather.main?.temp_max),
+                },
               ]
             : []),
           {
             label: m.weather_humidity(),
-            value: `${weather.main?.humidity ?? '--'}%`
+            value: `${weather.main?.humidity ?? "--"}%`,
           },
           {
             label: m.weather_wind(),
-            value: formatWind(weather.wind?.speed, weather.wind?.deg)
+            value: formatWind(weather.wind?.speed, weather.wind?.deg),
           },
-          { label: m.weather_sky(), value: weather.weather?.[0]?.main || '' },
+          { label: m.weather_sky(), value: weather.weather?.[0]?.main || "" },
           ...(weather.visibility != null
             ? [
                 {
                   label: m.weather_visibility(),
-                  value: formatVisibility(weather.visibility)
-                }
+                  value: formatVisibility(weather.visibility),
+                },
               ]
-            : [])
+            : []),
         ]
-      : []
-  )
+      : [],
+  );
 
   $effect(() => {
-    const cfg = widget.config || {}
-    const lat = cfg.latitude ?? 0
-    const lon = cfg.longitude ?? 0
-    if (lat === 0 && lon === 0 && !cfg.cityName) return
-    let cancelled = false
+    const cfg = widget.config || {};
+    const lat = cfg.latitude ?? 0;
+    const lon = cfg.longitude ?? 0;
+    if (lat === 0 && lon === 0 && !cfg.cityName) return;
+    let cancelled = false;
     getWeather({
-      provider: cfg.provider || 'open-meteo',
-      apiKey: cfg.apiKey || '',
-      cityName: cfg.cityName || '',
+      provider: cfg.provider || "open-meteo",
+      apiKey: cfg.apiKey || "",
+      cityName: cfg.cityName || "",
       latitude: lat,
       longitude: lon,
-      cacheTtl: (cfg.cacheTtl || 900) * 1000
+      cacheTtl: (cfg.cacheTtl || 900) * 1000,
     })
       .then((data) => {
-        if (!cancelled) weather = data
+        if (!cancelled) weather = data;
       })
       .catch(() => {
-        if (!cancelled) weather = null
-      })
+        if (!cancelled) weather = null;
+      });
     return () => {
-      cancelled = true
-    }
-  })
+      cancelled = true;
+    };
+  });
 
   function toCelsius(value: number | null | undefined) {
-    if (value == null) return '--°C'
-    return `${Math.floor(value - 273.15)}°C`
+    if (value == null) return "--°C";
+    return `${Math.floor(value - 273.15)}°C`;
   }
 
-  function formatHour(timestamp: number | null | undefined) {
-    if (!timestamp) return ''
-    const date = new Date(timestamp * 1000)
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+  function formatHour(timestamp: number | null | undefined, timezone?: string) {
+    if (!timestamp) return "";
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      ...(timezone && { timeZone: timezone }),
+    });
   }
 
   function formatVisibility(meters: number | null | undefined) {
-    if (meters == null) return ''
-    if (meters > 1000) return `${Math.floor(meters / 1000)}km`
-    return `${meters}m`
+    if (meters == null) return "";
+    if (meters > 1000) return `${Math.floor(meters / 1000)}km`;
+    return `${meters}m`;
   }
 
   function formatWind(
     speed: number | null | undefined,
-    deg: number | null | undefined
+    deg: number | null | undefined,
   ) {
-    if (speed == null) return '--'
-    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
-    const dir = directions[Math.round((deg || 0) / 45) % 8]
-    return `${speed}m/s · ${dir}`
+    if (speed == null) return "--";
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    const dir = directions[Math.round((deg || 0) / 45) % 8];
+    return `${speed}m/s · ${dir}`;
   }
 </script>
 
-{#if size === 'small'}
+{#if size === "small"}
   <div
-    class="relative flex flex-col justify-center p-4 pl-1 w-full min-w-0 min-h-0"
+    class="relative flex flex-col justify-center p-4 pl-1 w-full h-full min-w-10 min-h-10"
   >
     <Tooltip.Provider>
       <Tooltip.Root>
@@ -152,11 +153,11 @@
           {/if}
           <div>
             <strong class="block text-2xl leading-none"
-              >{weather ? toCelsius(weather.main?.temp) : '--°C'}</strong
+              >{weather ? toCelsius(weather.main?.temp) : "--°C"}</strong
             >
             <span class="text-muted-foreground text-xs"
-              >{weather?.name || 'Weather'} · {weather?.main?.humidity ??
-                '--'}%</span
+              >{weather?.name || "Weather"} · {weather?.main?.humidity ??
+                "--"}%</span
             >
           </div>
         </Tooltip.Trigger>
@@ -193,7 +194,7 @@
               <span class="text-muted-foreground">{m.weather_wind()}</span>
               <span>{weather.wind?.speed}m/s at {weather.wind?.deg}°</span>
               <span class="text-muted-foreground">{m.weather_sky()}</span>
-              <span>{weather.weather?.[0]?.main || ''}</span>
+              <span>{weather.weather?.[0]?.main || ""}</span>
               {#if weather.visibility != null}
                 <span class="text-muted-foreground"
                   >{m.weather_visibility()}</span
@@ -202,11 +203,21 @@
               {/if}
               {#if weather.sys?.sunrise}
                 <span class="text-muted-foreground">{m.weather_sunrise()}</span>
-                <span>{formatHour(weather.sys?.sunrise)}</span>
+                <span
+                  >{formatHour(
+                    weather.sys?.sunrise,
+                    weather.sys?.timezone,
+                  )}</span
+                >
               {/if}
               {#if weather.sys?.sunset}
                 <span class="text-muted-foreground">{m.weather_sunset()}</span>
-                <span>{formatHour(weather.sys?.sunset)}</span>
+                <span
+                  >{formatHour(
+                    weather.sys?.sunset,
+                    weather.sys?.timezone,
+                  )}</span
+                >
               {/if}
             </div>
           </Tooltip.Content>
@@ -229,7 +240,7 @@
           >{toCelsius(weather.main?.temp)}</strong
         >
         <span class="text-muted-foreground text-xs"
-          >{weather.name || 'Weather'} · {weather.main?.humidity ?? '--'}%</span
+          >{weather.name || "Weather"} · {weather.main?.humidity ?? "--"}%</span
         >
       </div>
     </div>
@@ -244,18 +255,20 @@
       {/each}
     </div>
 
-    {#if size === 'large'}
+    {#if size === "large"}
       {#if weather.sys?.sunrise || weather.sys?.sunset}
         <hr class="border-border/50 my-0.5" />
         <div class="flex items-center justify-between text-xs">
           {#if weather.sys?.sunrise}
             <span class="text-muted-foreground"
-              >{m.weather_sunrise()} {formatHour(weather.sys?.sunrise)}</span
+              >{m.weather_sunrise()}
+              {formatHour(weather.sys?.sunrise, weather.sys?.timezone)}</span
             >
           {/if}
           {#if weather.sys?.sunset}
             <span class="text-muted-foreground"
-              >{m.weather_sunset()} {formatHour(weather.sys?.sunset)}</span
+              >{m.weather_sunset()}
+              {formatHour(weather.sys?.sunset, weather.sys?.timezone)}</span
             >
           {/if}
         </div>

@@ -612,6 +612,7 @@
           dragging={draftWidget === widget.id}
           selected={selected?.id === widget.id && !selected?.childId}
           style={widgetStyle(widget, pageCenter, cellSize, cellHeight)}
+          noTitle={widget.type === 'button'}
           onSelect={selectWidget}
           onDragWidget={dragWidget}
           onDragEnd={endTemplateDrag}

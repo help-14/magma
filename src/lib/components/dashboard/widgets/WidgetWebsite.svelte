@@ -1,7 +1,6 @@
 <script lang="ts">
   import { ExternalLink } from '@lucide/svelte'
   import { Button } from '$lib/components/ui/button/index.js'
-  import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
 
   let { widget, compact = false } = $props()
@@ -23,9 +22,6 @@
 </script>
 
 <div class="relative flex flex-col w-full min-w-0 min-h-0 h-full">
-  {#if !compact}
-    <WidgetTitleBar title={widget.title} />
-  {/if}
   {#if !target}
     <div
       class="flex items-center justify-center h-full text-muted-foreground text-xs p-4"

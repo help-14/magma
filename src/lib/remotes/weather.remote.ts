@@ -150,8 +150,9 @@ async function fetchOpenMeteo(lat: number, lon: number, displayName = '') {
     },
     sys: {
       country: '',
-      sunrise: day.sunrise?.[0] ? new Date(day.sunrise[0]).getTime() / 1000 : 0,
-      sunset: day.sunset?.[0] ? new Date(day.sunset[0]).getTime() / 1000 : 0
+      timezone: raw.timezone || '',
+      sunrise: day.sunrise?.[0] ? parseLocalDate(day.sunrise[0], raw.timezone) : 0,
+      sunset: day.sunset?.[0] ? parseLocalDate(day.sunset[0], raw.timezone) : 0
     }
   }
 }
@@ -221,6 +222,27 @@ async function fetchOpenWeatherMap(lat: number, lon: number, key: string) {
   raw.main.temp_min = raw.main.temp_min ?? null
   raw.main.temp_max = raw.main.temp_max ?? null
   return raw
+}
+
+// ── Timezone helpers ───────────────────────────────────────────────────
+
+function getTzOffsetMs(tz: string, date: Date): number {
+  const parts = new Intl.DateTimeFormat('en', {
+    timeZone: tz,
+    timeZoneName: 'longOffset'
+  }).formatToParts(date)
+  const offsetStr = parts.find((p) => p.type === 'timeZoneName')?.value ?? ''
+  if (!offsetStr || offsetStr === 'GMT') return 0
+  const m = offsetStr.match(/GMT([+-])(\d{2}):(\d{2})$/)
+  if (!m) return 0
+  const sign = m[1] === '+' ? 1 : -1
+  return sign * (parseInt(m[2]) * 60 + parseInt(m[3])) * 60 * 1000
+}
+
+function parseLocalDate(dateStr: string, tz: string): number {
+  const naive = new Date(dateStr)
+  const offset = getTzOffsetMs(tz, naive)
+  return (naive.getTime() - offset) / 1000
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────

@@ -20,9 +20,10 @@
     onUpdateNumber = () => {}
   }: PropertyPanelProps = $props()
 
-  let fields: ConfigFieldDescriptor[] = $derived(
-    widgetConfigFields[widget.type] || []
-  )
+  let fields: ConfigFieldDescriptor[] = $derived([
+    { key: 'hideTitle', label: 'Hide title', type: 'checkbox', default: false },
+    ...(widgetConfigFields[widget.type] || [])
+  ])
 
   function inputValue(event: Event) {
     return (

@@ -8,7 +8,6 @@
     Provider as TooltipProvider
   } from '$lib/components/ui/tooltip/index.js'
   import { deepseekSummary } from '$lib/remotes/deepseek.remote.js'
-  import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
   import type { DeepSeekWidgetProps } from '$lib/types/widget.js'
@@ -82,7 +81,6 @@
 </script>
 
 <div class="relative flex flex-col w-full min-w-0 min-h-0 h-full">
-  <WidgetTitleBar title={widget.title} />
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}

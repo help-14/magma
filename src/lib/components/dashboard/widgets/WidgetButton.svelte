@@ -1,53 +1,53 @@
 <script lang="ts">
-  import { RefreshCw } from '@lucide/svelte'
-  import DashboardIcon from '../DashboardIcon.svelte'
-  import { resolveUrl } from '$lib/remotes/button.remote.js'
-  import type { ButtonWidgetProps } from '$lib/types/widget.js'
+  import { RefreshCw } from "@lucide/svelte";
+  import DashboardIcon from "../DashboardIcon.svelte";
+  import { resolveUrl } from "$lib/remotes/button.remote.js";
+  import type { ButtonWidgetProps } from "$lib/types/widget.js";
 
-  let { widget, compact = false }: ButtonWidgetProps = $props()
+  let { widget, compact = false }: ButtonWidgetProps = $props();
 
-  let navigating = $state(false)
+  let navigating = $state(false);
 
   function parseUrls() {
-    const raw = widget.config?.urls || ''
+    const raw = widget.config?.urls || "";
     const urls = raw
-      .split('\n')
+      .split("\n")
       .map((s: string) => s.trim())
-      .filter(Boolean)
-    const legacyUrl = (widget.config as { url?: string } | undefined)?.url
+      .filter(Boolean);
+    const legacyUrl = (widget.config as { url?: string } | undefined)?.url;
     if (urls.length === 0 && legacyUrl) {
-      return [legacyUrl.trim()]
+      return [legacyUrl.trim()];
     }
-    return urls
+    return urls;
   }
 
   async function handleClick() {
-    if (navigating) return
-    const urls = parseUrls()
-    if (urls.length === 0) return
+    if (navigating) return;
+    const urls = parseUrls();
+    if (urls.length === 0) return;
 
     if (urls.length === 1) {
-      navigate(urls[0])
-      return
+      navigate(urls[0]);
+      return;
     }
 
-    navigating = true
+    navigating = true;
     try {
-      const result = await resolveUrl({ urls })
-      navigate(result || urls[0])
+      const result = await resolveUrl({ urls });
+      navigate(result || urls[0]);
     } catch {
-      navigate(urls[0])
+      navigate(urls[0]);
     } finally {
-      navigating = false
+      navigating = false;
     }
   }
 
   function navigate(url: string) {
-    const target = widget.config?.openIn || '_self'
-    if (target === '_self') {
-      window.location.href = url
+    const target = widget.config?.openIn || "_self";
+    if (target === "_self") {
+      window.location.href = url;
     } else {
-      window.open(url, target)
+      window.open(url, target);
     }
   }
 </script>
@@ -67,7 +67,9 @@
       title={widget.title}
     />
   {/if}
-  <span class="overflow-hidden text-ellipsis whitespace-nowrap"
-    >{widget.title}</span
-  >
+  {#if !compact}
+    <span class="overflow-hidden text-ellipsis whitespace-nowrap">
+      {widget.title}
+    </span>
+  {/if}
 </button>

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { fetchUrl } from '$lib/remotes/fetch.remote.js'
-  import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
   import type { BaseWidgetProps } from '$lib/types/widget.js'
@@ -66,7 +65,6 @@
 </script>
 
 <div class="relative flex flex-col w-full min-w-0 min-h-0 h-full p-1">
-  <WidgetTitleBar title={widget.title} />
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}

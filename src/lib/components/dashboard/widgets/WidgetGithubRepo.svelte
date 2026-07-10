@@ -9,7 +9,6 @@
     ChevronRight
   } from '@lucide/svelte'
   import { fetchGithubRepo } from '$lib/remotes/github.remote.js'
-  import WidgetTitleBar from './WidgetTitleBar.svelte'
   import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
   import type { GithubRepoWidgetProps } from '$lib/types/widget.js'
@@ -57,21 +56,6 @@
 <div
   class="relative flex flex-col w-full min-w-0 min-h-0 h-full overflow-hidden"
 >
-  <WidgetTitleBar title={widget.title}>
-    {#snippet trailing()}
-      {#if data?.htmlUrl}
-        <a
-          href={data.htmlUrl}
-          target="_blank"
-          rel="noreferrer"
-          class="text-muted-foreground hover:text-accent"
-        >
-          <ExternalLink class="size-3" />
-        </a>
-      {/if}
-    {/snippet}
-  </WidgetTitleBar>
-
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
@@ -80,8 +64,18 @@
     {#snippet children()}
       {#if data}
         {#if data.description}
-          <div class="px-3 pb-1 text-xs text-muted-foreground truncate">
-            {data.description}
+          <div class="flex items-center gap-2 px-3 pb-1 text-xs text-muted-foreground">
+            <span class="truncate">{data.description}</span>
+            {#if data.htmlUrl}
+              <a
+                href={data.htmlUrl}
+                target="_blank"
+                rel="noreferrer"
+                class="text-muted-foreground hover:text-accent shrink-0"
+              >
+                <ExternalLink class="size-3" />
+              </a>
+            {/if}
           </div>
         {/if}
         {#if data.language}

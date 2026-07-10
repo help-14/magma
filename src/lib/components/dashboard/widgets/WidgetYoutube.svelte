@@ -1,80 +1,79 @@
 <script lang="ts">
-  import { Radio } from '@lucide/svelte'
-  import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
+  import { Radio } from "@lucide/svelte";
+  import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import {
     getYoutubeUploads,
-    getYoutubeLivestreams
-  } from '$lib/remotes/youtube.remote.js'
-  import WidgetTitleBar from './WidgetTitleBar.svelte'
-  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
-  import WidgetStateWrapper from './WidgetStateWrapper.svelte'
-  import type { YoutubeWidgetProps } from '$lib/types/widget.js'
+    getYoutubeLivestreams,
+  } from "$lib/remotes/youtube.remote.js";
+  import WidgetRefreshButton from "./WidgetRefreshButton.svelte";
+  import WidgetStateWrapper from "./WidgetStateWrapper.svelte";
+  import type { YoutubeWidgetProps } from "$lib/types/widget.js";
 
-  let { widget, compact = false }: YoutubeWidgetProps = $props()
+  let { widget, compact = false }: YoutubeWidgetProps = $props();
 
-  let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
-  let errorMsg = $state('')
-  let data: any = $state(null)
+  let widgetState: "idle" | "loading" | "error" | "content" = $state("idle");
+  let errorMsg = $state("");
+  let data: any = $state(null);
 
-  let mode = $derived(widget.config?.mode || 'uploads')
-  let channels = $derived(widget.config?.channels || '')
-  let flow = $derived(widget.config?.flow || 'vertical')
-  let cols = $derived(widget.config?.cols ?? 2)
-  let rows = $derived(widget.config?.rows ?? 0)
-  let limit = $derived(widget.config?.limit ?? 10)
-  let refreshInterval = $derived(widget.config?.refreshInterval ?? 60)
+  let mode = $derived(widget.config?.mode || "uploads");
+  let channels = $derived(widget.config?.channels || "");
+  let flow = $derived(widget.config?.flow || "vertical");
+  let cols = $derived(widget.config?.cols ?? 2);
+  let rows = $derived(widget.config?.rows ?? 0);
+  let limit = $derived(widget.config?.limit ?? 10);
+  let refreshInterval = $derived(widget.config?.refreshInterval ?? 60);
 
   let channelList = $derived(
     channels
-      .split('\n')
+      .split("\n")
       .map((s) => s.trim())
-      .filter(Boolean)
-  )
+      .filter(Boolean),
+  );
 
   let gridStyle = $derived.by(() => {
-    if (flow === 'horizontal' && rows > 0) {
-      return `grid-template-rows: repeat(${rows}, auto); grid-auto-flow: column;`
+    if (flow === "horizontal" && rows > 0) {
+      return `grid-template-rows: repeat(${rows}, auto); grid-auto-flow: column;`;
     }
-    return `grid-template-columns: repeat(${cols}, auto);`
-  })
+    return `grid-template-columns: repeat(${cols}, auto);`;
+  });
 
-  let scrollOrientation = $derived<'vertical' | 'horizontal'>(
-    flow === 'horizontal' ? 'horizontal' : 'vertical'
-  )
+  let scrollOrientation = $derived<"vertical" | "horizontal">(
+    flow === "horizontal" ? "horizontal" : "vertical",
+  );
 
   async function doFetch() {
     if (channelList.length === 0) {
-      widgetState = 'idle'
-      return
+      widgetState = "idle";
+      return;
     }
-    widgetState = 'loading'
-    errorMsg = ''
+    widgetState = "loading";
+    errorMsg = "";
     try {
-      let result
-      if (mode === 'livestream') {
-        result = await getYoutubeLivestreams({ channels: channelList })
+      let result;
+      if (mode === "livestream") {
+        result = await getYoutubeLivestreams({ channels: channelList });
       } else {
-        result = await getYoutubeUploads({ channels: channelList, limit })
+        result = await getYoutubeUploads({ channels: channelList, limit });
       }
       if (!result.ok) {
-        widgetState = 'error'
-        errorMsg = result.error || 'YouTube request failed'
-        return
+        widgetState = "error";
+        errorMsg = result.error || "YouTube request failed";
+        return;
       }
-      data = result.data
-      widgetState = 'content'
+      data = result.data;
+      widgetState = "content";
     } catch (err) {
-      widgetState = 'error'
-      errorMsg = err instanceof Error ? err.message : String(err)
+      widgetState = "error";
+      errorMsg = err instanceof Error ? err.message : String(err);
     }
   }
 
   $effect(() => {
-    void channelList
-    doFetch()
-    const id = setInterval(doFetch, refreshInterval * 1000)
-    return () => clearInterval(id)
-  })
+    void channelList;
+    doFetch();
+    const id = setInterval(doFetch, refreshInterval * 1000);
+    return () => clearInterval(id);
+  });
 </script>
 
 {#snippet thumbnailCard(item: any)}
@@ -118,14 +117,17 @@
   </div>
 {/snippet}
 
-<div class="relative flex flex-col w-full min-w-0 min-h-0 h-full p-3">
-  <WidgetTitleBar title={widget.title}>
-    {#snippet trailing()}
-      {#if mode === 'livestream'}
-        <Radio size={12} class="text-accent" />
-      {/if}
-    {/snippet}
-  </WidgetTitleBar>
+<div
+  class="relative flex flex-col w-full min-w-0 min-h-0 h-full p-3 content-center"
+>
+  {#if mode === "livestream"}
+    <div
+      class="flex items-center gap-1.5 px-3 pt-2 pb-1 text-accent text-xs font-extrabold shrink-0"
+    >
+      <Radio size={12} class="text-accent" />
+      <span>Live</span>
+    </div>
+  {/if}
 
   <WidgetStateWrapper
     state={widgetState}
@@ -135,7 +137,7 @@
     {#snippet children()}
       <ScrollArea class="flex-1 min-h-0 w-full" orientation={scrollOrientation}>
         <div class="grid gap-2 pt-2 justify-center" style={gridStyle}>
-          {#if mode === 'uploads'}
+          {#if mode === "uploads"}
             {#each data.videos as video (video.videoId)}
               {@render thumbnailCard(video)}
             {/each}

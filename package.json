@@ -1,6 +1,6 @@
 {
   "name": "magma",
-  "version": "2.3.3",
+  "version": "2.4.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.10.0",
