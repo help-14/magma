@@ -1,9 +1,10 @@
 <script lang="ts">
   import { ExternalLink } from '@lucide/svelte'
   import { Button } from '$lib/components/ui/button/index.js'
-  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
 
   let { widget, compact = false } = $props()
+  const refreshContext = getWidgetRefreshContext()
 
   let iframeKey = $state(0)
   let url = $derived(widget.config?.url || '')
@@ -19,6 +20,11 @@
   function reload() {
     iframeKey++
   }
+
+  $effect(() => {
+    refreshContext?.registerRefresh(widget.id, target ? reload : null)
+    return () => refreshContext?.registerRefresh(widget.id, null)
+  })
 </script>
 
 <div class="relative flex flex-col w-full min-w-0 min-h-0 h-full">
@@ -39,13 +45,12 @@
     {/key}
   {/if}
   {#if target}
-    <div class="absolute top-1 right-1 flex gap-1">
+    <div class="absolute top-1 right-8 flex gap-1">
       <a href={target} target="_blank" rel="noreferrer" title="Open in new tab">
         <Button variant="ghost" class="p-1 rounded text-sm aspect-square">
           <ExternalLink class="size-3" />
         </Button>
       </a>
-      <WidgetRefreshButton onclick={reload} />
     </div>
   {/if}
 </div>

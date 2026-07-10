@@ -3,8 +3,8 @@ version: 1
 language: en
 system:
   dashboardGrid:
-    cellWidth: 60
-    cellHeight: 60
+    cellWidth: 30
+    cellHeight: 30
     mobileScale: 0.75
 theme:
   backgroundImage: /bg.jpg

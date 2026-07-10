@@ -1,3 +1,5 @@
+export type WidgetInterface = 'small' | 'medium' | 'large'
+
 export interface ButtonConfig {
   urls?: string
   openIn?: '_self' | '_blank' | '_window'
@@ -11,6 +13,7 @@ export interface SearchConfig {
 }
 
 export interface WeatherConfig {
+  interface?: WidgetInterface
   provider?: 'open-meteo' | 'weatherapi' | 'openweathermap'
   apiKey?: string
   cityName?: string
@@ -27,6 +30,7 @@ export interface DockerStatusConfig {
 }
 
 export interface StackConfig {
+  interface?: WidgetInterface
   flow?: string
   cols?: number
   rows?: number
@@ -88,6 +92,7 @@ export interface GithubRepoConfig {
 }
 
 export interface ClockConfig {
+  interface?: WidgetInterface
   showSeconds?: boolean
   showDate?: boolean
   showGreeting?: boolean

@@ -16,17 +16,8 @@
     onReorderChild = () => {},
   }: StackWidgetProps = $props();
 
-  let w = $derived(widget.w ?? 0);
-  let h = $derived(widget.h ?? 0);
-
   let size = $derived(
-    compact
-      ? "small"
-      : w <= 2 && h <= 2
-        ? "small"
-        : w >= 4 && h >= 4
-          ? "large"
-          : "medium",
+    compact ? "small" : (widget.config?.interface ?? "medium"),
   );
 
   let flow = $derived(

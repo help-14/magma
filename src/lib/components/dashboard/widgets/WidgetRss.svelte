@@ -2,11 +2,12 @@
   import { ExternalLink, ChevronDown, ChevronUp } from '@lucide/svelte'
   import { fetchRss } from '$lib/remotes/rss.remote.js'
   import { Button } from '$lib/components/ui/button/index.js'
-  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
   import type { RssWidgetProps } from '$lib/types/widget.js'
 
   let { widget, compact = false }: RssWidgetProps = $props()
+  const refreshContext = getWidgetRefreshContext()
 
   let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
@@ -62,6 +63,11 @@
     doFetch()
     const id = setInterval(doFetch, refreshInterval * 1000)
     return () => clearInterval(id)
+  })
+
+  $effect(() => {
+    refreshContext?.registerRefresh(widget.id, doFetch)
+    return () => refreshContext?.registerRefresh(widget.id, null)
   })
 
   function timeAgo(dateStr: string) {
@@ -171,5 +177,4 @@
     {/snippet}
   </WidgetStateWrapper>
 
-  <WidgetRefreshButton onclick={doFetch} />
 </div>

@@ -4,10 +4,10 @@ dashboard:
     - id: timer-main
       type: timer
       title: Timer
-      x: -5
+      x: -8
       y: 1
-      w: 7
-      h: 2
+      w: 10
+      h: 4
       config:
         hideTitle: true
     - id: weather-main
@@ -15,19 +15,20 @@ dashboard:
       title: Weather
       x: 2
       y: 1
-      w: 3
-      h: 2
+      w: 6
+      h: 4
       config:
         cityName: Hanoi
         provider: open-meteo
         hideTitle: true
+        interface: small
     - id: search-main
       type: search
       title: Search
-      x: -5
-      y: 3
-      w: 10
-      h: 1
+      x: -8
+      y: 5
+      w: 16
+      h: 2
       config:
         provider: google
         placeholder: type something to search...
@@ -35,10 +36,10 @@ dashboard:
     - id: apps-stack
       type: stack
       title: Applications
-      x: -5
-      y: 4
-      w: 10
-      h: 2
+      x: -8
+      y: 7
+      w: 16
+      h: 4
       config:
         flow: horizontal
         cols: 4
@@ -73,10 +74,10 @@ dashboard:
     - id: media-stack
       type: stack
       title: Media
-      x: -5
-      y: 6
-      w: 10
-      h: 2
+      x: -8
+      y: 11
+      w: 16
+      h: 4
       config:
         flow: horizontal
         cols: 4
@@ -110,38 +111,38 @@ dashboard:
     - id: docker-status-mqrjvli3-7g80
       type: docker-status
       title: Docker
-      x: -5
-      y: 8
-      w: 6
-      h: 4
+      x: -15
+      y: 18
+      w: 7
+      h: 9
       config:
         dockerHost: http://10.10.10.90:2375
         columns: 2
     - id: deepseek-main
       type: deepseek
       title: DeepSeek
-      x: 5
-      y: 9
-      w: 4
-      h: 2
+      x: -15
+      y: 14
+      w: 7
+      h: 4
       config:
         authToken: null
         refreshInterval: 600
     - id: calendar-mqs8wzat-ass1
       type: calendar
       title: Calendar
-      x: 1
-      y: 8
-      w: 4
-      h: 4
+      x: 8
+      y: 14
+      w: 7
+      h: 8
       config: {}
     - id: rss-news
       type: rss
       title: News
-      x: 5
+      x: -15
       y: 1
-      w: 4
-      h: 8
+      w: 7
+      h: 13
       config:
         feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"},{"url":"https://feeds.feedburner.com/TheHackersNews","title":"Threat
           Intel"}]'
@@ -154,8 +155,8 @@ dashboard:
       title: Markets
       x: -1
       y: 15
-      w: 4
-      h: 3
+      w: 9
+      h: 6
       config:
         stocks: |-
           AAPL
@@ -166,10 +167,10 @@ dashboard:
     - id: youtube-tech
       type: youtube-live
       title: YouTube
-      x: -5
-      y: 12
-      w: 10
-      h: 3
+      x: -8
+      y: 21
+      w: 16
+      h: 6
       config:
         mode: uploads
         channels: |
@@ -183,10 +184,10 @@ dashboard:
     - id: fetch-posts
       type: fetch
       title: Latest Posts
-      x: -9
+      x: 8
       y: 1
-      w: 4
-      h: 8
+      w: 7
+      h: 13
       config:
         url: https://jsonplaceholder.typicode.com/posts
         method: GET
@@ -204,10 +205,10 @@ dashboard:
     - id: github-repo-main
       type: github-repo
       title: GitHub
-      x: -5
+      x: -8
       y: 15
-      w: 4
-      h: 3
+      w: 7
+      h: 6
       config:
         repo: help-14/magma
         showStars: true

@@ -8,11 +8,12 @@
     Provider as TooltipProvider
   } from '$lib/components/ui/tooltip/index.js'
   import { deepseekSummary } from '$lib/remotes/deepseek.remote.js'
-  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
   import type { DeepSeekWidgetProps } from '$lib/types/widget.js'
 
   let { widget }: DeepSeekWidgetProps = $props()
+  const refreshContext = getWidgetRefreshContext()
 
   let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
@@ -78,6 +79,11 @@
     const id = setInterval(doFetch, refreshInterval * 1000)
     return () => clearInterval(id)
   })
+
+  $effect(() => {
+    refreshContext?.registerRefresh(widget.id, doFetch)
+    return () => refreshContext?.registerRefresh(widget.id, null)
+  })
 </script>
 
 <div class="relative flex flex-col w-full min-w-0 min-h-0 h-full">
@@ -114,5 +120,4 @@
       </div>
     {/snippet}
   </WidgetStateWrapper>
-  <WidgetRefreshButton onclick={doFetch} />
 </div>

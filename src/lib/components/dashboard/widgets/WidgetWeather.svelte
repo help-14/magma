@@ -9,17 +9,8 @@
   let { widget, compact = false }: WeatherWidgetProps = $props();
   let weather = $state<any>(null);
 
-  let w = $derived(widget.w ?? 0);
-  let h = $derived(widget.h ?? 0);
-
   let size = $derived(
-    compact
-      ? "small"
-      : w <= 3 && h <= 2
-        ? "small"
-        : w >= 4 && h >= 4
-          ? "large"
-          : "medium",
+    compact ? "small" : (widget.config?.interface ?? "medium"),
   );
 
   let iconPx = $derived(

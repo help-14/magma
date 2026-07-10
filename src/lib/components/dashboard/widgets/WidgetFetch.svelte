@@ -1,10 +1,11 @@
 <script lang="ts">
   import { fetchUrl } from '$lib/remotes/fetch.remote.js'
-  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
   import type { BaseWidgetProps } from '$lib/types/widget.js'
 
   let { widget, compact = false }: BaseWidgetProps = $props()
+  const refreshContext = getWidgetRefreshContext()
 
   let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
@@ -62,6 +63,11 @@
     const id = setInterval(doFetch, refreshInterval * 1000)
     return () => clearInterval(id)
   })
+
+  $effect(() => {
+    refreshContext?.registerRefresh(widget.id, doFetch)
+    return () => refreshContext?.registerRefresh(widget.id, null)
+  })
 </script>
 
 <div class="relative flex flex-col w-full min-w-0 min-h-0 h-full p-1">
@@ -82,5 +88,4 @@
       {/key}
     {/snippet}
   </WidgetStateWrapper>
-  <WidgetRefreshButton onclick={doFetch} />
 </div>

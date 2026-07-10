@@ -5,11 +5,12 @@
     getYoutubeUploads,
     getYoutubeLivestreams,
   } from "$lib/remotes/youtube.remote.js";
-  import WidgetRefreshButton from "./WidgetRefreshButton.svelte";
+  import { getWidgetRefreshContext } from "$lib/components/dashboard/widget-refresh-context.js";
   import WidgetStateWrapper from "./WidgetStateWrapper.svelte";
   import type { YoutubeWidgetProps } from "$lib/types/widget.js";
 
   let { widget, compact = false }: YoutubeWidgetProps = $props();
+  const refreshContext = getWidgetRefreshContext();
 
   let widgetState: "idle" | "loading" | "error" | "content" = $state("idle");
   let errorMsg = $state("");
@@ -73,6 +74,11 @@
     doFetch();
     const id = setInterval(doFetch, refreshInterval * 1000);
     return () => clearInterval(id);
+  });
+
+  $effect(() => {
+    refreshContext?.registerRefresh(widget.id, doFetch);
+    return () => refreshContext?.registerRefresh(widget.id, null);
   });
 </script>
 
@@ -155,5 +161,4 @@
     {/snippet}
   </WidgetStateWrapper>
 
-  <WidgetRefreshButton onclick={doFetch} />
 </div>

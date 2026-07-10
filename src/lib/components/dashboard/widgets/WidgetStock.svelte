@@ -1,11 +1,12 @@
 <script lang="ts">
   import { TrendingUp, TrendingDown, Minus } from '@lucide/svelte'
   import { fetchStocks } from '$lib/remotes/stocks.remote.js'
-  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
   import type { StockWidgetProps } from '$lib/types/widget.js'
 
   let { widget, compact = false }: StockWidgetProps = $props()
+  const refreshContext = getWidgetRefreshContext()
 
   let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
@@ -47,6 +48,11 @@
     doFetch()
     const id = setInterval(doFetch, refreshInterval * 1000)
     return () => clearInterval(id)
+  })
+
+  $effect(() => {
+    refreshContext?.registerRefresh(widget.id, doFetch)
+    return () => refreshContext?.registerRefresh(widget.id, null)
   })
 
   function formatPrice(price: number | null | undefined) {
@@ -201,5 +207,4 @@
     {/snippet}
   </WidgetStateWrapper>
 
-  <WidgetRefreshButton onclick={doFetch} />
 </div>

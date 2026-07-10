@@ -17,6 +17,7 @@
   } from '@lucide/svelte'
   import { Button } from '$lib/components/ui/button/index.js'
   import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
+  import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
   import {
     ContextMenu,
     ContextMenuTrigger,
@@ -25,10 +26,10 @@
     ContextMenuLabel,
     ContextMenuSeparator
   } from '$lib/components/ui/context-menu/index.js'
-  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
   import type { DockerStatusWidgetProps } from '$lib/types/widget.js'
 
   let { widget, compact = false }: DockerStatusWidgetProps = $props()
+  const refreshContext = getWidgetRefreshContext()
 
   let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
@@ -74,6 +75,11 @@
     doFetch()
     const id = setInterval(doFetch, refreshInterval * 1000)
     return () => clearInterval(id)
+  })
+
+  $effect(() => {
+    refreshContext?.registerRefresh(widget.id, doFetch)
+    return () => refreshContext?.registerRefresh(widget.id, null)
   })
 
   function getHostname(url: string) {
@@ -264,5 +270,4 @@
     </ScrollArea>
   {/if}
 
-  <WidgetRefreshButton onclick={doFetch} />
 </div>

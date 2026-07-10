@@ -6,17 +6,8 @@
   let { widget, compact = false }: TimerWidgetProps = $props();
 
   let now = useNow();
-  let w = $derived(widget.w ?? 0);
-  let h = $derived(widget.h ?? 0);
-
   let size = $derived(
-    compact
-      ? "small"
-      : w <= 2 && h <= 1
-        ? "small"
-        : w >= 4 && h >= 4
-          ? "large"
-          : "medium",
+    compact ? "small" : (widget.config?.interface ?? "medium"),
   );
 
   function greeting() {
@@ -112,7 +103,7 @@
       >{mediumDateTimeStr}</span
     >
     {#if widget.config?.showGreeting ?? true}
-      <strong class="text-4xl">
+      <strong class="text-3xl">
         {greetingStr}
       </strong>
     {/if}

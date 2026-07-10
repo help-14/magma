@@ -41,6 +41,17 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
   ],
   weather: [
     {
+      key: 'interface',
+      label: 'Interface',
+      type: 'select',
+      default: 'medium',
+      options: [
+        { label: 'Small', value: 'small' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'Large', value: 'large' }
+      ]
+    },
+    {
       key: 'provider',
       label: 'Provider',
       type: 'select',
@@ -104,6 +115,17 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
     }
   ],
   stack: [
+    {
+      key: 'interface',
+      label: 'Interface',
+      type: 'select',
+      default: 'medium',
+      options: [
+        { label: 'Small', value: 'small' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'Large', value: 'large' }
+      ]
+    },
     {
       key: 'flow',
       label: 'Flow direction',
@@ -292,6 +314,17 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
     { key: 'limit', label: 'Max videos', type: 'number', default: 10 }
   ],
   timer: [
+    {
+      key: 'interface',
+      label: 'Interface',
+      type: 'select',
+      default: 'medium',
+      options: [
+        { label: 'Small', value: 'small' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'Large', value: 'large' }
+      ]
+    },
     {
       key: 'showSeconds',
       label: 'Show seconds',

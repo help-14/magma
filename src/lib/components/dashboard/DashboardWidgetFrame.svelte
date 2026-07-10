@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { GripHorizontal, Trash2 } from "@lucide/svelte";
+  import { GripHorizontal, RefreshCw, Trash2 } from "@lucide/svelte";
   import type { Snippet } from "svelte";
   import { m } from "$lib/paraglide/messages.js";
   import { Button } from "$lib/components/ui/button/index.js";
+  import { setWidgetRefreshContext } from "$lib/components/dashboard/widget-refresh-context.js";
   import type { Widget } from "$lib/types/widget.js";
   import type { ResizeDirection } from "$lib/dashboard/resize-utils.js";
+
+  type RefreshHandler = () => void | Promise<void>;
 
   let {
     widget,
@@ -39,6 +42,14 @@
     ) => void;
     children?: Snippet;
   } = $props();
+
+  let refreshHandler = $state<RefreshHandler | null>(null);
+
+  setWidgetRefreshContext({
+    registerRefresh: (widgetId, handler) => {
+      if (widgetId === widget.id) refreshHandler = handler;
+    },
+  });
 </script>
 
 <div
@@ -100,6 +111,18 @@
       {@render children?.()}
     </div>
   </div>
+
+  {#if refreshHandler && !editMode}
+    <Button
+      onclick={refreshHandler}
+      variant="ghost"
+      class="absolute top-2.5 right-2.5 z-5 p-1 rounded text-sm aspect-square"
+      title="Refresh"
+      aria-label="Refresh widget"
+    >
+      <RefreshCw class="size-3" />
+    </Button>
+  {/if}
 
   {#if editMode}
     <Button

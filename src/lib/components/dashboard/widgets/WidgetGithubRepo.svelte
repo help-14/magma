@@ -9,11 +9,12 @@
     ChevronRight
   } from '@lucide/svelte'
   import { fetchGithubRepo } from '$lib/remotes/github.remote.js'
-  import WidgetRefreshButton from './WidgetRefreshButton.svelte'
+  import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
   import type { GithubRepoWidgetProps } from '$lib/types/widget.js'
 
   let { widget, compact = false }: GithubRepoWidgetProps = $props()
+  const refreshContext = getWidgetRefreshContext()
 
   let widgetState: 'idle' | 'loading' | 'error' | 'content' = $state('idle')
   let errorMsg = $state('')
@@ -50,6 +51,11 @@
     doFetch()
     const id = setInterval(doFetch, refreshInterval * 1000)
     return () => clearInterval(id)
+  })
+
+  $effect(() => {
+    refreshContext?.registerRefresh(widget.id, doFetch)
+    return () => refreshContext?.registerRefresh(widget.id, null)
   })
 </script>
 
@@ -168,5 +174,4 @@
     {/snippet}
   </WidgetStateWrapper>
 
-  <WidgetRefreshButton onclick={doFetch} />
 </div>
