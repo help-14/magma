@@ -222,10 +222,11 @@ dashboard:
       x: -15
       y: 18
       w: 7
-      h: 6
+      h: 4
       config:
         refreshInterval: 600
         authToken: ""
+        interface: small
 locations:
   default:
     latitude: 21.042698

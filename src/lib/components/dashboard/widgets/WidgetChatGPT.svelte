@@ -115,30 +115,24 @@
   >
     {#snippet children()}
       <div class="flex flex-col justify-center h-full p-3">
-        {#if size === "small"}
-          <div class="flex items-center gap-2 text-sm">
-            <span class="font-bold">{planType}</span>
-            <Progress value={primaryPct} class="h-2 flex-1" />
-            <span class="text-xs tabular-nums">{primaryPct}%</span>
-          </div>
-        {:else}
-          <div class="flex items-center gap-2">
-            <span class="text-xs w-14 shrink-0">5-hour</span>
-            <Progress value={primaryPct} class="h-2 flex-1" />
-            <span class="text-xs tabular-nums w-8 text-right"
-              >{primaryPct}%</span
-            >
-          </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs w-14 shrink-0">5-hour</span>
+          <Progress value={primaryPct} class="h-2 flex-1" />
+          <span class="text-xs tabular-nums w-8 text-right">{primaryPct}%</span>
+        </div>
+        {#if size !== "small"}
           <div class="text-xs text-muted-foreground/60 italic">
             Resets {primaryReset}
           </div>
-          <div class="flex items-center gap-2 mt-3">
-            <span class="text-xs w-14 shrink-0">7-day</span>
-            <Progress value={secondaryPct} class="h-2 flex-1" />
-            <span class="text-xs tabular-nums w-8 text-right"
-              >{secondaryPct}%</span
-            >
-          </div>
+        {/if}
+        <div class="flex items-center gap-2 mt-3">
+          <span class="text-xs w-14 shrink-0">7-day</span>
+          <Progress value={secondaryPct} class="h-2 flex-1" />
+          <span class="text-xs tabular-nums w-8 text-right"
+            >{secondaryPct}%</span
+          >
+        </div>
+        {#if size !== "small"}
           <div class="text-xs text-muted-foreground/60 italic">
             Resets {secondaryReset}
           </div>
