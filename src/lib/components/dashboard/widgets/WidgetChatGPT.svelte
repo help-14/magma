@@ -114,30 +114,26 @@
     idleMessage="Configure Auth Token in properties"
   >
     {#snippet children()}
-      <div class="flex flex-col justify-center h-full p-3">
-        <div class="flex items-center gap-2">
-          <span class="text-xs w-14 shrink-0">5-hour</span>
-          <Progress value={primaryPct} class="h-2 flex-1" />
-          <span class="text-xs tabular-nums w-8 text-right">{primaryPct}%</span>
-        </div>
+      <div
+        class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 items-center justify-center h-full p-3"
+      >
+        <span class="text-xs">5-hour</span>
+        <Progress value={primaryPct} class="h-2 grow" />
+        <span class="text-xs text-right">{primaryPct}%</span>
         {#if size !== "small"}
-          <div class="text-xs text-muted-foreground/60 italic">
-            Resets {primaryReset}
-          </div>
-        {/if}
-        <div class="flex items-center gap-2 mt-3">
-          <span class="text-xs w-14 shrink-0">7-day</span>
-          <Progress value={secondaryPct} class="h-2 flex-1" />
-          <span class="text-xs tabular-nums w-8 text-right"
-            >{secondaryPct}%</span
+          <span class="text-xs text-muted-foreground/60 italic col-span-3"
+            >Resets {primaryReset}</span
           >
-        </div>
+        {/if}
+        <span class="text-xs mt-3">7-day</span>
+        <Progress value={secondaryPct} class="h-2 mt-1" />
+        <span class="text-xs text-right mt-1">{secondaryPct}%</span>
         {#if size !== "small"}
-          <div class="text-xs text-muted-foreground/60 italic">
-            Resets {secondaryReset}
-          </div>
+          <span class="text-xs text-muted-foreground/60 italic col-span-3"
+            >Resets {secondaryReset}</span
+          >
           <div
-            class="flex items-center gap-1 text-xs text-muted-foreground mt-3"
+            class="flex items-center gap-1 text-xs text-muted-foreground mt-3 col-span-3"
           >
             {planType}
             {#if creditsBalance}
