@@ -99,6 +99,26 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
       default: 600
     }
   ],
+  chatgpt: [
+    {
+      key: 'interface',
+      label: 'Interface',
+      type: 'select',
+      default: 'medium',
+      options: [
+        { label: 'Small', value: 'small' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'Large', value: 'large' }
+      ]
+    },
+    { key: 'authToken', label: 'Auth Token', type: 'password', default: '' },
+    {
+      key: 'refreshInterval',
+      label: 'Refresh (s)',
+      type: 'number',
+      default: 600
+    }
+  ],
   'service-status': [
     {
       key: 'dockerHost',

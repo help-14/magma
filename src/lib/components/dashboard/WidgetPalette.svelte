@@ -17,15 +17,22 @@
       h: 2,
       config: { icon: "server", urls: "", openIn: "_self" },
     },
-    { type: "calendar", title: "Calendar", w: 4, h: 4, config: {} },
+    { type: "calendar", title: "Calendar", w: 8, h: 8, config: {} },
+    {
+      type: "chatgpt",
+      title: "ChatGPT",
+      w: 6,
+      h: 7,
+      config: { refreshInterval: 600 },
+    },
     {
       type: "deepseek",
       title: "DeepSeek",
       w: 6,
-      h: 4,
+      h: 6,
       config: { refreshInterval: 600 },
     },
-    { type: "docker-status", title: "Docker", w: 6, h: 4, config: {} },
+    { type: "docker-status", title: "Docker", w: 8, h: 8, config: {} },
     { type: "fetch", title: "Fetch", w: 8, h: 8, config: {} },
     {
       type: "rss",
@@ -53,7 +60,7 @@
     {
       type: "search",
       title: "Search",
-      w: 4,
+      w: 6,
       h: 2,
       config: { provider: "google" },
     },
@@ -69,23 +76,27 @@
     {
       type: "weather",
       title: "Weather",
-      w: 4,
-      h: 4,
-      config: { provider: "open-meteo", cityName: "London" },
+      w: 6,
+      h: 6,
+      config: {
+        provider: "open-meteo",
+        cityName: "London",
+        interface: "small",
+      },
     },
     { type: "website", title: "Website", w: 8, h: 6, config: {} },
     {
       type: "youtube-live",
       title: "YouTube",
       w: 8,
-      h: 4,
+      h: 6,
       config: { mode: "uploads", channels: "", limit: 10 },
     },
     {
       type: "github-repo",
       title: "GitHub Repo",
-      w: 6,
-      h: 6,
+      w: 8,
+      h: 8,
       config: {
         repo: "",
         showStars: true,
@@ -179,9 +190,9 @@
         ondragend={onDragEnd}
       >
         <strong>{template.title}</strong>
-        <span class="text-muted-foreground text-xs"
+        <!-- <span class="text-muted-foreground text-xs"
           >{template.w} x {template.h}</span
-        >
+        > -->
       </Button>
     {/each}
   </div>

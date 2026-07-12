@@ -1,5 +1,6 @@
 import type {
   ButtonConfig,
+  ChatGPTConfig,
   ClockConfig,
   DeepSeekConfig,
   DockerStatusConfig,
@@ -26,6 +27,7 @@ export type WidgetType =
   | 'service-status'
   | 'fetch'
   | 'deepseek'
+  | 'chatgpt'
   | 'website'
   | 'youtube-live'
   | 'stack'
@@ -97,6 +99,11 @@ export type CalendarWidgetProps = BaseWidgetProps
 
 export interface DeepSeekWidgetProps {
   widget: TypedWidget<DeepSeekConfig>
+  compact?: boolean
+}
+
+export interface ChatGptWidgetProps {
+  widget: TypedWidget<ChatGPTConfig>
   compact?: boolean
 }
 

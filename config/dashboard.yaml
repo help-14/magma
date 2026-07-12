@@ -111,9 +111,9 @@ dashboard:
     - id: docker-status-mqrjvli3-7g80
       type: docker-status
       title: Docker
-      x: -15
-      y: 18
-      w: 7
+      x: -8
+      y: 21
+      w: 8
       h: 9
       config:
         dockerHost: http://10.10.10.90:2375
@@ -167,10 +167,10 @@ dashboard:
     - id: youtube-tech
       type: youtube-live
       title: YouTube
-      x: -8
+      x: 0
       y: 21
-      w: 16
-      h: 6
+      w: 8
+      h: 9
       config:
         mode: uploads
         channels: |
@@ -179,7 +179,7 @@ dashboard:
           UCsBjURrPoezykLs9EqgamOA
         limit: 10
         rows: 1
-        flow: horizontal
+        flow: vertical
         cols: 0
     - id: fetch-posts
       type: fetch
@@ -216,6 +216,16 @@ dashboard:
         showPrs: true
         showIssues: true
         refreshInterval: 3600
+    - id: chatgpt-mrhfwcdx-ajn6
+      type: chatgpt
+      title: ChatGPT
+      x: -15
+      y: 18
+      w: 7
+      h: 6
+      config:
+        refreshInterval: 600
+        authToken: ""
 locations:
   default:
     latitude: 21.042698

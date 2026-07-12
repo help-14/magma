@@ -55,6 +55,12 @@ export interface DeepSeekConfig {
   refreshInterval?: number
 }
 
+export interface ChatGPTConfig {
+  interface?: WidgetInterface
+  authToken?: string
+  refreshInterval?: number
+}
+
 export interface YoutubeConfig {
   mode?: string
   channels?: string

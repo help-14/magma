@@ -7,6 +7,7 @@
   import WidgetDockerStatus from './widgets/WidgetDockerStatus.svelte'
   import WidgetFetch from './widgets/WidgetFetch.svelte'
   import WidgetWebsite from './widgets/WidgetWebsite.svelte'
+  import WidgetChatGPT from './widgets/WidgetChatGPT.svelte'
   import WidgetDeepSeek from './widgets/WidgetDeepSeek.svelte'
   import WidgetYoutube from './widgets/WidgetYoutube.svelte'
   import WidgetStack from './widgets/WidgetStack.svelte'
@@ -30,6 +31,7 @@
     fetch: WidgetFetch,
     website: WidgetWebsite,
     deepseek: WidgetDeepSeek,
+    chatgpt: WidgetChatGPT,
     'youtube-live': WidgetYoutube,
     stack: WidgetStack,
     'stack-horizontal': WidgetStack,

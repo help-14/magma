@@ -60,6 +60,7 @@ export const knownWidgetTypes = new Set([
   'fetch',
   'website',
   'deepseek',
+  'chatgpt',
   'rss',
   'stock',
   'github-repo'
