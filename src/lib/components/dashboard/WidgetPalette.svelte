@@ -26,6 +26,13 @@
       config: { refreshInterval: 600 },
     },
     {
+      type: "claude",
+      title: "Claude",
+      w: 6,
+      h: 7,
+      config: { provider: "claude.ai", refreshInterval: 600 },
+    },
+    {
       type: "deepseek",
       title: "DeepSeek",
       w: 6,

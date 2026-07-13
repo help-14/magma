@@ -61,6 +61,7 @@ export const knownWidgetTypes = new Set([
   'website',
   'deepseek',
   'chatgpt',
+  'claude',
   'rss',
   'stock',
   'github-repo'

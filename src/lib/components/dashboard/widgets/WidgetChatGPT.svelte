@@ -107,7 +107,9 @@
   });
 </script>
 
-<div class="relative flex flex-col w-full min-w-0 min-h-0 h-full">
+<div
+  class="relative flex flex-col w-full min-w-0 min-h-0 h-full justify-center"
+>
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
@@ -115,25 +117,25 @@
   >
     {#snippet children()}
       <div
-        class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 items-center justify-center h-full p-3"
+        class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 gap-y-3 items-center justify-center p-3"
       >
         <span class="text-xs">5-hour</span>
         <Progress value={primaryPct} class="h-2 grow" />
         <span class="text-xs text-right">{primaryPct}%</span>
         {#if size !== "small"}
-          <span class="text-xs text-muted-foreground/60 italic col-span-3"
+          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
             >Resets {primaryReset}</span
           >
         {/if}
-        <span class="text-xs mt-3">7-day</span>
-        <Progress value={secondaryPct} class="h-2 mt-1" />
-        <span class="text-xs text-right mt-1">{secondaryPct}%</span>
+        <span class="text-xs">7-day</span>
+        <Progress value={secondaryPct} class="h-2" />
+        <span class="text-xs text-right">{secondaryPct}%</span>
         {#if size !== "small"}
-          <span class="text-xs text-muted-foreground/60 italic col-span-3"
+          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
             >Resets {secondaryReset}</span
           >
           <div
-            class="flex items-center gap-1 text-xs text-muted-foreground mt-3 col-span-3"
+            class="flex items-center gap-1 text-xs text-muted-foreground col-span-3"
           >
             {planType}
             {#if creditsBalance}

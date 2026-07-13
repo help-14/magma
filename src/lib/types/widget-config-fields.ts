@@ -119,6 +119,25 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
       default: 600
     }
   ],
+  claude: [
+    {
+      key: 'provider',
+      label: 'Provider',
+      type: 'select',
+      default: 'claude.ai',
+      options: [
+        { label: 'Claude.ai (session cookie)', value: 'claude.ai' },
+        { label: 'API (API key)', value: 'api' }
+      ]
+    },
+    { key: 'authToken', label: 'Auth Token', type: 'password', default: '' },
+    {
+      key: 'refreshInterval',
+      label: 'Refresh (s)',
+      type: 'number',
+      default: 600
+    }
+  ],
   'service-status': [
     {
       key: 'dockerHost',

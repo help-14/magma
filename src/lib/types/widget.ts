@@ -1,6 +1,7 @@
 import type {
   ButtonConfig,
   ChatGPTConfig,
+  ClaudeConfig,
   ClockConfig,
   DeepSeekConfig,
   DockerStatusConfig,
@@ -28,6 +29,7 @@ export type WidgetType =
   | 'fetch'
   | 'deepseek'
   | 'chatgpt'
+  | 'claude'
   | 'website'
   | 'youtube-live'
   | 'stack'
@@ -104,6 +106,11 @@ export interface DeepSeekWidgetProps {
 
 export interface ChatGptWidgetProps {
   widget: TypedWidget<ChatGPTConfig>
+  compact?: boolean
+}
+
+export interface ClaudeWidgetProps {
+  widget: TypedWidget<ClaudeConfig>
   compact?: boolean
 }
 

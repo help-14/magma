@@ -61,6 +61,12 @@ export interface ChatGPTConfig {
   refreshInterval?: number
 }
 
+export interface ClaudeConfig {
+  provider?: 'claude.ai' | 'api'
+  authToken?: string
+  refreshInterval?: number
+}
+
 export interface YoutubeConfig {
   mode?: string
   channels?: string

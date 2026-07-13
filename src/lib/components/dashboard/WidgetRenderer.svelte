@@ -8,6 +8,7 @@
   import WidgetFetch from './widgets/WidgetFetch.svelte'
   import WidgetWebsite from './widgets/WidgetWebsite.svelte'
   import WidgetChatGPT from './widgets/WidgetChatGPT.svelte'
+  import WidgetClaude from './widgets/WidgetClaude.svelte'
   import WidgetDeepSeek from './widgets/WidgetDeepSeek.svelte'
   import WidgetYoutube from './widgets/WidgetYoutube.svelte'
   import WidgetStack from './widgets/WidgetStack.svelte'
@@ -32,6 +33,7 @@
     website: WidgetWebsite,
     deepseek: WidgetDeepSeek,
     chatgpt: WidgetChatGPT,
+    claude: WidgetClaude,
     'youtube-live': WidgetYoutube,
     stack: WidgetStack,
     'stack-horizontal': WidgetStack,
