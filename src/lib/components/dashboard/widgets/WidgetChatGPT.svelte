@@ -21,9 +21,17 @@
       : "",
   );
 
+  let primaryLabel = $derived(
+    formatWindowLabel(
+      data?.rate_limit?.primary_window?.limit_window_seconds ?? 0,
+    ),
+  );
+
   let primaryPct = $derived(
     data?.rate_limit?.primary_window?.used_percent ?? 0,
   );
+  let hasSecondary = $derived(data?.rate_limit?.secondary_window != null);
+
   let secondaryPct = $derived(
     data?.rate_limit?.secondary_window?.used_percent ?? 0,
   );
@@ -35,10 +43,19 @@
   );
 
   let secondaryReset = $derived(
-    data?.rate_limit?.secondary_window?.reset_after_seconds
+    hasSecondary && data?.rate_limit?.secondary_window?.reset_after_seconds
       ? formatResetTime(data.rate_limit.secondary_window.reset_after_seconds)
       : "",
   );
+
+  function formatWindowLabel(seconds: number): string {
+    if (seconds <= 0) return "";
+    if (seconds === 604800) return "Weekly limit";
+    const hours = seconds / 3600;
+    if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} limit`;
+    const days = Math.round(hours / 24);
+    return `${days}-day limit`;
+  }
 
   let creditsBalance = $derived(
     data?.credits?.balance != null
@@ -119,21 +136,24 @@
       <div
         class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 gap-y-3 items-center justify-center p-3"
       >
-        <span class="text-xs">5-hour</span>
+        <span class="text-xs">{primaryLabel}</span>
         <Progress value={primaryPct} class="h-2 grow" />
         <span class="text-xs text-right">{primaryPct}%</span>
-        {#if size !== "small"}
-          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-            >Resets {primaryReset}</span
-          >
+        <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+          >Resets {primaryReset}</span
+        >
+        {#if hasSecondary}
+          <span class="text-xs">7-day</span>
+          <Progress value={secondaryPct} class="h-2" />
+          <span class="text-xs text-right">{secondaryPct}%</span>
+          {#if size !== "small"}
+            <span
+              class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+              >Resets {secondaryReset}</span
+            >
+          {/if}
         {/if}
-        <span class="text-xs">7-day</span>
-        <Progress value={secondaryPct} class="h-2" />
-        <span class="text-xs text-right">{secondaryPct}%</span>
         {#if size !== "small"}
-          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-            >Resets {secondaryReset}</span
-          >
           <div
             class="flex items-center gap-1 text-xs text-muted-foreground col-span-3"
           >
