@@ -375,7 +375,11 @@
     })
   }
 
-  function reorderChildInStack(stackId: string, childId: string, targetIndex: number) {
+  function reorderChildInStack(
+    stackId: string,
+    childId: string,
+    targetIndex: number
+  ) {
     config.dashboard.widgets = widgets.map((widget: any) => {
       if (widget.id !== stackId) return widget
       const children = widget.children || []
@@ -383,7 +387,8 @@
       if (fromIndex === -1 || fromIndex === targetIndex) return widget
       const newChildren = [...children]
       const [moved] = newChildren.splice(fromIndex, 1)
-      const adjustedTarget = targetIndex > fromIndex ? targetIndex - 1 : targetIndex
+      const adjustedTarget =
+        targetIndex > fromIndex ? targetIndex - 1 : targetIndex
       newChildren.splice(adjustedTarget, 0, moved)
       return { ...widget, children: newChildren }
     })
@@ -564,7 +569,7 @@
 
   <nav
     class="fixed right-6 bottom-6 z-22 flex items-center justify-end gap-2.5 max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:flex-wrap"
-    aria-label="Dashboard actions"
+    aria-label={m.editor_actions_aria_label()}
   >
     <Button
       href="/settings"

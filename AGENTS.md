@@ -27,6 +27,7 @@ Magma is a SvelteKit dashboard app.
   - System settings: `config/system.yaml`
   - Dashboard settings: `config/dashboard.yaml`
   - CSS override: `config/override.css`
+- Apply styling using tailwinds css class directly into shadcn-svelte component so it can be reuse everywhere. Don't style it directly in page, only margin/padding, ... allowed.
 
 ## Server Calls
 
@@ -67,9 +68,9 @@ Add an exported TypeScript type for the widget's config object with all configur
 
 ```ts
 export type MyWidgetConfig = {
-  apiKey?: string
-  refreshInterval?: number
-}
+  apiKey?: string;
+  refreshInterval?: number;
+};
 ```
 
 ### 2. `src/lib/types/widget.ts` — Widget type & props type
@@ -78,13 +79,13 @@ Add the widget name to the `WidgetType` union and create a props type:
 
 ```ts
 // Add to the WidgetType union:
-export type WidgetType = '...' | 'my-widget'
+export type WidgetType = "..." | "my-widget";
 
 // Add props type:
 export type MyWidgetWidgetProps = {
-  widget: Omit<Widget, 'config'> & { config?: MyWidgetConfig }
-  compact?: boolean
-}
+  widget: Omit<Widget, "config"> & { config?: MyWidgetConfig };
+  compact?: boolean;
+};
 ```
 
 ### 3. `src/lib/types/widget-config-fields.ts` — Property panel fields
@@ -105,35 +106,35 @@ Supported field types: `text`, `number`, `color`, `icon-picker`, `checkbox`, `se
 Create a remote function using SvelteKit's `query` with valibot validation. Add an in-memory cache if calling an external API:
 
 ```ts
-import { query } from '$app/server'
-import * as v from 'valibot'
+import { query } from "$app/server";
+import * as v from "valibot";
 
-const cache = new Map<string, { data: unknown; ts: number }>()
-const CACHE_TTL = 60_000
+const cache = new Map<string, { data: unknown; ts: number }>();
+const CACHE_TTL = 60_000;
 
 function getCached<T>(key: string): T | null {
-  const entry = cache.get(key)
-  if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data as T
-  return null
+  const entry = cache.get(key);
+  if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data as T;
+  return null;
 }
 
 function setCache(key: string, data: unknown) {
-  cache.set(key, { data, ts: Date.now() })
+  cache.set(key, { data, ts: Date.now() });
 }
 
 export const fetchMyData = query(
   v.object({ param: v.string() }),
   async ({ param }) => {
-    const cached = getCached<unknown>(param)
-    if (cached) return cached
-    const response = await fetch(`https://api.example.com/${param}`)
+    const cached = getCached<unknown>(param);
+    if (cached) return cached;
+    const response = await fetch(`https://api.example.com/${param}`);
     if (!response.ok)
-      throw new Error(`${response.status} ${response.statusText}`)
-    const data = await response.json()
-    setCache(param, data)
-    return data
-  }
-)
+      throw new Error(`${response.status} ${response.statusText}`);
+    const data = await response.json();
+    setCache(param, data);
+    return data;
+  },
+);
 ```
 
 Cache GET requests only — skip caching for POST/PUT/DELETE. Do NOT cache `docker.remote.ts` (local API).
@@ -239,8 +240,8 @@ import WidgetMyWidget from './widgets/WidgetMyWidget.svelte'
 ```ts
 const knownWidgetTypes = new Set([
   // ...
-  'my-widget'
-])
+  "my-widget",
+]);
 ```
 
 **c. `src/routes/(dashboard)/DashboardEditor.svelte`** — Add a template for the Add Widget palette:
@@ -265,7 +266,7 @@ Add a widget entry to verify it renders:
   w: 4
   h: 4
   config:
-    apiKey: ''
+    apiKey: ""
     refreshInterval: 300
 ```
 

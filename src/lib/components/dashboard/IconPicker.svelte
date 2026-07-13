@@ -68,7 +68,7 @@
     <Input
       class="pl-8"
       value={searchText}
-      placeholder="Search Iconify, e.g. docker or simple-icons:docker"
+      placeholder={m.icon_picker_placeholder()}
       onfocus={() => (open = true)}
       oninput={(event: Event) => update(inputValue(event))}
       onkeydown={(event: KeyboardEvent) => {

@@ -1,3 +1,4 @@
+import { ErrorCode } from '$lib/errors.js'
 import { query } from '$app/server'
 import * as v from 'valibot'
 
@@ -17,7 +18,7 @@ export const chatgptUsage = query(
       try {
         json = JSON.parse(responseText)
       } catch {
-        return { ok: false, error: 'Invalid JSON response' }
+        return { ok: false, error: ErrorCode.INVALID_JSON }
       }
       return { ok: true, data: json }
     } catch (err) {

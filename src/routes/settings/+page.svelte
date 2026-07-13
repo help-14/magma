@@ -3,9 +3,18 @@
   import { invalidateAll } from '$app/navigation'
   import { toast } from 'svelte-sonner'
   import { m } from '$lib/paraglide/messages.js'
+  import { ErrorCode, toErrorMessage } from '$lib/errors.js'
   import { Button } from '$lib/components/ui/button/index.js'
+  import { FieldLabel } from '$lib/components/ui/field-label/index.js'
   import { Input } from '$lib/components/ui/input/index.js'
   import { Label } from '$lib/components/ui/label/index.js'
+  import { SettingsPanel } from '$lib/components/ui/settings-panel/index.js'
+  import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger
+  } from '$lib/components/ui/select/index.js'
   import * as Tabs from '$lib/components/ui/tabs/index.js'
   import CodeEditor from '$lib/components/settings/CodeEditor.svelte'
   import PasskeySetup from '$lib/components/settings/PasskeySetup.svelte'
@@ -38,6 +47,9 @@
   let authenticating = $state(false)
   let showGate = $derived(passkeyCount > 0 && !isAuthenticated)
 
+  let settingsInputClass =
+    'w-full min-h-9 border-border rounded-lg bg-[rgb(20_18_16/48%)] text-foreground px-2.5 outline-none transition-all duration-140 hover:border-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]'
+
   let highlightedSystemYaml = $derived(highlightYaml(systemYaml))
   let highlightedDashboardYaml = $derived(highlightYaml(dashboardYaml))
   let highlightedCss = $derived(highlightCss(customCss))
@@ -46,7 +58,7 @@
     { id: 'system', label: m.settings_system() },
     { id: 'dashboard', label: m.settings_dashboard() },
     { id: 'css', label: m.settings_css() },
-    { id: 'security', label: 'Security' }
+    { id: 'security', label: m.settings_security() }
   ])
 
   function inputValue(event: Event) {
@@ -285,7 +297,7 @@
           result.config?.theme?.backgroundImage || backgroundImage
       }
       if (typeof result.customCss === 'string') customCss = result.customCss
-      toast.success('Saved settings')
+      toast.success(m.settings_saved())
       if (
         activeTab === 'system' &&
         result.systemConfig?.language !== data.language
@@ -320,7 +332,7 @@
       const assertion = (await navigator.credentials.get({
         publicKey
       })) as PublicKeyCredential | null
-      if (!assertion) throw new Error('Cancelled')
+      if (!assertion) throw new Error(ErrorCode.AUTH_CANCELLED)
       const response = await fetch('/api/auth/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -331,11 +343,16 @@
           rpID
         })
       })
-      if (!response.ok) throw new Error('Authentication failed')
+      if (!response.ok) throw new Error(ErrorCode.AUTH_FAILED)
       await invalidateAll()
     } catch (err) {
-      if (err instanceof Error && err.message === 'Cancelled') return
-      toast.error(err instanceof Error ? err.message : 'Failed to authenticate')
+      if (err instanceof Error && err.message === ErrorCode.AUTH_CANCELLED)
+        return
+      toast.error(
+        err instanceof Error
+          ? toErrorMessage(err.message)
+          : m.passkey_failed_to_authenticate()
+      )
     } finally {
       authenticating = false
     }
@@ -377,10 +394,10 @@
       <div class="flex flex-col items-center justify-center py-16 text-center">
         <Fingerprint size={64} class="text-accent mb-4" />
         <h2 class="text-foreground text-lg font-bold mb-2">
-          Verify your identity
+          {m.passkey_verify_identity()}
         </h2>
         <p class="text-muted-foreground text-sm mb-6">
-          Use your passkey to access settings
+          {m.settings_use_passkey_access()}
         </p>
         <Button
           variant="magma"
@@ -388,7 +405,7 @@
           onclick={handleAuthenticate}
           disabled={authenticating}
         >
-          {authenticating ? 'Verifying...' : 'Use Passkey'}
+          {authenticating ? m.passkey_verifying() : m.passkey_use_passkey()}
         </Button>
       </div>
     {:else}
@@ -410,99 +427,97 @@
             <CodeEditor
               bind:value={systemYaml}
               highlighted={highlightedSystemYaml}
-              label="System YAML"
+              label={m.settings_label_system_yaml()}
             />
-            <aside
-              class="border border-border rounded-lg bg-card shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-muted-foreground"
+            <SettingsPanel
+              title={m.settings_system()}
+              description={m.settings_system_desc()}
             >
-              <h2 class="text-foreground text-base m-0 mb-2.5">
-                {m.settings_system()}
-              </h2>
-              <p>{@html m.settings_system_desc()}</p>
               <Label class="grid gap-2 mt-4">
-                <span class="text-accent text-xs font-bold uppercase"
-                  >Title</span
-                >
+                <FieldLabel accent>{m.settings_title()}</FieldLabel>
+
                 <Input
                   value={title}
-                  placeholder="Magma"
-                  class="w-full min-h-9 border-border rounded-lg bg-[rgb(20_18_16/48%)] text-foreground px-2.5 outline-none transition-all duration-140 hover:border-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                  placeholder={m.settings_title_placeholder()}
+                  class={settingsInputClass}
                   oninput={(event: Event) =>
                     updateSystemTitle(inputValue(event))}
                 />
               </Label>
               <div class="grid grid-cols-2 gap-3">
                 <Label class="grid gap-2 mt-4">
-                  <span class="text-accent text-xs font-bold uppercase"
-                    >{m.settings_cell_width()}</span
-                  >
+                  <FieldLabel accent>{m.settings_cell_width()}</FieldLabel>
+
                   <Input
                     type="number"
                     min="1"
                     value={cellWidth}
-                    class="w-full min-h-9 border-border rounded-lg bg-[rgb(20_18_16/48%)] text-foreground px-2.5 outline-none transition-all duration-140 hover:border-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                    class={settingsInputClass}
                     oninput={(event: Event) =>
                       updateSystemGridField('cellWidth', inputValue(event))}
                   />
                 </Label>
                 <Label class="grid gap-2 mt-4">
-                  <span class="text-accent text-xs font-bold uppercase"
-                    >{m.settings_cell_height()}</span
-                  >
+                  <FieldLabel accent>{m.settings_cell_height()}</FieldLabel>
+
                   <Input
                     type="number"
                     min="1"
                     value={cellHeight}
-                    class="w-full min-h-9 border-border rounded-lg bg-[rgb(20_18_16/48%)] text-foreground px-2.5 outline-none transition-all duration-140 hover:border-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                    class={settingsInputClass}
                     oninput={(event: Event) =>
                       updateSystemGridField('cellHeight', inputValue(event))}
                   />
                 </Label>
                 <Label class="grid col-span-2 gap-2 mt-4">
-                  <span class="text-accent text-xs font-bold uppercase"
-                    >Mobile scale</span
-                  >
+                  <FieldLabel accent>{m.settings_mobile_scale()}</FieldLabel>
+
                   <Input
                     type="number"
                     min="0.4"
                     max="1"
                     step="0.05"
                     value={mobileScale}
-                    class="w-full min-h-9 border-border rounded-lg bg-[rgb(20_18_16/48%)] text-foreground px-2.5 outline-none transition-all duration-140 hover:border-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                    class={settingsInputClass}
                     oninput={(event: Event) =>
                       updateSystemGridField('mobileScale', inputValue(event))}
                   />
                 </Label>
                 <Label class="grid col-span-2 gap-2 mt-4">
-                  <span class="text-accent text-xs font-bold uppercase"
-                    >{m.settings_bg_image()}</span
-                  >
+                  <FieldLabel accent>{m.settings_bg_image()}</FieldLabel>
+
                   <Input
                     value={backgroundImage}
-                    placeholder="/bg.jpg"
-                    class="w-full min-h-9 border-border rounded-lg bg-[rgb(20_18_16/48%)] text-foreground px-2.5 outline-none transition-all duration-140 hover:border-accent/34 hover:bg-[rgb(20_18_16/62%)] focus:border-accent/54 focus:bg-[rgb(20_18_16/72%)] focus:shadow-[0_0_0_3px_rgb(250_189_47/12%)]"
+                    placeholder={m.settings_background_image_placeholder()}
+                    class={settingsInputClass}
                     oninput={(event: Event) =>
                       updateBackgroundImage(inputValue(event))}
                   />
                 </Label>
                 <Label class="grid col-span-2 gap-2 mt-4">
-                  <span class="text-accent text-xs font-bold uppercase"
-                    >{m.settings_language()}</span
+                  <FieldLabel accent>{m.settings_language()}</FieldLabel>
+                  <Select
+                    type="single"
+                    bind:value={language}
+                    onValueChange={(v) => updateSystemLanguage(v as string)}
                   >
-                  <select
-                    class="flex h-9 w-full rounded-md border border-border bg-card px-3 py-1 text-sm text-foreground shadow-sm cursor-pointer outline-0"
-                    value={language}
-                    onchange={(event: Event) => {
-                      language = inputValue(event)
-                      updateSystemLanguage(inputValue(event))
-                    }}
-                  >
-                    <option value="en">English</option>
-                    <option value="vi">Tiếng Việt</option>
-                  </select>
+                    <SelectTrigger class={settingsInputClass}>
+                      {language === 'en'
+                        ? m.settings_language_en()
+                        : m.settings_language_vi()}
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en"
+                        >{m.settings_language_en()}</SelectItem
+                      >
+                      <SelectItem value="vi"
+                        >{m.settings_language_vi()}</SelectItem
+                      >
+                    </SelectContent>
+                  </Select>
                 </Label>
               </div>
-            </aside>
+            </SettingsPanel>
           </section>
         </Tabs.Content>
 
@@ -513,16 +528,12 @@
             <CodeEditor
               bind:value={dashboardYaml}
               highlighted={highlightedDashboardYaml}
-              label="Dashboard YAML"
+              label={m.settings_label_dashboard_yaml()}
             />
-            <aside
-              class="border border-border rounded-lg bg-card shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-muted-foreground"
-            >
-              <h2 class="text-foreground text-base m-0 mb-2.5">
-                {m.settings_dashboard()}
-              </h2>
-              <p>{@html m.settings_dashboard_desc()}</p>
-            </aside>
+            <SettingsPanel
+              title={m.settings_dashboard()}
+              description={m.settings_dashboard_desc()}
+            />
           </section>
         </Tabs.Content>
 
@@ -533,33 +544,24 @@
             <CodeEditor
               bind:value={customCss}
               highlighted={highlightedCss}
-              label="Override CSS"
+              label={m.settings_label_override_css()}
               placeholder={`:root {\n  --accent: #fabd2f;\n}\n\n.button-widget {\n  border-radius: 10px;\n}`}
             />
-            <aside
-              class="border border-border rounded-lg bg-card shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-muted-foreground"
-            >
-              <h2 class="text-foreground text-base m-0 mb-2.5">
-                {m.settings_css()}
-              </h2>
-              <p>{@html m.settings_css_desc()}</p>
-            </aside>
+            <SettingsPanel
+              title={m.settings_css()}
+              description={m.settings_css_desc()}
+            />
           </section>
         </Tabs.Content>
 
         <Tabs.Content value="security">
           <section class="mt-2">
-            <aside
-              class="border border-border rounded-lg bg-card shadow-[0_18px_60px_rgb(0_0_0/24%)] backdrop-blur-xl p-4 text-muted-foreground"
+            <SettingsPanel
+              title={m.settings_security()}
+              description={m.settings_passkey_description()}
             >
-              <h2 class="text-foreground text-base m-0 mb-2.5">Security</h2>
-              <p class="mb-4">
-                Manage your passkeys. Passkeys use biometrics (Face ID, Touch
-                ID, Windows Hello) to verify your identity before allowing edit
-                mode and settings access.
-              </p>
               <PasskeySetup onPasskeyChanged={handlePasskeyChanged} />
-            </aside>
+            </SettingsPanel>
           </section>
         </Tabs.Content>
       </Tabs.Root>

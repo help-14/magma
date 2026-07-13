@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages.js'
   import { ExternalLink } from '@lucide/svelte'
   import { Button } from '$lib/components/ui/button/index.js'
   import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
@@ -32,7 +33,7 @@
     <div
       class="flex items-center justify-center h-full text-muted-foreground text-xs p-4"
     >
-      Configure URL in properties
+      {m.website_configure_url()}
     </div>
   {:else}
     {#key iframeKey}
@@ -46,7 +47,7 @@
   {/if}
   {#if target}
     <div class="absolute top-1 right-8 flex gap-1">
-      <a href={target} target="_blank" rel="noreferrer" title="Open in new tab">
+      <a href={target} target="_blank" rel="noreferrer" title={m.website_open_new_tab()}>
         <Button variant="ghost" class="p-1 rounded text-sm aspect-square">
           <ExternalLink class="size-3" />
         </Button>

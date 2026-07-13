@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { m } from "$lib/paraglide/messages.js";
   import { flip } from "svelte/animate";
   import WidgetRenderer from "../WidgetRenderer.svelte";
   import WidgetStackChildFrame from "./WidgetStackChildFrame.svelte";
@@ -100,7 +101,7 @@
   bind:this={listRef}
   class="flex-1 min-h-10 p-2 min-w-10 stack-grid w-full h-full content-center"
   role="list"
-  aria-label={`${widget.title} children`}
+  aria-label={m.stack_children_label({ title: widget.title })}
   style={gridStyle}
 >
   {#each displayChildren as child, i (child.id)}
@@ -109,7 +110,7 @@
         <div
           class="relative min-w-0 h-full overflow-hidden rounded-lg bg-white/6 border-2 border-dashed border-yellow-400/50"
           role="listitem"
-          aria-label="Drop position"
+          aria-label={m.stack_drop_position()}
         ></div>
       {:else}
         <WidgetStackChildFrame

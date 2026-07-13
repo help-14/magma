@@ -1,3 +1,4 @@
+import { ErrorCode } from '$lib/errors.js'
 import { query } from '$app/server'
 import * as v from 'valibot'
 import { XMLParser } from 'fast-xml-parser'
@@ -96,7 +97,7 @@ export const fetchRss = query(
     } catch {
       return {
         articles: [],
-        errors: [{ feedUrl: '', message: 'Invalid feeds JSON' }]
+        errors: [{ feedUrl: '', message: ErrorCode.INVALID_FEEDS_JSON }]
       }
     }
     const errors: { feedUrl: string; message: string }[] = []
@@ -137,7 +138,7 @@ export const fetchRss = query(
       } catch (err) {
         errors.push({
           feedUrl: feed.url,
-          message: err instanceof Error ? err.message : 'Fetch failed'
+            message: err instanceof Error ? err.message : ErrorCode.FETCH_FAILED
         })
       }
     }

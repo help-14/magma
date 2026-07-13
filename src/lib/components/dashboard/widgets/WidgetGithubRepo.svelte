@@ -8,6 +8,8 @@
     ExternalLink,
     ChevronRight
   } from '@lucide/svelte'
+  import { m } from '$lib/paraglide/messages.js'
+  import { ErrorCode, toErrorMessage } from '$lib/errors.js'
   import { fetchGithubRepo } from '$lib/remotes/github.remote.js'
   import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
@@ -38,7 +40,12 @@
       widgetState = 'content'
     } catch (err) {
       widgetState = 'error'
-      errorMsg = err instanceof Error ? err.message : String(err)
+      const msg = err instanceof Error ? err.message : String(err)
+      if (msg === ErrorCode.REPO_NOT_FOUND) {
+        errorMsg = m.error_repo_not_found({ repo })
+      } else {
+        errorMsg = toErrorMessage(msg)
+      }
     }
   }
 
@@ -65,7 +72,7 @@
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
-    idleMessage="Configure repo in properties"
+    idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
       {#if data}
@@ -119,7 +126,7 @@
               class="flex items-center gap-1.5 text-xs font-bold text-foreground mb-1"
             >
               <GitPullRequest class="size-3.5 text-green-400" />
-              <span>Pull Requests</span>
+              <span>{m.github_pull_requests()}</span>
               <span class="text-muted-foreground font-normal"
                 >({data.openPrs})</span
               >
@@ -143,7 +150,7 @@
               class="flex items-center gap-1.5 text-xs font-bold text-foreground mb-1 mt-2"
             >
               <CircleAlert class="size-3.5 text-orange-400" />
-              <span>Issues</span>
+              <span>{m.github_issues()}</span>
               <span class="text-muted-foreground font-normal"
                 >({data.openIssues})</span
               >
@@ -166,7 +173,7 @@
             <div
               class="flex items-center justify-center h-full text-muted-foreground text-xs"
             >
-              No open PRs or issues
+              {m.github_no_open()}
             </div>
           {/if}
         </div>

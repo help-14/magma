@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from "$lib/paraglide/messages.js";
+  import { toErrorMessage } from "$lib/errors.js";
   import { Radio } from "@lucide/svelte";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import {
@@ -58,14 +60,14 @@
       }
       if (!result.ok) {
         widgetState = "error";
-        errorMsg = result.error || "YouTube request failed";
+        errorMsg = toErrorMessage(result.error || "");
         return;
       }
       data = result.data;
       widgetState = "content";
     } catch (err) {
       widgetState = "error";
-      errorMsg = err instanceof Error ? err.message : String(err);
+      errorMsg = err instanceof Error ? toErrorMessage(err.message) : String(err);
     }
   }
 
@@ -131,14 +133,14 @@
       class="flex items-center gap-1.5 px-3 pt-2 pb-1 text-accent text-xs font-extrabold shrink-0"
     >
       <Radio size={12} class="text-accent" />
-      <span>Live</span>
+      <span>{m.youtube_live()}</span>
     </div>
   {/if}
 
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
-    idleMessage="Add channel IDs in properties"
+    idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
       <ScrollArea class="flex-1 min-h-0 w-full" orientation={scrollOrientation}>

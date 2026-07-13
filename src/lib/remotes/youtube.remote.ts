@@ -1,3 +1,4 @@
+import { ErrorCode } from '$lib/errors.js'
 import { query } from '$app/server'
 import * as v from 'valibot'
 import { createCache } from '$lib/server/cache.js'
@@ -74,7 +75,7 @@ export const getYoutubeUploads = query(
             const xml = await response.text()
             const parsed = parseFeedXml(xml)
             if (parsed.length === 0)
-              throw new Error(`No entries for channel ${channelId}`)
+              throw new Error(ErrorCode.NO_ENTRIES)
             return parsed
           })
         })
@@ -88,7 +89,7 @@ export const getYoutubeUploads = query(
       }
 
       if (allVideos.length === 0) {
-        return { ok: false, error: 'No videos found' }
+        return { ok: false, error: ErrorCode.NO_VIDEOS }
       }
 
       allVideos.sort(

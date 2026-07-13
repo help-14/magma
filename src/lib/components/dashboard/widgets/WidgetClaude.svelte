@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from "$lib/paraglide/messages.js";
+  import { toErrorMessage } from "$lib/errors.js";
   import { Progress } from "$lib/components/ui/progress/index.js";
   import { claudeAiUsage, claudeApiUsage } from "$lib/remotes/claude.remote.js";
   import { getWidgetRefreshContext } from "$lib/components/dashboard/widget-refresh-context.js";
@@ -69,12 +71,7 @@
 
   function formatTime(iso: string): string {
     const d = new Date(iso);
-    const hours = d.getHours();
-    const minutes = d.getMinutes();
-    const ampm = hours >= 12 ? "PM" : "AM";
-    const h12 = hours % 12 || 12;
-    const m = minutes.toString().padStart(2, "0");
-    return `${h12}:${m} ${ampm}`;
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   }
 
   function formatTokenCount(n: number): string {
@@ -92,14 +89,14 @@
       const result = await fn({ authToken });
       if (!result.ok) {
         widgetState = "error";
-        errorMsg = result.error || "";
+        errorMsg = toErrorMessage(result.error || "");
         return;
       }
       data = result.data;
       widgetState = "content";
     } catch (err) {
       widgetState = "error";
-      errorMsg = err instanceof Error ? err.message : String(err);
+      errorMsg = err instanceof Error ? toErrorMessage(err.message) : String(err);
     }
   }
 
@@ -124,29 +121,29 @@
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
-    idleMessage="Configure Auth Token in properties"
+    idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
       {#if provider === "claude.ai"}
         <div
           class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 gap-y-3 items-center justify-center h-full p-3"
         >
-          <span class="text-xs">5-hour</span>
+          <span class="text-xs">{m.claude_five_hour()}</span>
           <Progress value={fiveHourPct} class="h-2 grow" />
           <span class="text-xs text-right">{fiveHourPct.toFixed(0)}%</span>
           {#if size !== "small"}
             <span
               class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-              >Resets {fiveHourReset}</span
+              >{m.claude_resets({ time: fiveHourReset })}</span
             >
           {/if}
-          <span class="text-xs mt-3">7-day</span>
+          <span class="text-xs mt-3">{m.claude_seven_day()}</span>
           <Progress value={sevenDayPct} class="h-2 mt-1" />
           <span class="text-xs text-right mt-1">{sevenDayPct.toFixed(0)}%</span>
           {#if size !== "small"}
             <span
               class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-              >Resets {sevenDayReset}</span
+              >{m.claude_resets({ time: sevenDayReset })}</span
             >
             {#if data?.email}
               <div
@@ -161,12 +158,12 @@
         <div
           class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 items-center justify-center h-full p-3"
         >
-          <span class="text-xs">Requests</span>
+          <span class="text-xs">{m.claude_requests()}</span>
           <Progress value={requestsPct} class="h-2 grow" />
           <span class="text-xs text-right"
             >{requestsUsed}/{data?.requestsLimit ?? 0}</span
           >
-          <span class="text-xs mt-3">Tokens</span>
+          <span class="text-xs mt-3">{m.claude_tokens()}</span>
           <Progress value={tokensPct} class="h-2 mt-1" />
           <span class="text-xs text-right mt-1"
             >{formatTokenCount(tokensUsed)}/{formatTokenCount(

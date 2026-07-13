@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages.js'
+  import { toErrorMessage } from '$lib/errors.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import { Progress } from '$lib/components/ui/progress/index.js'
   import {
@@ -47,7 +49,7 @@
       10
     ).toLocaleString()
     const current = parseInt(data.current_token, 10).toLocaleString()
-    return `${total} / ${current} tokens`
+    return m.deepseek_tokens({ total, current })
   })
 
   async function doFetch() {
@@ -58,14 +60,14 @@
       const result = await deepseekSummary({ authToken })
       if (!result.ok) {
         widgetState = 'error'
-        errorMsg = result.error
+        errorMsg = toErrorMessage(result.error)
         return
       }
       data = result.data
       widgetState = 'content'
     } catch (err) {
       widgetState = 'error'
-      errorMsg = err instanceof Error ? err.message : String(err)
+      errorMsg = err instanceof Error ? toErrorMessage(err.message) : String(err)
     }
   }
 
@@ -90,7 +92,7 @@
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
-    idleMessage="Configure Auth Token in properties"
+    idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
       <div class="flex flex-col gap-2 justify-center h-full p-3">

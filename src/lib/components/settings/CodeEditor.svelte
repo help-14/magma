@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages.js'
   import { Textarea } from '$lib/components/ui/textarea/index.js'
 
   let {
     value = $bindable(''),
     highlighted = '',
-    label = 'Code editor',
+    label = m.code_editor_label(),
     placeholder = ''
   }: {
     value?: string

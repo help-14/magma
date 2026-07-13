@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages.js'
+  import { ErrorCode, toErrorMessage } from '$lib/errors.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import { Trash2, Plus, KeyRound } from '@lucide/svelte'
   import { toast } from 'svelte-sonner'
@@ -63,7 +65,7 @@
       const credential = await navigator.credentials.create({
         publicKey
       })
-      if (!credential) throw new Error('Passkey creation cancelled')
+      if (!credential) throw new Error(ErrorCode.PASSKEY_CREATION_CANCELLED)
 
       const label = `${window.navigator.platform || 'Device'} (${new Date().toLocaleDateString()})`
       await registerComplete({
@@ -74,14 +76,14 @@
         rpID
       })
 
-      toast.success('Passkey registered')
+      toast.success(m.passkey_registered())
       onPasskeyChanged()
       await loadPasskeys()
     } catch (err) {
-      if (err instanceof Error && err.message === 'Passkey creation cancelled')
+      if (err instanceof Error && err.message === ErrorCode.PASSKEY_CREATION_CANCELLED)
         return
       toast.error(
-        err instanceof Error ? err.message : 'Failed to register passkey'
+        err instanceof Error ? toErrorMessage(err.message) : m.passkey_register_failed()
       )
     } finally {
       registering = false
@@ -91,12 +93,12 @@
   async function handleDelete(id: string) {
     try {
       await deletePasskey({ id })
-      toast.success('Passkey deleted')
+      toast.success(m.passkey_deleted())
       onPasskeyChanged()
       await loadPasskeys()
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : 'Failed to delete passkey'
+        err instanceof Error ? toErrorMessage(err.message) : m.passkey_delete_failed()
       )
     }
   }
@@ -114,14 +116,14 @@
 
 <div>
   {#if loading}
-    <p class="text-muted-foreground text-sm">Loading passkeys...</p>
+    <p class="text-muted-foreground text-sm">{m.passkey_loading()}</p>
   {:else if passkeys.length === 0}
     <div class="flex flex-col items-center gap-4 py-8 text-muted-foreground">
       <KeyRound size={40} class="opacity-40" />
-      <p class="text-sm">No passkeys registered</p>
+      <p class="text-sm">{m.passkey_no_passkeys()}</p>
       <Button variant="magma" onclick={handleAdd} disabled={registering}>
         <Plus size={16} />
-        {registering ? 'Registering...' : 'Add Passkey'}
+        {registering ? m.passkey_registering() : m.passkey_add_passkey()}
       </Button>
     </div>
   {:else}
@@ -135,7 +137,7 @@
             <div class="min-w-0">
               <p class="text-foreground text-sm truncate">{pk.label}</p>
               <p class="text-muted-foreground text-xs">
-                Created {formatDate(pk.created)}
+                {m.passkey_created()}{formatDate(pk.created)}
               </p>
             </div>
           </div>
@@ -155,7 +157,7 @@
         class="mt-2 self-start"
       >
         <Plus size={16} />
-        {registering ? 'Registering...' : 'Add Another Passkey'}
+        {registering ? m.passkey_registering() : m.passkey_add_another()}
       </Button>
     </div>
   {/if}

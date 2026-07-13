@@ -1,154 +1,200 @@
+import { m } from '$lib/paraglide/messages.js'
 import type { ConfigFieldDescriptor } from './config.js'
+
+const displaySizes = [
+  { label: m.properties_option_small, value: 'small' },
+  { label: m.properties_option_medium, value: 'medium' },
+  { label: m.properties_option_large, value: 'large' }
+]
+
+const refreshInterval = (defaultValue: number): ConfigFieldDescriptor => ({
+  key: 'refreshInterval',
+  label: m.properties_field_refresh_interval,
+  type: 'number',
+  default: defaultValue
+})
 
 export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
   button: [
     {
       key: 'urls',
-      label: 'URLs (one per line)',
+      label: m.properties_field_urls,
       type: 'textarea',
       default: '',
       rows: 4
     },
     {
       key: 'openIn',
-      label: 'Open in',
+      label: m.properties_field_open_in,
       type: 'select',
       default: '_self',
       options: [
-        { label: 'Current tab', value: '_self' },
-        { label: 'New tab', value: '_blank' },
-        { label: 'New window', value: '_window' }
+        { label: m.properties_option_current_tab, value: '_self' },
+        { label: m.properties_option_new_tab, value: '_blank' },
+        { label: m.properties_option_new_window, value: '_window' }
       ]
     },
-    { key: 'icon', label: 'Icon', type: 'icon-picker', default: '' },
-    { key: 'iconColor', label: 'Icon color', type: 'color', default: '#fabd2f' }
+    {
+      key: 'icon',
+      label: m.properties_field_icon,
+      type: 'icon-picker',
+      default: ''
+    },
+    {
+      key: 'iconColor',
+      label: m.properties_field_icon_color,
+      type: 'color',
+      default: '#fabd2f'
+    }
   ],
   search: [
-    { key: 'placeholder', label: 'Placeholder', type: 'text', default: '' },
+    {
+      key: 'placeholder',
+      label: m.properties_field_placeholder,
+      type: 'text',
+      default: ''
+    },
     {
       key: 'provider',
-      label: 'Provider',
+      label: m.properties_field_provider,
       type: 'select',
       default: 'google',
       options: [
-        { label: 'Google', value: 'google' },
-        { label: 'DuckDuckGo', value: 'duckduckgo' },
-        { label: 'Bing', value: 'bing' },
-        { label: 'YouTube', value: 'youtube' },
-        { label: 'Wikipedia', value: 'wikipedia' }
+        { label: m.properties_option_google, value: 'google' },
+        { label: m.properties_option_duckduckgo, value: 'duckduckgo' },
+        { label: m.properties_option_bing, value: 'bing' },
+        { label: m.properties_option_youtube, value: 'youtube' },
+        { label: m.properties_option_wikipedia, value: 'wikipedia' }
       ]
     }
   ],
   weather: [
     {
       key: 'interface',
-      label: 'Interface',
+      label: m.properties_field_interface,
       type: 'select',
       default: 'medium',
-      options: [
-        { label: 'Small', value: 'small' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'Large', value: 'large' }
-      ]
+      options: displaySizes
     },
     {
       key: 'provider',
-      label: 'Provider',
+      label: m.properties_field_provider,
       type: 'select',
       default: 'open-meteo',
       options: [
-        { label: 'Open-Meteo (free, no key)', value: 'open-meteo' },
-        { label: 'WeatherAPI.com', value: 'weatherapi' },
-        { label: 'OpenWeatherMap', value: 'openweathermap' }
+        { label: m.properties_option_open_meteo, value: 'open-meteo' },
+        { label: m.properties_option_weatherapi, value: 'weatherapi' },
+        { label: m.properties_option_openweathermap, value: 'openweathermap' }
       ]
     },
-    { key: 'apiKey', label: 'API Key', type: 'password', default: '' },
+    {
+      key: 'apiKey',
+      label: m.properties_field_api_key,
+      type: 'password',
+      default: ''
+    },
     {
       key: 'cityName',
-      label: 'City name',
+      label: m.properties_field_city_name,
       type: 'text',
       default: '',
-      placeholder: 'e.g. London'
+      placeholder: m.properties_placeholder_city
     },
-    { key: 'latitude', label: 'Latitude', type: 'number', default: 0 },
-    { key: 'longitude', label: 'Longitude', type: 'number', default: 0 },
-    { key: 'cacheTtl', label: 'Cache TTL (s)', type: 'number', default: 900 }
+    {
+      key: 'latitude',
+      label: m.properties_field_latitude,
+      type: 'number',
+      default: 0
+    },
+    {
+      key: 'longitude',
+      label: m.properties_field_longitude,
+      type: 'number',
+      default: 0
+    },
+    {
+      key: 'cacheTtl',
+      label: m.properties_field_cache_ttl,
+      type: 'number',
+      default: 900
+    }
   ],
   'docker-status': [
     {
       key: 'dockerHost',
-      label: 'Docker Host URL',
+      label: m.properties_field_docker_host_url,
       type: 'text',
       default: '',
-      placeholder: 'http://10.0.0.1:2375'
+      placeholder: () => 'http://10.0.0.1:2375'
     },
     {
       key: 'hideOffline',
-      label: 'Hide offline containers',
+      label: m.properties_field_hide_offline,
       type: 'checkbox',
       default: false
     },
-    { key: 'columns', label: 'Columns', type: 'number', default: 2 }
+    {
+      key: 'columns',
+      label: m.properties_field_columns,
+      type: 'number',
+      default: 2
+    }
   ],
   deepseek: [
-    { key: 'authToken', label: 'Auth Token', type: 'password', default: '' },
     {
-      key: 'refreshInterval',
-      label: 'Refresh (s)',
-      type: 'number',
-      default: 600
-    }
+      key: 'authToken',
+      label: m.properties_field_auth_token,
+      type: 'password',
+      default: ''
+    },
+    refreshInterval(600)
   ],
   chatgpt: [
     {
       key: 'interface',
-      label: 'Interface',
+      label: m.properties_field_interface,
       type: 'select',
       default: 'medium',
-      options: [
-        { label: 'Small', value: 'small' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'Large', value: 'large' }
-      ]
+      options: displaySizes
     },
-    { key: 'authToken', label: 'Auth Token', type: 'password', default: '' },
     {
-      key: 'refreshInterval',
-      label: 'Refresh (s)',
-      type: 'number',
-      default: 600
-    }
+      key: 'authToken',
+      label: m.properties_field_auth_token,
+      type: 'password',
+      default: ''
+    },
+    refreshInterval(600)
   ],
   claude: [
     {
       key: 'provider',
-      label: 'Provider',
+      label: m.properties_field_provider,
       type: 'select',
       default: 'claude.ai',
       options: [
-        { label: 'Claude.ai (session cookie)', value: 'claude.ai' },
-        { label: 'API (API key)', value: 'api' }
+        { label: m.properties_option_claude_session, value: 'claude.ai' },
+        { label: m.properties_option_api_key, value: 'api' }
       ]
     },
-    { key: 'authToken', label: 'Auth Token', type: 'password', default: '' },
     {
-      key: 'refreshInterval',
-      label: 'Refresh (s)',
-      type: 'number',
-      default: 600
-    }
+      key: 'authToken',
+      label: m.properties_field_auth_token,
+      type: 'password',
+      default: ''
+    },
+    refreshInterval(600)
   ],
   'service-status': [
     {
       key: 'dockerHost',
-      label: 'Docker Host URL',
+      label: m.properties_field_docker_host_url,
       type: 'text',
       default: '',
-      placeholder: 'http://10.0.0.1:2375'
+      placeholder: () => 'http://10.0.0.1:2375'
     },
     {
       key: 'hideOffline',
-      label: 'Hide offline containers',
+      label: m.properties_field_hide_offline,
       type: 'checkbox',
       default: false
     }
@@ -156,239 +202,268 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
   stack: [
     {
       key: 'interface',
-      label: 'Interface',
+      label: m.properties_field_interface,
       type: 'select',
       default: 'medium',
-      options: [
-        { label: 'Small', value: 'small' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'Large', value: 'large' }
-      ]
+      options: displaySizes
     },
     {
       key: 'flow',
-      label: 'Flow direction',
+      label: m.properties_field_flow_direction,
       type: 'select',
       default: 'vertical',
       options: [
-        { label: 'Vertical', value: 'vertical' },
-        { label: 'Horizontal', value: 'horizontal' }
+        { label: m.properties_option_vertical, value: 'vertical' },
+        { label: m.properties_option_horizontal, value: 'horizontal' }
       ]
     },
-    { key: 'cols', label: 'Columns', type: 'number', default: 2 },
-    { key: 'rows', label: 'Rows', type: 'number', default: 0 },
-    { key: 'gap', label: 'Gap', type: 'number', default: 12 }
+    {
+      key: 'cols',
+      label: m.properties_field_columns,
+      type: 'number',
+      default: 2
+    },
+    { key: 'rows', label: m.properties_field_rows, type: 'number', default: 0 },
+    { key: 'gap', label: m.properties_field_gap, type: 'number', default: 12 }
   ],
   website: [
     {
       key: 'url',
-      label: 'URL',
+      label: m.properties_field_url,
       type: 'text',
       default: '',
-      placeholder: 'https://example.com'
+      placeholder: () => 'https://example.com'
     }
   ],
   fetch: [
-    { key: 'url', label: 'URL', type: 'text', default: '' },
+    { key: 'url', label: m.properties_field_url, type: 'text', default: '' },
     {
       key: 'method',
-      label: 'Method',
+      label: m.properties_field_method,
       type: 'select',
       default: 'GET',
       options: [
-        { label: 'GET', value: 'GET' },
-        { label: 'POST', value: 'POST' },
-        { label: 'PUT', value: 'PUT' },
-        { label: 'DELETE', value: 'DELETE' }
+        { label: () => 'GET', value: 'GET' },
+        { label: () => 'POST', value: 'POST' },
+        { label: () => 'PUT', value: 'PUT' },
+        { label: () => 'DELETE', value: 'DELETE' }
       ]
     },
     {
       key: 'headers',
-      label: 'Headers (JSON array)',
+      label: m.properties_field_headers,
       type: 'textarea',
       default: '[]',
       rows: 3
     },
-    { key: 'body', label: 'Body', type: 'textarea', default: '', rows: 4 },
+    {
+      key: 'body',
+      label: m.properties_field_body,
+      type: 'textarea',
+      default: '',
+      rows: 4
+    },
     {
       key: 'formatScript',
-      label: 'Format script',
+      label: m.properties_field_format_script,
       type: 'textarea',
       default: 'return responseText',
       rows: 6
     },
-    {
-      key: 'refreshInterval',
-      label: 'Refresh (s)',
-      type: 'number',
-      default: 600
-    }
+    refreshInterval(600)
   ],
   stock: [
     {
       key: 'stocks',
-      label: 'Stocks (one per line)',
+      label: m.properties_field_stocks,
       type: 'textarea',
       default: 'SPY\nAAPL\nNVDA',
       rows: 6
     },
     {
       key: 'sortBy',
-      label: 'Sort by',
+      label: m.properties_field_sort_by,
       type: 'select',
       default: 'default',
       options: [
-        { label: 'Default (input order)', value: 'default' },
-        { label: 'Change %', value: 'change' },
-        { label: 'Absolute change %', value: 'absolute-change' }
+        { label: m.properties_option_default_order, value: 'default' },
+        { label: m.properties_option_change_percent, value: 'change' },
+        {
+          label: m.properties_option_absolute_change_percent,
+          value: 'absolute-change'
+        }
       ]
     },
-    { key: 'cacheTime', label: 'Cache time (s)', type: 'number', default: 300 },
     {
-      key: 'refreshInterval',
-      label: 'Refresh (s)',
+      key: 'cacheTime',
+      label: m.properties_field_cache_time,
       type: 'number',
       default: 300
-    }
+    },
+    refreshInterval(300)
   ],
   rss: [
     {
       key: 'feeds',
-      label: 'Feeds (JSON)',
+      label: m.properties_field_feeds,
       type: 'textarea',
       default: '[]',
       rows: 6
     },
     {
       key: 'style',
-      label: 'Style',
+      label: m.properties_field_style,
       type: 'select',
       default: 'vertical-list',
       options: [
-        { label: 'Vertical list', value: 'vertical-list' },
-        { label: 'Detailed list', value: 'detailed-list' },
-        { label: 'Horizontal cards', value: 'horizontal-cards' }
+        { label: m.properties_option_vertical_list, value: 'vertical-list' },
+        { label: m.properties_option_detailed_list, value: 'detailed-list' },
+        {
+          label: m.properties_option_horizontal_cards,
+          value: 'horizontal-cards'
+        }
       ]
     },
-    { key: 'limit', label: 'Max articles', type: 'number', default: 25 },
+    {
+      key: 'limit',
+      label: m.properties_field_max_articles,
+      type: 'number',
+      default: 25
+    },
     {
       key: 'collapseAfter',
-      label: 'Collapse after',
+      label: m.properties_field_collapse_after,
       type: 'number',
       default: 5
     },
     {
       key: 'singleLineTitles',
-      label: 'Single-line titles',
+      label: m.properties_field_single_line_titles,
       type: 'checkbox',
       default: false
     },
     {
       key: 'preserveOrder',
-      label: 'Preserve feed order',
+      label: m.properties_field_preserve_order,
       type: 'checkbox',
       default: false
     },
-    {
-      key: 'refreshInterval',
-      label: 'Refresh (s)',
-      type: 'number',
-      default: 600
-    }
+    refreshInterval(600)
   ],
   'github-repo': [
     {
       key: 'repo',
-      label: 'Repository (owner/repo)',
+      label: m.properties_field_repository,
       type: 'text',
       default: ''
     },
-    { key: 'showStars', label: 'Show Stars', type: 'checkbox', default: true },
-    { key: 'showForks', label: 'Show Forks', type: 'checkbox', default: true },
-    { key: 'showPrs', label: 'Show Open PRs', type: 'checkbox', default: true },
     {
-      key: 'showIssues',
-      label: 'Show Open Issues',
+      key: 'showStars',
+      label: m.properties_field_show_stars,
       type: 'checkbox',
       default: true
     },
     {
-      key: 'refreshInterval',
-      label: 'Refresh (s)',
-      type: 'number',
-      default: 3600
-    }
+      key: 'showForks',
+      label: m.properties_field_show_forks,
+      type: 'checkbox',
+      default: true
+    },
+    {
+      key: 'showPrs',
+      label: m.properties_field_show_open_prs,
+      type: 'checkbox',
+      default: true
+    },
+    {
+      key: 'showIssues',
+      label: m.properties_field_show_open_issues,
+      type: 'checkbox',
+      default: true
+    },
+    refreshInterval(3600)
   ],
   'youtube-live': [
     {
       key: 'mode',
-      label: 'Mode',
+      label: m.properties_field_mode,
       type: 'select',
       default: 'uploads',
       options: [
-        { label: 'Newest uploads', value: 'uploads' },
-        { label: 'Livestream', value: 'livestream' }
+        { label: m.properties_option_newest_uploads, value: 'uploads' },
+        { label: m.properties_option_livestream, value: 'livestream' }
       ]
     },
     {
       key: 'channels',
-      label: 'Channel IDs (one per line)',
+      label: m.properties_field_channel_ids,
       type: 'textarea',
       default: '',
       rows: 4,
-      placeholder: 'UCXuqSBlHAE6Xw...'
+      placeholder: () => 'UCXuqSBlHAE6Xw...'
     },
     {
       key: 'flow',
-      label: 'Flow direction',
+      label: m.properties_field_flow_direction,
       type: 'select',
       default: 'vertical',
       options: [
-        { label: 'Vertical', value: 'vertical' },
-        { label: 'Horizontal', value: 'horizontal' }
+        { label: m.properties_option_vertical, value: 'vertical' },
+        { label: m.properties_option_horizontal, value: 'horizontal' }
       ]
     },
-    { key: 'cols', label: 'Columns', type: 'number', default: 2 },
-    { key: 'rows', label: 'Rows', type: 'number', default: 0 },
-    { key: 'limit', label: 'Max videos', type: 'number', default: 10 }
+    {
+      key: 'cols',
+      label: m.properties_field_columns,
+      type: 'number',
+      default: 2
+    },
+    { key: 'rows', label: m.properties_field_rows, type: 'number', default: 0 },
+    {
+      key: 'limit',
+      label: m.properties_field_max_videos,
+      type: 'number',
+      default: 10
+    }
   ],
   timer: [
     {
       key: 'interface',
-      label: 'Interface',
+      label: m.properties_field_interface,
       type: 'select',
       default: 'medium',
-      options: [
-        { label: 'Small', value: 'small' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'Large', value: 'large' }
-      ]
+      options: displaySizes
     },
     {
       key: 'showSeconds',
-      label: 'Show seconds',
+      label: m.properties_field_show_seconds,
       type: 'checkbox',
       default: false
     },
-    { key: 'showDate', label: 'Show date', type: 'checkbox', default: true },
+    {
+      key: 'showDate',
+      label: m.properties_field_show_date,
+      type: 'checkbox',
+      default: true
+    },
     {
       key: 'showGreeting',
-      label: 'Show greeting',
+      label: m.properties_field_show_greeting,
       type: 'checkbox',
       default: true
     },
     {
       key: 'hour12',
-      label: '12-hour format',
+      label: m.properties_field_12_hour,
       type: 'checkbox',
       default: false
     },
     {
       key: 'timezone',
-      label: 'Timezone',
+      label: m.properties_field_timezone,
       type: 'text',
       default: '',
-      placeholder: 'e.g. America/New_York'
+      placeholder: m.properties_placeholder_timezone
     }
   ]
 }

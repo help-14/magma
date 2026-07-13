@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from "$lib/paraglide/messages.js";
+  import { toErrorMessage } from "$lib/errors.js";
   import { Progress } from "$lib/components/ui/progress/index.js";
   import { chatgptUsage } from "$lib/remotes/chatgpt.remote.js";
   import { getWidgetRefreshContext } from "$lib/components/dashboard/widget-refresh-context.js";
@@ -50,11 +52,14 @@
 
   function formatWindowLabel(seconds: number): string {
     if (seconds <= 0) return "";
-    if (seconds === 604800) return "Weekly limit";
+    if (seconds === 604800) return m.chatgpt_weekly_usage();
     const hours = seconds / 3600;
-    if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} limit`;
+    if (hours < 24) {
+      const h = Math.round(hours);
+      return h === 1 ? m.chatgpt_hour_usage({ hours: h }) : m.chatgpt_hours_usage({ hours: h });
+    }
     const days = Math.round(hours / 24);
-    return `${days}-day limit`;
+    return m.chatgpt_days_usage({ days });
   }
 
   let creditsBalance = $derived(
@@ -74,18 +79,12 @@
 
   function formatResetTime(seconds: number): string {
     const resetDate = new Date(Date.now() + seconds * 1000);
-    const hours = resetDate.getHours();
-    const minutes = resetDate.getMinutes();
-    const ampm = hours >= 12 ? "PM" : "AM";
-    const h12 = hours % 12 || 12;
-    const m = minutes.toString().padStart(2, "0");
-    const time = `${h12}:${m} ${ampm}`;
+    const timeStr = resetDate.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     if (seconds > 86400) {
-      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const dayName = days[resetDate.getDay()];
-      return `${dayName} ${time}`;
+      const dayStr = resetDate.toLocaleDateString([], { weekday: "short" });
+      return `${dayStr} ${timeStr}`;
     }
-    return time;
+    return timeStr;
   }
 
   async function doFetch() {
@@ -96,14 +95,14 @@
       const result = await chatgptUsage({ authToken });
       if (!result.ok) {
         widgetState = "error";
-        errorMsg = result.error || "";
+        errorMsg = toErrorMessage(result.error || "");
         return;
       }
       data = result.data;
       widgetState = "content";
     } catch (err) {
       widgetState = "error";
-      errorMsg = err instanceof Error ? err.message : String(err);
+      errorMsg = err instanceof Error ? toErrorMessage(err.message) : String(err);
     }
   }
 
@@ -130,44 +129,44 @@
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
-    idleMessage="Configure Auth Token in properties"
+    idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
       <div
         class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 gap-y-3 items-center justify-center p-3"
       >
-        <span class="text-xs">{primaryLabel}</span>
-        <Progress value={primaryPct} class="h-2 grow" />
-        <span class="text-xs text-right">{primaryPct}%</span>
-        <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-          >Resets {primaryReset}</span
-        >
-        {#if hasSecondary}
-          <span class="text-xs">7-day</span>
-          <Progress value={secondaryPct} class="h-2" />
-          <span class="text-xs text-right">{secondaryPct}%</span>
-          {#if size !== "small"}
-            <span
-              class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-              >Resets {secondaryReset}</span
-            >
-          {/if}
-        {/if}
-        {#if size !== "small"}
-          <div
-            class="flex items-center gap-1 text-xs text-muted-foreground col-span-3"
+          <span class="text-xs">{primaryLabel}</span>
+          <Progress value={primaryPct} class="h-2 grow" />
+          <span class="text-xs text-right">{primaryPct}%</span>
+          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+            >{m.chatgpt_resets({ time: primaryReset })}</span
           >
-            {planType}
-            {#if creditsBalance}
-              <span>|</span>
-              <span>Credits: {creditsBalance}</span>
+          {#if hasSecondary}
+            <span class="text-xs">{m.chatgpt_days_usage({ days: 7 })}</span>
+            <Progress value={secondaryPct} class="h-2" />
+            <span class="text-xs text-right">{secondaryPct}%</span>
+            {#if size !== "small"}
+              <span
+                class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+                >{m.chatgpt_resets({ time: secondaryReset })}</span
+              >
             {/if}
-            {#if resetCreditsCount > 0}
-              <span>|</span>
-              <span>Resets: {resetCreditsCount}</span>
-            {/if}
-          </div>
-        {/if}
+          {/if}
+          {#if size !== "small"}
+            <div
+              class="flex items-center gap-1 text-xs text-muted-foreground col-span-3"
+            >
+              {planType}
+              {#if creditsBalance}
+                <span>|</span>
+                <span>{m.chatgpt_credits({ balance: creditsBalance })}</span>
+              {/if}
+              {#if resetCreditsCount > 0}
+                <span>|</span>
+                <span>{m.chatgpt_resets_count({ count: resetCreditsCount })}</span>
+              {/if}
+            </div>
+          {/if}
       </div>
     {/snippet}
   </WidgetStateWrapper>

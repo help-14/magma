@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages.js'
+  import { toErrorMessage } from '$lib/errors.js'
   import { TrendingUp, TrendingDown, Minus } from '@lucide/svelte'
   import { fetchStocks } from '$lib/remotes/stocks.remote.js'
   import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
@@ -106,18 +108,18 @@
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
-    idleMessage="Add stocks in properties"
+    idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
       {#if feedErrors.length > 0}
         <div
           class="flex items-center gap-1 px-3 pt-1 pb-0 text-amber-400 text-xs cursor-help"
           title={feedErrors
-            .map((e: any) => `${e.symbol}: ${e.message}`)
+            .map((e: any) => `${e.symbol}: ${toErrorMessage(e.message)}`)
             .join('\n')}
         >
           <span>⚠</span>
-          <span class="truncate">{feedErrors.length} feed error{feedErrors.length > 1 ? 's' : ''}</span>
+          <span class="truncate">{m.stock_feed_errors({ count: feedErrors.length })}</span>
         </div>
       {/if}
       <div class="flex-1 overflow-y-auto min-h-0 px-1 pb-1">

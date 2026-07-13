@@ -1,4 +1,4 @@
-// @ts-nocheck
+import { ErrorCode } from '$lib/errors.js'
 import { command, query } from '$app/server'
 import * as v from 'valibot'
 import { saveChallenge, consumeChallenge } from '$lib/server/challenge-store.js'
@@ -28,7 +28,7 @@ export const registerComplete = command(
   }),
   async ({ challengeId, credential, label, origin, rpID }) => {
     const challenge = consumeChallenge(challengeId)
-    if (!challenge) throw new Error('Challenge expired or invalid')
+    if (!challenge) throw new Error(ErrorCode.CHALLENGE_EXPIRED)
     await verifyAndSaveRegistration(challenge, credential, label, origin, rpID)
     return { success: true }
   }
@@ -61,7 +61,7 @@ export const deletePasskey = command(
     const passkeys = await store.readPasskeys()
     const filtered = passkeys.filter((pk: any) => pk.id !== id)
     if (filtered.length === passkeys.length) {
-      throw new Error('Passkey not found')
+      throw new Error(ErrorCode.PASSKEY_NOT_FOUND)
     }
     await store.writePasskeys(filtered)
     return { success: true }

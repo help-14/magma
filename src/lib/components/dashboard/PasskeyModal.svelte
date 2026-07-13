@@ -1,5 +1,7 @@
 <script lang="ts">
   import { Fingerprint, X } from '@lucide/svelte'
+  import { m } from '$lib/paraglide/messages.js'
+  import { ErrorCode, toErrorMessage } from '$lib/errors.js'
   import { Button } from '$lib/components/ui/button/index.js'
   import { toast } from 'svelte-sonner'
   import { authenticateBegin } from '$lib/remotes/passkey.remote.js'
@@ -48,7 +50,7 @@
       const assertion = (await navigator.credentials.get({
         publicKey
       })) as PublicKeyCredential | null
-      if (!assertion) throw new Error('Passkey authentication cancelled')
+      if (!assertion) throw new Error(ErrorCode.PASSKEY_AUTH_CANCELLED)
 
       const response = await fetch('/api/auth/complete', {
         method: 'POST',
@@ -63,18 +65,18 @@
 
       if (!response.ok) {
         const err = await response.json()
-        throw new Error(err.error || 'Authentication failed')
+        throw new Error(err.error || ErrorCode.AUTH_FAILED)
       }
 
-      toast.success('Verified with passkey')
+      toast.success(m.passkey_verified())
       onSuccess()
     } catch (err) {
       if (
         err instanceof Error &&
-        err.message === 'Passkey authentication cancelled'
+        err.message === ErrorCode.PASSKEY_AUTH_CANCELLED
       )
         return
-      toast.error(err instanceof Error ? err.message : 'Failed to authenticate')
+      toast.error(err instanceof Error ? toErrorMessage(err.message) : m.passkey_failed_to_authenticate())
     } finally {
       authenticating = false
     }
@@ -96,7 +98,7 @@
       onkeydown={() => {}}
       role="dialog"
       aria-modal="true"
-      aria-label="Passkey verification"
+      aria-label={m.passkey_verify_identity()}
       tabindex="-1"
     >
       <Button
@@ -110,10 +112,10 @@
       <Fingerprint size={64} class="mx-auto text-accent mb-4" />
 
       <h2 class="text-foreground text-lg font-bold mb-2">
-        Verify your identity
+        {m.passkey_verify_identity()}
       </h2>
       <p class="text-muted-foreground text-sm mb-6">
-        Use your passkey to continue
+        {m.passkey_use_passkey_modal()}
       </p>
 
       <Button
@@ -122,7 +124,7 @@
         onclick={handleAuthenticate}
         disabled={authenticating}
       >
-        {authenticating ? 'Verifying...' : 'Use Passkey'}
+        {authenticating ? m.passkey_verifying() : m.passkey_use_passkey()}
       </Button>
     </div>
   </div>

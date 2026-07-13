@@ -1,6 +1,6 @@
 {
   "name": "magma",
-  "version": "2.4.5",
+  "version": "2.5.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.10.0",
@@ -29,7 +29,7 @@
     "@fontsource-variable/geist": "^5.2.9",
     "@inlang/paraglide-js": "^2.20.2",
     "@internationalized/date": "^3.12.2",
-    "@lucide/svelte": "^1.23.0",
+    "@lucide/svelte": "^1.24.0",
     "@sveltejs/adapter-auto": "^7.0.1",
     "@sveltejs/adapter-node": "^5.5.7",
     "@sveltejs/kit": "^2.69.2",

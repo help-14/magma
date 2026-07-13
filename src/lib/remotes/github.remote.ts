@@ -1,3 +1,4 @@
+import { ErrorCode } from '$lib/errors.js'
 import { query } from '$app/server'
 import * as v from 'valibot'
 import { createCache } from '$lib/server/cache.js'
@@ -13,12 +14,10 @@ function extractLastPage(linkHeader: string | null) {
 export const fetchGithubRepo = query(
   v.object({ repo: v.string() }),
   async ({ repo }) => {
-    if (!repo.trim()) throw new Error('Repository not configured')
+    if (!repo.trim()) throw new Error(ErrorCode.REPO_NOT_CONFIGURED)
     const cleaned = repo.trim().replace(/^https?:\/\/github\.com\//, '')
     if (!/^[\w.-]+\/[\w.-]+$/.test(cleaned)) {
-      throw new Error(
-        'Invalid repo format. Use owner/repo (e.g. "help-14/magma")'
-      )
+      throw new Error(ErrorCode.INVALID_REPO_FORMAT)
     }
 
     return cache.getOrSet(cleaned, async () => {
@@ -38,9 +37,9 @@ export const fetchGithubRepo = query(
 
       if (!repoRes.ok) {
         if (repoRes.status === 404) {
-          throw new Error(`Repository "${cleaned}" not found on GitHub`)
+          throw new Error(ErrorCode.REPO_NOT_FOUND)
         }
-        throw new Error(`GitHub API ${repoRes.status}: ${repoRes.statusText}`)
+        throw new Error(ErrorCode.GITHUB_API_ERROR)
       }
       const repoData = await repoRes.json()
 

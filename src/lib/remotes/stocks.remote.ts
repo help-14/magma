@@ -1,3 +1,4 @@
+import { ErrorCode } from '$lib/errors.js'
 import { query } from '$app/server'
 import * as v from 'valibot'
 import { createCache, stableCacheKey } from '$lib/server/cache.js'
@@ -64,12 +65,12 @@ async function fetchSingle(symbol: string): Promise<StockResult> {
   const quoteResult = quoteData.chart?.result?.[0]
   if (!quoteResult) {
     const err = quoteData.chart?.error
-    throw new Error(err?.description || err?.code || 'No data')
+    throw new Error(err?.description || err?.code || ErrorCode.NO_DATA)
   }
   const meta = quoteResult.meta || {}
   const price = meta.regularMarketPrice
   const prevClose = meta.previousClose
-  if (price == null) throw new Error('Price unavailable')
+  if (price == null) throw new Error(ErrorCode.PRICE_UNAVAILABLE)
 
   const chartResult = chartData?.chart?.result?.[0]
   const closes: number[] = chartResult?.indicators?.quote?.[0]?.close || []
@@ -102,7 +103,7 @@ export const fetchStocks = query(
     if (parsed.length === 0) {
       return {
         stocks: [],
-        errors: [{ symbol: '', message: 'No stocks configured' }]
+        errors: [{ symbol: '', message: ErrorCode.NO_STOCKS }]
       }
     }
 

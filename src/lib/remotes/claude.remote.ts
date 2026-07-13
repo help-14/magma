@@ -1,3 +1,4 @@
+import { ErrorCode } from '$lib/errors.js'
 import { query } from '$app/server'
 import * as v from 'valibot'
 
@@ -19,7 +20,7 @@ export const claudeAiUsage = query(
       }
       const orgs = await orgRes.json()
       if (!Array.isArray(orgs) || orgs.length === 0) {
-        return { ok: false, error: 'No organizations found' }
+        return { ok: false, error: ErrorCode.NO_ORGANIZATIONS }
       }
       const orgUuid = orgs[0].uuid
 

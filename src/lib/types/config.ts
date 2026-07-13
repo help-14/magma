@@ -126,10 +126,10 @@ export type ConfigFieldType =
 
 export interface ConfigFieldDescriptor {
   key: string
-  label: string
+  label: () => string
   type: ConfigFieldType
   default: string | number | boolean
-  placeholder?: string
-  options?: { label: string; value: string }[]
+  placeholder?: () => string
+  options?: { label: () => string; value: string }[]
   rows?: number
 }

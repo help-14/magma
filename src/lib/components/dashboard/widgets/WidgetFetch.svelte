@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages.js'
   import { fetchUrl } from '$lib/remotes/fetch.remote.js'
   import { getWidgetRefreshContext } from '$lib/components/dashboard/widget-refresh-context.js'
   import WidgetStateWrapper from './WidgetStateWrapper.svelte'
@@ -42,14 +43,15 @@
         widgetState = 'content'
       } catch (scriptErr) {
         widgetState = 'error'
-        errorMsg =
-          'Script error: ' +
-          (scriptErr instanceof Error ? scriptErr.message : String(scriptErr))
+        errorMsg = m.fetch_script_error({
+          error: scriptErr instanceof Error ? scriptErr.message : String(scriptErr)
+        })
       }
     } catch (err) {
       widgetState = 'error'
-      errorMsg =
-        'Request failed: ' + (err instanceof Error ? err.message : String(err))
+      errorMsg = m.fetch_request_failed({
+        error: err instanceof Error ? err.message : String(err)
+      })
     }
   }
 
@@ -74,7 +76,7 @@
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
-    idleMessage="Configure URL in properties"
+    idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
       {#key contentKey}

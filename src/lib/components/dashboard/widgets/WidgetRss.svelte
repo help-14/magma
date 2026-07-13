@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages.js'
+  import { toErrorMessage } from '$lib/errors.js'
   import { ExternalLink, ChevronDown, ChevronUp } from '@lucide/svelte'
   import { fetchRss } from '$lib/remotes/rss.remote.js'
   import { Button } from '$lib/components/ui/button/index.js'
@@ -75,10 +77,10 @@
     const d = new Date(dateStr)
     if (isNaN(d.getTime())) return ''
     const diff = Math.floor((Date.now() - d.getTime()) / 1000)
-    if (diff < 60) return 'now'
-    if (diff < 3600) return `${Math.floor(diff / 60)}m`
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h`
-    return `${Math.floor(diff / 86400)}d`
+    if (diff < 60) return m.rss_time_ago_now()
+    if (diff < 3600) return m.rss_time_ago_m({ minutes: Math.floor(diff / 60) })
+    if (diff < 86400) return m.rss_time_ago_h({ hours: Math.floor(diff / 3600) })
+    return m.rss_time_ago_d({ days: Math.floor(diff / 86400) })
   }
 
   function stripHtml(html: string) {
@@ -99,18 +101,18 @@
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
-    idleMessage="Configure feeds in properties"
+    idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
       {#if feedErrors.length > 0}
         <div
           class="flex items-center gap-1 px-3 pt-1 pb-0 text-amber-400 text-xs cursor-help"
           title={feedErrors
-            .map((e: any) => `${e.feedUrl}: ${e.message}`)
+            .map((e: any) => `${e.feedUrl}: ${toErrorMessage(e.message)}`)
             .join('\n')}
         >
           <span>⚠</span>
-          <span class="truncate">{feedErrors.length} feed error{feedErrors.length > 1 ? 's' : ''}</span>
+          <span class="truncate">{m.rss_feed_errors({ count: feedErrors.length })}</span>
         </div>
       {/if}
       <div class="flex-1 overflow-y-auto min-h-0 px-1 pb-1 space-y-0.5">
@@ -165,7 +167,7 @@
             variant="ghost"
             class="w-full text-xs text-accent/70 h-6"
           >
-            {collapsed ? 'Show more' : 'Show less'}
+            {collapsed ? m.rss_show_more() : m.rss_show_less()}
             {#if collapsed}
               <ChevronDown class="size-3 ml-1" />
             {:else}
