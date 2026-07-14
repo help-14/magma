@@ -267,7 +267,7 @@ export function mergeDashboardWithSystem(
       backgroundImage:
         systemConfig.theme?.backgroundImage ||
         config?.theme?.backgroundImage ||
-        '/bg.jpg'
+        null
     }
   }
 }

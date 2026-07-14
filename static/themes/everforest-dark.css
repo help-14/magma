@@ -1,0 +1,34 @@
+:root:root {
+  --background: #2b3339;
+  --foreground: #d3c6aa;
+  --card: rgb(43 51 57 / 56%);
+  --card-foreground: #d3c6aa;
+  --popover: rgb(43 51 57 / 74%);
+  --popover-foreground: #d3c6aa;
+  --primary: #a7c080;
+  --primary-foreground: #2b3339;
+  --secondary: rgb(51 61 66 / 48%);
+  --secondary-foreground: #d3c6aa;
+  --muted: rgb(51 61 66 / 48%);
+  --muted-foreground: #859289;
+  --accent: #e69875;
+  --accent-foreground: #2b3339;
+  --destructive: #e67e80;
+  --border: rgb(211 198 170 / 16%);
+  --input: rgb(211 198 170 / 16%);
+  --ring: #a7c080;
+  --magma-bg: none;
+  --chart-1: #a7c080;
+  --chart-2: #d3c6aa;
+  --chart-3: #83c092;
+  --chart-4: #e69875;
+  --chart-5: #dbbc7f;
+  --sidebar: rgb(51 61 66 / 56%);
+  --sidebar-foreground: #d3c6aa;
+  --sidebar-primary: #a7c080;
+  --sidebar-primary-foreground: #2b3339;
+  --sidebar-accent: rgb(51 61 66 / 48%);
+  --sidebar-accent-foreground: #d3c6aa;
+  --sidebar-border: rgb(211 198 170 / 16%);
+  --sidebar-ring: #a7c080;
+}

@@ -42,7 +42,6 @@ Theme settings control dashboard accent color and background image reference.
 
 ```yaml
 theme:
-  accentColor: '#fabd2f'
   backgroundImage: /bg.jpg
 ```
 

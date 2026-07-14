@@ -561,12 +561,7 @@
   }
 </script>
 
-<section
-  class="relative min-h-screen p-6 text-foreground max-sm:p-4.5 max-sm:overflow-x-auto"
-  style={`--accent: ${config.theme?.accentColor || '#fabd2f'}; --ring: ${config.theme?.accentColor || '#fabd2f'}; --magma-bg: url('${config.theme?.backgroundImage || '/bg.jpg'}');`}
->
-  <div class="background"></div>
-
+<section class="p-6 max-sm:p-4.5 max-sm:overflow-x-auto">
   <nav
     class="fixed right-6 bottom-6 z-22 flex items-center justify-end gap-2.5 max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:flex-wrap"
     aria-label={m.editor_actions_aria_label()}

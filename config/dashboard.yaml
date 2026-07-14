@@ -237,8 +237,7 @@ search:
 network:
   localPingUrl: 10.0.0.1
   localPingTimeout: 300
-theme:
-  accentColor: "#fabd2f"
+theme: {}
 integrations:
   weather:
     provider: openweather
