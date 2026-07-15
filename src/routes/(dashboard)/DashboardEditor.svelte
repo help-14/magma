@@ -22,6 +22,7 @@
   import { resizePatchForDirection } from '$lib/dashboard/resize-utils.js'
   import type { ResizeDirection } from '$lib/dashboard/resize-utils.js'
   import PasskeyModal from '$lib/components/dashboard/PasskeyModal.svelte'
+  import DashboardPageTabs from '$lib/components/dashboard/DashboardPageTabs.svelte'
 
   let {
     initialConfig,
@@ -49,8 +50,34 @@
   let draggingWidgetId: string | null = $state(null)
   let didCenterMobileCanvas = false
 
+  // ── Multi-page state ──
+  let pages: any[] = $state(config.dashboard.pages ?? [])
+
+  function getStoredPageId(): string {
+    if (!browser) return pages[0]?.id ?? ''
+    const stored = localStorage.getItem('dashboard_active_page')
+    if (stored && pages.some((p: any) => p.id === stored)) return stored
+    return pages[0]?.id ?? ''
+  }
+
+  let activePageId = $state(getStoredPageId())
+
+  $effect(() => {
+    if (browser && activePageId) {
+      localStorage.setItem('dashboard_active_page', activePageId)
+    }
+  })
+
+  let activeWidgets = $derived(
+    pages.find((p: any) => p.id === activePageId)?.widgets ?? []
+  )
+
+  function handlePageSelect(id: string) {
+    activePageId = id
+  }
+
   let grid = $derived(config.dashboard.grid)
-  let widgets: any[] = $derived(config.dashboard.widgets)
+  let widgets: any[] = $derived(activeWidgets)
   let selectedWidget = $derived(getSelectedWidget())
   let authenticatedForEdit = $derived(isAuthenticated || passkeyVerified)
 
@@ -513,6 +540,7 @@
   async function save() {
     saving = true
     try {
+      config.dashboard.pages = pages
       const data = await saveDashboardConfig({ config })
       config = data.config
       dirty = false
@@ -561,7 +589,7 @@
   }
 </script>
 
-<section class="p-6 max-sm:p-4.5 max-sm:overflow-x-auto">
+<section class="p-6 max-sm:p-4.5 max-sm:overflow-x-auto flex flex-col min-h-0">
   <nav
     class="fixed right-6 bottom-6 z-22 flex items-center justify-end gap-2.5 max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:flex-wrap"
     aria-label={m.editor_actions_aria_label()}
@@ -592,6 +620,12 @@
       {/if}
     </Button>
   </nav>
+
+  <DashboardPageTabs
+    pages={pages}
+    {activePageId}
+    onSelect={handlePageSelect}
+  />
 
   <div
     bind:this={canvasElement}
