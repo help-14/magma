@@ -1,3 +1,5 @@
+import type { Widget } from './widget.js'
+
 export type WidgetInterface = 'small' | 'medium' | 'large'
 
 export interface ButtonConfig {
@@ -110,6 +112,12 @@ export interface ClockConfig {
   showGreeting?: boolean
   hour12?: boolean
   timezone?: string
+}
+
+export interface PageConfig {
+  id: string
+  title: string
+  widgets?: Widget[]
 }
 
 export type WidgetConfig = Record<string, any>
