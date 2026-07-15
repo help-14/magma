@@ -97,8 +97,16 @@ export const store = {
       this.readDashboardYaml(),
       this.readSystemConfig()
     ])
+    const parsed = YAML.parse(dashboardYaml)
+    if (parsed.dashboard && Array.isArray(parsed.dashboard.widgets) && !parsed.dashboard.pages) {
+      parsed.dashboard.pages = [
+        { id: 'home', title: 'Home', widgets: parsed.dashboard.widgets }
+      ]
+      delete parsed.dashboard.widgets
+      parsed.version = 2
+    }
     const config = mergeDashboardWithSystem(
-      YAML.parse(dashboardYaml),
+      parsed,
       systemConfig
     )
     validateDashboardConfig(config)
@@ -300,7 +308,9 @@ export function validateDashboardConfig(config: any) {
   }
 
   const grid = config.dashboard?.grid
+  const pages = config.dashboard?.pages
   const widgets = config.dashboard?.widgets
+
   if (!grid || typeof grid !== 'object') {
     throw new Error('dashboard.grid is required.')
   }
@@ -310,15 +320,38 @@ export function validateDashboardConfig(config: any) {
   if (!Number.isInteger(grid.rows) || grid.rows < 1) {
     throw new Error('dashboard.grid.rows must be a positive integer.')
   }
-  if (!Array.isArray(widgets)) {
-    throw new Error('dashboard.widgets must be an array.')
-  }
 
-  const seen = new Set<string>()
-  for (const widget of widgets) {
-    validateWidget(widget, true, seen)
+  if (pages) {
+    if (!Array.isArray(pages)) {
+      throw new Error('dashboard.pages must be an array.')
+    }
+    if (pages.length === 0) {
+      throw new Error('dashboard.pages must have at least one page.')
+    }
+    const seen = new Set<string>()
+    for (const page of pages) {
+      if (!page.id || typeof page.id !== 'string') {
+        throw new Error('Each page needs a string id.')
+      }
+      if (!page.title || typeof page.title !== 'string') {
+        throw new Error(`Page ${page.id} needs a title.`)
+      }
+      if (Array.isArray(page.widgets)) {
+        for (const widget of page.widgets) {
+          validateWidget(widget, true, seen)
+        }
+        validateTopLevelOverlaps(page.widgets)
+      }
+    }
+  } else if (Array.isArray(widgets)) {
+    const seen = new Set<string>()
+    for (const widget of widgets) {
+      validateWidget(widget, true, seen)
+    }
+    validateTopLevelOverlaps(widgets)
+  } else {
+    throw new Error('dashboard.pages or dashboard.widgets is required.')
   }
-  validateTopLevelOverlaps(widgets)
 }
 
 function validateWidget(
