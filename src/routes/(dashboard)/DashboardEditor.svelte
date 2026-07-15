@@ -68,16 +68,18 @@
     }
   })
 
-  let activeWidgets = $derived(
-    pages.find((p: any) => p.id === activePageId)?.widgets ?? []
-  )
+  let widgets: any[] = $state([])
+
+  $effect(() => {
+    const page = pages.find((p: any) => p.id === activePageId)
+    widgets = page?.widgets ?? []
+  })
 
   function handlePageSelect(id: string) {
     activePageId = id
   }
 
   let grid = $derived(config.dashboard.grid)
-  let widgets: any[] = $derived(activeWidgets)
   let selectedWidget = $derived(getSelectedWidget())
   let authenticatedForEdit = $derived(isAuthenticated || passkeyVerified)
 
@@ -218,7 +220,7 @@
       }
       if (template.children)
         widget.children = structuredClone(template.children)
-      config.dashboard.widgets = [...widgets, widget]
+      widgets = [...widgets, widget]
       dirty = true
       gridActive = false
       toast.info(m.editor_widget_added())
@@ -288,7 +290,7 @@
         title: widget.title,
         config: structuredClone(widget.config || {})
       }
-      config.dashboard.widgets = widgets
+      widgets = widgets
         .filter((item: any) => item.id !== widget.id)
         .map((item: any) =>
           item.id === stack.id
@@ -395,7 +397,7 @@
   }
 
   function updateWidget(id: string, patch: Record<string, any>) {
-    config.dashboard.widgets = widgets.map((widget: any) => {
+    widgets = widgets.map((widget: any) => {
       if (widget.id !== id) return widget
       const next = { ...widget, ...patch }
       return canPlace(next, widgets, id) ? next : widget
@@ -407,7 +409,7 @@
     childId: string,
     targetIndex: number
   ) {
-    config.dashboard.widgets = widgets.map((widget: any) => {
+    widgets = widgets.map((widget: any) => {
       if (widget.id !== stackId) return widget
       const children = widget.children || []
       const fromIndex = children.findIndex((c: any) => c.id === childId)
@@ -423,7 +425,7 @@
   }
 
   function addChildToStack(stackId: string, child: any) {
-    config.dashboard.widgets = widgets.map((widget: any) =>
+    widgets = widgets.map((widget: any) =>
       widget.id === stackId
         ? { ...widget, children: [...(widget.children || []), child] }
         : widget
@@ -436,7 +438,7 @@
     if (!editMode) return
 
     if (childId) {
-      config.dashboard.widgets = widgets.map((item: any) =>
+      widgets = widgets.map((item: any) =>
         item.id === widget.id
           ? {
               ...item,
@@ -452,7 +454,7 @@
       return
     }
 
-    config.dashboard.widgets = widgets.filter(
+    widgets = widgets.filter(
       (item: any) => item.id !== widget.id
     )
     if (selected?.id === widget.id) selected = null
@@ -488,7 +490,7 @@
     const currentSelection = selected
 
     if (currentSelection.childId) {
-      config.dashboard.widgets = widgets.map((widget: any) => {
+      widgets = widgets.map((widget: any) => {
         if (widget.id !== currentSelection.id) return widget
         return {
           ...widget,
@@ -513,7 +515,7 @@
       return
     }
 
-    config.dashboard.widgets = widgets.map((widget: any) =>
+    widgets = widgets.map((widget: any) =>
       widget.id === currentSelection.id ? next : widget
     )
     dirty = true
@@ -540,6 +542,9 @@
   async function save() {
     saving = true
     try {
+      pages = pages.map((p: any) =>
+        p.id === activePageId ? { ...p, widgets: [...widgets] } : p
+      )
       config.dashboard.pages = pages
       const data = await saveDashboardConfig({ config })
       config = data.config
