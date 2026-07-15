@@ -612,7 +612,7 @@
                     <Input
                       value={page.title}
                       class={settingsInputClass}
-                      oninput={(e: Event) => {
+                      onchange={(e: Event) => {
                         const val = (e.currentTarget as HTMLInputElement).value
                         updatePageTitle(page.id, val)
                       }}
