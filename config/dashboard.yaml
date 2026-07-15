@@ -1,232 +1,235 @@
-version: 1
+version: 2
 dashboard:
-  widgets:
-    - id: timer-main
-      type: timer
-      title: Timer
-      x: -8
-      y: 1
-      w: 10
-      h: 4
-      config:
-        hideTitle: true
-    - id: weather-main
-      type: weather
-      title: Weather
-      x: 2
-      y: 1
-      w: 6
-      h: 4
-      config:
-        cityName: Hanoi
-        provider: open-meteo
-        hideTitle: true
-        interface: small
-    - id: search-main
-      type: search
-      title: Search
-      x: -8
-      y: 5
-      w: 16
-      h: 2
-      config:
-        provider: google
-        placeholder: type something to search...
-        hideTitle: true
-    - id: apps-stack
-      type: stack
-      title: Applications
-      x: -8
-      y: 7
-      w: 16
-      h: 4
-      config:
-        flow: horizontal
-        cols: 4
-        rows: 0
-        gap: 12
-      children:
-        - id: unifi
-          type: button
-          title: UniFi
+  pages:
+    - id: home
+      title: Home
+      widgets:
+        - id: timer-main
+          type: timer
+          title: Timer
+          x: -8
+          y: 1
+          w: 10
+          h: 4
           config:
-            icon: simple-icons:ubiquiti
-            url: https://10.0.0.1/
-        - id: truenas
-          type: button
-          title: Truenas
+            hideTitle: true
+        - id: weather-main
+          type: weather
+          title: Weather
+          x: 2
+          y: 1
+          w: 6
+          h: 4
           config:
-            icon: simple-icons:truenas
-            url: http://truenas.local
-        - id: dockhand
-          type: button
-          title: Dockhand
+            cityName: Hanoi
+            provider: open-meteo
+            hideTitle: true
+            interface: small
+        - id: search-main
+          type: search
+          title: Search
+          x: -8
+          y: 5
+          w: 16
+          h: 2
           config:
-            icon: simple-icons:docker
-            url: https://dockhand.nhan.pt
-        - id: button-mqs1vt7u-fs1k
-          type: button
-          title: Button
+            provider: google
+            placeholder: type something to search...
+            hideTitle: true
+        - id: apps-stack
+          type: stack
+          title: Applications
+          x: -8
+          y: 7
+          w: 16
+          h: 4
           config:
-            icon: material-symbols:house
-            url: https://
-            iconColor: ""
-    - id: media-stack
-      type: stack
-      title: Media
-      x: -8
-      y: 11
-      w: 16
-      h: 4
-      config:
-        flow: horizontal
-        cols: 4
-        rows: 0
-        gap: 12
-      children:
-        - id: photos
-          type: button
-          title: Photos
+            flow: horizontal
+            cols: 4
+            rows: 0
+            gap: 12
+          children:
+            - id: unifi
+              type: button
+              title: UniFi
+              config:
+                icon: simple-icons:ubiquiti
+                url: https://10.0.0.1/
+            - id: truenas
+              type: button
+              title: Truenas
+              config:
+                icon: simple-icons:truenas
+                url: http://truenas.local
+            - id: dockhand
+              type: button
+              title: Dockhand
+              config:
+                icon: simple-icons:docker
+                url: https://dockhand.nhan.pt
+            - id: button-mqs1vt7u-fs1k
+              type: button
+              title: Button
+              config:
+                icon: material-symbols:house
+                url: https://
+                iconColor: ""
+        - id: media-stack
+          type: stack
+          title: Media
+          x: -8
+          y: 11
+          w: 16
+          h: 4
           config:
-            icon: image
-            url: https://photos.nhan.pt
-        - id: jellyfin
-          type: button
-          title: Jellyfin
+            flow: horizontal
+            cols: 4
+            rows: 0
+            gap: 12
+          children:
+            - id: photos
+              type: button
+              title: Photos
+              config:
+                icon: image
+                url: https://photos.nhan.pt
+            - id: jellyfin
+              type: button
+              title: Jellyfin
+              config:
+                icon: simple-icons:jellyfin
+                url: https://phim.nhan.pt
+            - id: radarr
+              type: button
+              title: Radarr
+              config:
+                icon: simple-icons:radarr
+                url: https://radarr.nhan.pt
+            - id: sonarr
+              type: button
+              title: Sonarr
+              config:
+                icon: simple-icons:sonarr
+                url: https://sonarr.nhan.pt
+        - id: docker-status-mqrjvli3-7g80
+          type: docker-status
+          title: Docker
+          x: -8
+          y: 21
+          w: 8
+          h: 9
           config:
-            icon: simple-icons:jellyfin
-            url: https://phim.nhan.pt
-        - id: radarr
-          type: button
-          title: Radarr
+            dockerHost: http://10.10.10.90:2375
+            columns: 2
+        - id: deepseek-main
+          type: deepseek
+          title: DeepSeek
+          x: -15
+          y: 14
+          w: 7
+          h: 4
           config:
-            icon: simple-icons:radarr
-            url: https://radarr.nhan.pt
-        - id: sonarr
-          type: button
-          title: Sonarr
+            authToken: null
+            refreshInterval: 600
+        - id: calendar-mqs8wzat-ass1
+          type: calendar
+          title: Calendar
+          x: 8
+          y: 14
+          w: 7
+          h: 8
+          config: {}
+        - id: rss-news
+          type: rss
+          title: News
+          x: -15
+          y: 1
+          w: 7
+          h: 13
           config:
-            icon: simple-icons:sonarr
-            url: https://sonarr.nhan.pt
-    - id: docker-status-mqrjvli3-7g80
-      type: docker-status
-      title: Docker
-      x: -8
-      y: 21
-      w: 8
-      h: 9
-      config:
-        dockerHost: http://10.10.10.90:2375
-        columns: 2
-    - id: deepseek-main
-      type: deepseek
-      title: DeepSeek
-      x: -15
-      y: 14
-      w: 7
-      h: 4
-      config:
-        authToken: null
-        refreshInterval: 600
-    - id: calendar-mqs8wzat-ass1
-      type: calendar
-      title: Calendar
-      x: 8
-      y: 14
-      w: 7
-      h: 8
-      config: {}
-    - id: rss-news
-      type: rss
-      title: News
-      x: -15
-      y: 1
-      w: 7
-      h: 13
-      config:
-        feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"},{"url":"https://feeds.feedburner.com/TheHackersNews","title":"Threat
-          Intel"}]'
-        style: vertical-list
-        limit: 25
-        collapseAfter: 5
-        refreshInterval: 600
-    - id: stocks-main
-      type: stock
-      title: Markets
-      x: -1
-      y: 15
-      w: 9
-      h: 6
-      config:
-        stocks: |-
-          AAPL
-          NVDA
-          MSFT
-        sortBy: change
-        refreshInterval: 300
-    - id: youtube-tech
-      type: youtube-live
-      title: YouTube
-      x: 0
-      y: 21
-      w: 8
-      h: 9
-      config:
-        mode: uploads
-        channels: |
-          UCXuqSBlHAE6Xw-yeJA0Tunw
-          UCR-DXc1voovS8nhAvccRZhg
-          UCsBjURrPoezykLs9EqgamOA
-        limit: 10
-        rows: 1
-        flow: vertical
-        cols: 0
-    - id: fetch-posts
-      type: fetch
-      title: Latest Posts
-      x: 8
-      y: 1
-      w: 7
-      h: 13
-      config:
-        url: https://jsonplaceholder.typicode.com/posts
-        method: GET
-        headers: "[]"
-        body: ""
-        formatScript: |-
-          const data = JSON.parse(responseText);
-          return `<ul style="list-style:none;padding:0;margin:0;font-size:13px;color:#ebdbb2;">
-            ${data.slice(0, 5).map(p => `<li style="padding:6px 0;border-bottom:1px solid #3c3836;">
-              <strong style="color:#fabd2f;">${p.title}</strong>
-              <p style="margin:2px 0 0;color:#a89984;">${p.body}</p>
-            </li>`).join('')}
-          </ul>`;
-        refreshInterval: 600
-    - id: github-repo-main
-      type: github-repo
-      title: GitHub
-      x: -8
-      y: 15
-      w: 7
-      h: 6
-      config:
-        repo: help-14/magma
-        showStars: true
-        showForks: true
-        showPrs: true
-        showIssues: true
-        refreshInterval: 3600
-    - id: chatgpt-mrhfwcdx-ajn6
-      type: chatgpt
-      title: ChatGPT
-      x: -15
-      y: 18
-      w: 7
-      h: 4
-      config:
-        refreshInterval: 600
-        authToken: ""
-        interface: small
+            feeds: '[{"url":"https://hnrss.org/frontpage","title":"HN"},{"url":"https://feeds.feedburner.com/TheHackersNews","title":"Threat
+              Intel"}]'
+            style: vertical-list
+            limit: 25
+            collapseAfter: 5
+            refreshInterval: 600
+        - id: stocks-main
+          type: stock
+          title: Markets
+          x: -1
+          y: 15
+          w: 9
+          h: 6
+          config:
+            stocks: |-
+              AAPL
+              NVDA
+              MSFT
+            sortBy: change
+            refreshInterval: 300
+        - id: youtube-tech
+          type: youtube-live
+          title: YouTube
+          x: 0
+          y: 21
+          w: 8
+          h: 9
+          config:
+            mode: uploads
+            channels: |
+              UCXuqSBlHAE6Xw-yeJA0Tunw
+              UCR-DXc1voovS8nhAvccRZhg
+              UCsBjURrPoezykLs9EqgamOA
+            limit: 10
+            rows: 1
+            flow: vertical
+            cols: 0
+        - id: fetch-posts
+          type: fetch
+          title: Latest Posts
+          x: 8
+          y: 1
+          w: 7
+          h: 13
+          config:
+            url: https://jsonplaceholder.typicode.com/posts
+            method: GET
+            headers: "[]"
+            body: ""
+            formatScript: |-
+              const data = JSON.parse(responseText);
+              return `<ul style="list-style:none;padding:0;margin:0;font-size:13px;color:#ebdbb2;">
+                ${data.slice(0, 5).map(p => `<li style="padding:6px 0;border-bottom:1px solid #3c3836;">
+                  <strong style="color:#fabd2f;">${p.title}</strong>
+                  <p style="margin:2px 0 0;color:#a89984;">${p.body}</p>
+                </li>`).join('')}
+              </ul>`;
+            refreshInterval: 600
+        - id: github-repo-main
+          type: github-repo
+          title: GitHub
+          x: -8
+          y: 15
+          w: 7
+          h: 6
+          config:
+            repo: help-14/magma
+            showStars: true
+            showForks: true
+            showPrs: true
+            showIssues: true
+            refreshInterval: 3600
+        - id: chatgpt-mrhfwcdx-ajn6
+          type: chatgpt
+          title: ChatGPT
+          x: -15
+          y: 18
+          w: 7
+          h: 4
+          config:
+            refreshInterval: 600
+            authToken: ""
+            interface: small
 locations:
   default:
     latitude: 21.042698
