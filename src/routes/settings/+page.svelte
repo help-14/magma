@@ -24,6 +24,7 @@
     saveSystemSettings,
   } from "$lib/remotes/settings.remote.js";
   import { authenticateBegin } from "$lib/remotes/passkey.remote.js";
+  import YAML from "yaml";
 
   let { data }: { data: any } = $props();
 
@@ -39,6 +40,14 @@
   let dashboardYaml = $state(data.yaml);
   let backgroundImage = $state(data.config.theme?.backgroundImage ?? "");
   let customCss = $state(data.customCss || "");
+  let dashboardData = $derived.by(() => {
+    try { return YAML.parse(dashboardYaml) } catch { return {} }
+  })
+  let pages: any[] = $derived(
+    dashboardData.dashboard?.pages ?? dashboardData.dashboard?.widgets
+      ? [{ id: 'home', title: 'Home', widgets: dashboardData.dashboard.widgets }]
+      : []
+  )
   let themeTemplate = $state("default");
   let themeNames = $derived([
     "gruvbox",
@@ -281,6 +290,50 @@
 
   function formatThemeField(key: string, value: string) {
     return `  ${key}: ${value}`;
+  }
+
+  function updatePageTitle(pageId: string, title: string) {
+    try {
+      const data = YAML.parse(dashboardYaml)
+      if (!data.dashboard) data.dashboard = {}
+      if (!data.dashboard.pages) {
+        const widgets = data.dashboard.widgets || []
+        data.dashboard.pages = widgets.length > 0
+          ? [{ id: 'home', title: 'Home', widgets }]
+          : [{ id: 'home', title: 'Home', widgets: [] }]
+        delete data.dashboard.widgets
+      }
+      const page = data.dashboard.pages.find((p: any) => p.id === pageId)
+      if (page) page.title = title
+      dashboardYaml = YAML.stringify(data, { lineWidth: 100 })
+    } catch { /* ignore parse errors */ }
+  }
+
+  function addPage() {
+    try {
+      const data = YAML.parse(dashboardYaml)
+      if (!data.dashboard) data.dashboard = {}
+      if (!data.dashboard.pages) {
+        const widgets = data.dashboard.widgets || []
+        data.dashboard.pages = widgets.length > 0
+          ? [{ id: 'home', title: 'Home', widgets }]
+          : []
+        delete data.dashboard.widgets
+      }
+      const id = `page-${Date.now().toString(36)}`
+      data.dashboard.pages.push({ id, title: 'New Page', widgets: [] })
+      dashboardYaml = YAML.stringify(data, { lineWidth: 100 })
+    } catch { /* ignore */ }
+  }
+
+  function deletePage(pageId: string) {
+    try {
+      const data = YAML.parse(dashboardYaml)
+      const pages = data.dashboard?.pages
+      if (!pages || pages.length <= 1) return
+      data.dashboard.pages = pages.filter((p: any) => p.id !== pageId)
+      dashboardYaml = YAML.stringify(data, { lineWidth: 100 })
+    } catch { /* ignore */ }
   }
 
   async function save() {
@@ -544,10 +597,46 @@
               highlighted={highlightedDashboardYaml}
               label={m.settings_label_dashboard_yaml()}
             />
-            <SettingsPanel
-              title={m.settings_dashboard()}
-              description={m.settings_dashboard_desc()}
-            />
+            <div class="flex flex-col gap-4">
+              <SettingsPanel
+                title={m.settings_dashboard()}
+                description={m.settings_dashboard_desc()}
+              />
+              <SettingsPanel
+                title="Pages"
+                description="Manage dashboard pages/tabs"
+              >
+                {#each pages as page, i (page.id)}
+                  <div class="flex items-center gap-2 mt-3">
+                    <span class="text-muted-foreground text-sm cursor-grab">⠿</span>
+                    <Input
+                      value={page.title}
+                      class={settingsInputClass}
+                      oninput={(e: Event) => {
+                        const val = (e.currentTarget as HTMLInputElement).value
+                        updatePageTitle(page.id, val)
+                      }}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={pages.length <= 1}
+                      onclick={() => deletePage(page.id)}
+                      class="text-red-400 hover:text-red-300 shrink-0"
+                    >
+                      ×
+                    </Button>
+                  </div>
+                {/each}
+                <Button
+                  variant="magma"
+                  class="mt-3 w-full text-foreground!"
+                  onclick={addPage}
+                >
+                  + Add Page
+                </Button>
+              </SettingsPanel>
+            </div>
           </section>
         </Tabs.Content>
 
