@@ -76,6 +76,10 @@
   })
 
   function handlePageSelect(id: string) {
+    // Sync current widgets back to current page before switching
+    pages = pages.map((p: any) =>
+      p.id === activePageId ? { ...p, widgets: [...widgets] } : p
+    )
     activePageId = id
   }
 
