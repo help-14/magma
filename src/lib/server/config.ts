@@ -98,7 +98,7 @@ export const store = {
       this.readSystemConfig()
     ])
     const parsed = YAML.parse(dashboardYaml)
-    if (parsed.dashboard && Array.isArray(parsed.dashboard.widgets) && !parsed.dashboard.pages) {
+    if (parsed && parsed.dashboard && Array.isArray(parsed.dashboard.widgets) && !parsed.dashboard.pages) {
       parsed.dashboard.pages = [
         { id: 'home', title: 'Home', widgets: parsed.dashboard.widgets }
       ]
@@ -311,6 +311,10 @@ export function validateDashboardConfig(config: any) {
   const pages = config.dashboard?.pages
   const widgets = config.dashboard?.widgets
 
+  if (pages && Array.isArray(widgets)) {
+    throw new Error('dashboard cannot have both pages and widgets.')
+  }
+
   if (!grid || typeof grid !== 'object') {
     throw new Error('dashboard.grid is required.')
   }
@@ -330,10 +334,10 @@ export function validateDashboardConfig(config: any) {
     }
     const seen = new Set<string>()
     for (const page of pages) {
-      if (!page.id || typeof page.id !== 'string') {
+      if (!page.id || typeof page.id !== 'string' || !page.id.trim()) {
         throw new Error('Each page needs a string id.')
       }
-      if (!page.title || typeof page.title !== 'string') {
+      if (!page.title || typeof page.title !== 'string' || !page.title.trim()) {
         throw new Error(`Page ${page.id} needs a title.`)
       }
       if (Array.isArray(page.widgets)) {
