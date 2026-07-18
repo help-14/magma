@@ -196,8 +196,9 @@ dashboard:
             method: GET
             headers: "[]"
             body: ""
-            formatScript: |-
+            formatScript: >-
               const data = JSON.parse(responseText);
+
               return `<ul style="list-style:none;padding:0;margin:0;font-size:13px;color:#ebdbb2;">
                 ${data.slice(0, 5).map(p => `<li style="padding:6px 0;border-bottom:1px solid #3c3836;">
                   <strong style="color:#fabd2f;">${p.title}</strong>
@@ -230,6 +231,9 @@ dashboard:
             refreshInterval: 600
             authToken: ""
             interface: small
+    - id: page-mrpmzpa0
+      title: Test
+      widgets: []
 locations:
   default:
     latitude: 21.042698
@@ -240,7 +244,6 @@ search:
 network:
   localPingUrl: 10.0.0.1
   localPingTimeout: 300
-theme: {}
 integrations:
   weather:
     provider: openweather

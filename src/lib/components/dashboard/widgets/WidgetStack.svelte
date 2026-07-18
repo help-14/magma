@@ -14,6 +14,8 @@
     selectedChildId = null,
     onSelectChild = () => {},
     onDeleteChild = () => {},
+    onDropChild = () => {},
+    onDragOverChild = () => {},
     onReorderChild = () => {},
   }: StackWidgetProps = $props();
 
@@ -103,6 +105,8 @@
   role="list"
   aria-label={m.stack_children_label({ title: widget.title })}
   style={gridStyle}
+  ondrop={onDropChild}
+  ondragover={onDragOverChild}
 >
   {#each displayChildren as child, i (child.id)}
     <div animate:flip={{ duration: 200 }}>

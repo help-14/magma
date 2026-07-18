@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ArrowLeft, Save, Fingerprint } from "@lucide/svelte";
+  import { ArrowLeft, Save, Fingerprint, GripVertical } from "@lucide/svelte";
   import { invalidateAll } from "$app/navigation";
   import { toast } from "svelte-sonner";
   import { m } from "$lib/paraglide/messages.js";
@@ -37,6 +37,9 @@
     data.systemConfig.system?.dashboardGrid?.cellHeight || 100,
   );
   let mobileScale = $state(initialMobileScale());
+  let navPosition = $state(
+    data.systemConfig.system?.navPosition ?? 'left',
+  );
   let dashboardYaml = $state(data.yaml);
   let backgroundImage = $state(data.config.theme?.backgroundImage ?? "");
   let customCss = $state(data.customCss || "");
@@ -44,9 +47,11 @@
     try { return YAML.parse(dashboardYaml) } catch { return {} }
   })
   let pages: any[] = $derived(
-    dashboardData.dashboard?.pages ?? dashboardData.dashboard?.widgets
-      ? [{ id: 'home', title: 'Home', widgets: dashboardData.dashboard.widgets }]
-      : []
+    dashboardData.dashboard?.pages ?? (
+      dashboardData.dashboard?.widgets
+        ? [{ id: 'home', title: 'Home', widgets: dashboardData.dashboard.widgets }]
+        : []
+    )
   )
   let themeTemplate = $state("default");
   let themeNames = $derived([
@@ -230,6 +235,28 @@
     }
   }
 
+  function updateNavPosition(value: string) {
+    navPosition = value as "left" | "right";
+    const lines = systemYaml.split("\n");
+    const fieldIndex = lines.findIndex((line: string) =>
+      /^\s+navPosition:/.test(line),
+    );
+    const nextLine = `  navPosition: ${value}`;
+    if (fieldIndex === -1) {
+      const systemIndex = lines.findIndex((line: string) =>
+        /^system:\s*$/.test(line),
+      );
+      if (systemIndex === -1) {
+        lines.splice(1, 0, "system:\n" + nextLine);
+      } else {
+        lines.splice(systemIndex + 1, 0, nextLine);
+      }
+    } else {
+      lines.splice(fieldIndex, 1, nextLine);
+    }
+    systemYaml = lines.join("\n");
+  }
+
   function updateThemeField(key: string, value: string) {
     const lines = dashboardYaml.split("\n");
     const themeIndex = lines.findIndex((line: string) =>
@@ -332,6 +359,21 @@
       const pages = data.dashboard?.pages
       if (!pages || pages.length <= 1) return
       data.dashboard.pages = pages.filter((p: any) => p.id !== pageId)
+      dashboardYaml = YAML.stringify(data, { lineWidth: 100 })
+    } catch { /* ignore */ }
+  }
+
+  let dragIndex = $state<number | null>(null)
+  let dropIndex = $state<number | null>(null)
+
+  function reorderPage(from: number, to: number) {
+    if (from === to) return
+    try {
+      const data = YAML.parse(dashboardYaml)
+      const pages = data.dashboard?.pages
+      if (!pages) return
+      const [moved] = pages.splice(from, 1)
+      pages.splice(to, 0, moved)
       dashboardYaml = YAML.stringify(data, { lineWidth: 100 })
     } catch { /* ignore */ }
   }
@@ -551,6 +593,22 @@
                   />
                 </Label>
                 <Label class="grid col-span-2 gap-2 mt-4">
+                  <FieldLabel accent>Page Nav Position</FieldLabel>
+                  <Select
+                    type="single"
+                    value={navPosition}
+                    onValueChange={(v) => updateNavPosition(v as string)}
+                  >
+                    <SelectTrigger class={settingsInputClass}>
+                      {navPosition === 'left' ? 'Left' : 'Right'}
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="left">Left</SelectItem>
+                      <SelectItem value="right">Right</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Label>
+                <Label class="grid col-span-2 gap-2 mt-4">
                   <FieldLabel accent>{m.settings_bg_image()}</FieldLabel>
 
                   <Input
@@ -606,9 +664,35 @@
                 title="Pages"
                 description="Manage dashboard pages/tabs"
               >
-                {#each pages as page, i (page.id)}
-                  <div class="flex items-center gap-2 mt-3">
-                    <span class="text-muted-foreground text-sm cursor-grab">⠿</span>
+                  {#each pages as page, i (page.id)}
+                  <div
+                    draggable="true"
+                    ondragstart={(e) => {
+                      const dt = e.dataTransfer
+                      if (!dt) return
+                      dragIndex = i
+                      dt.effectAllowed = 'move'
+                      dt.setData('text/plain', '')
+                    }}
+                    ondragenter={() => dropIndex = i}
+                    ondragover={(e) => {
+                      e.preventDefault()
+                      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
+                    }}
+                    ondrop={(e) => {
+                      e.preventDefault()
+                      dropIndex = null
+                      if (dragIndex !== null && dragIndex !== i) {
+                        reorderPage(dragIndex, i)
+                      }
+                      dragIndex = null
+                    }}
+                    ondragend={() => { dragIndex = null; dropIndex = null }}
+                    class="flex items-center gap-2 mt-3 transition-all duration-140 {dropIndex === i ? 'opacity-60' : ''}"
+                  >
+                    <span class="text-muted-foreground shrink-0 cursor-grab">
+                      <GripVertical size={16} />
+                    </span>
                     <Input
                       value={page.title}
                       class={settingsInputClass}
