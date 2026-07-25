@@ -255,6 +255,20 @@
     draggingWidgetId = null;
   }
 
+  function findWidgetIncludingChildren(
+    id: string,
+  ): { widget: any; parentStackId?: string } | null {
+    const top = widgets.find((w: any) => w.id === id);
+    if (top) return { widget: top };
+    for (const w of widgets) {
+      if (w.children) {
+        const child = w.children.find((c: any) => c.id === id);
+        if (child) return { widget: child, parentStackId: w.id };
+      }
+    }
+    return null;
+  }
+
   function dropIntoStack(event: DragEvent, stack: any) {
     event.preventDefault();
     event.stopPropagation();
@@ -291,26 +305,56 @@
       return;
     }
 
-    if (widgetId) {
-      const widget = widgets.find((item: any) => item.id === widgetId);
-      if (!widget || widget.type !== "button" || widget.id === stack.id) return;
+    if (widgetId) moveButtonIntoStack(widgetId, stack.id);
+  }
+
+  function moveButtonIntoStack(widgetId: string, targetStackId: string) {
+      const found = findWidgetIncludingChildren(widgetId);
+      if (
+        !found ||
+        found.widget.type !== "button" ||
+        found.widget.id === targetStackId
+      )
+        return;
+      if (found.parentStackId === targetStackId) return;
+
+      const sourceWidget = found.widget;
+      const sourceParentId = found.parentStackId;
       const child = {
-        id: widget.id,
-        type: widget.type,
-        title: widget.title,
-        config: structuredClone(widget.config || {}),
+        id: sourceWidget.id,
+        type: sourceWidget.type,
+        title: sourceWidget.title,
+        config: structuredClone(sourceWidget.config || {}),
       };
-      widgets = widgets
-        .filter((item: any) => item.id !== widget.id)
-        .map((item: any) =>
-          item.id === stack.id
-            ? { ...item, children: [...(item.children || []), child] }
-            : item,
-        );
-      selected = { id: stack.id, childId: child.id };
+
+      if (sourceParentId) {
+        widgets = widgets.map((item: any) => {
+          if (item.id === sourceParentId) {
+            return {
+              ...item,
+              children: (item.children || []).filter(
+                (c: any) => c.id !== widgetId,
+              ),
+            };
+          }
+          if (item.id === targetStackId) {
+            return { ...item, children: [...(item.children || []), child] };
+          }
+          return item;
+        });
+      } else {
+        widgets = widgets
+          .filter((item: any) => item.id !== widgetId)
+          .map((item: any) =>
+            item.id === targetStackId
+              ? { ...item, children: [...(item.children || []), child] }
+              : item,
+          );
+      }
+
+      selected = { id: targetStackId, childId: child.id };
       dirty = true;
       toast.info(m.editor_button_moved_stack());
-    }
   }
 
   function dragOverStack(event: DragEvent) {
@@ -443,6 +487,22 @@
       newChildren.splice(adjustedTarget, 0, moved);
       return { ...widget, children: newChildren };
     });
+    dirty = true;
+  }
+
+  function updateStackChildren(
+    stackId: string,
+    items: any[],
+    finalized: boolean,
+  ) {
+    widgets = widgets.map((widget: any) =>
+      widget.id === stackId ? { ...widget, children: items } : widget,
+    );
+    if (!finalized) return;
+
+    if (selected?.childId && items.some((item) => item.id === selected?.childId)) {
+      selected = { id: stackId, childId: selected.childId };
+    }
     dirty = true;
   }
 
@@ -698,7 +758,7 @@
             onDeleteChild={(event, child) => deleteWidget(widget, child.id)}
             onDropChild={(event) => dropIntoStack(event, widget)}
             onDragOverChild={dragOverStack}
-            onReorderChild={reorderChildInStack}
+            onStackDnd={updateStackChildren}
           />
         </DashboardWidgetFrame>
       {/each}

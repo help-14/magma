@@ -84,7 +84,10 @@ export interface StackWidgetProps {
   onDeleteChild?: (event: Event, child: Widget) => void
   onDropChild?: (event: DragEvent) => void
   onDragOverChild?: (event: DragEvent) => void
+  onDragWidget?: (event: DragEvent, child: Widget) => void
+  onDragEnd?: (event: DragEvent) => void
   onReorderChild?: (stackId: string, childId: string, targetIndex: number) => void
+  onStackDnd?: (stackId: string, items: Widget[], finalized: boolean) => void
 }
 
 export interface DockerStatusWidgetProps {
@@ -146,7 +149,10 @@ export interface WidgetRendererProps {
   onDeleteChild?: (event: Event, child: Widget) => void
   onDropChild?: (event: DragEvent) => void
   onDragOverChild?: (event: DragEvent) => void
+  onDragWidget?: (event: DragEvent, child: Widget) => void
+  onDragEnd?: (event: DragEvent) => void
   onReorderChild?: (stackId: string, childId: string, targetIndex: number) => void
+  onStackDnd?: (stackId: string, items: Widget[], finalized: boolean) => void
 }
 
 export interface WidgetTemplate {

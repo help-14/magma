@@ -1,7 +1,7 @@
 FROM node:26-alpine AS deps
 WORKDIR /app
 ENV CI=true
-ARG PNPM_VERSION=11.10.0
+ARG PNPM_VERSION=11.17.0
 RUN npm install -g pnpm@${PNPM_VERSION}
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
@@ -13,7 +13,7 @@ RUN pnpm build
 FROM node:26-alpine AS prod-deps
 WORKDIR /app
 ENV CI=true
-ARG PNPM_VERSION=11.10.0
+ARG PNPM_VERSION=11.17.0
 RUN npm install -g pnpm@${PNPM_VERSION}
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --prod --frozen-lockfile && pnpm store prune

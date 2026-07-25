@@ -10,7 +10,6 @@
     selected = false,
     onSelect = () => {},
     onDelete = () => {},
-    onPointerDown = () => {},
     children
   }: {
     child: any
@@ -18,7 +17,6 @@
     selected?: boolean
     onSelect?: (event: Event, child: any) => void
     onDelete?: (event: MouseEvent, child: any) => void
-    onPointerDown?: (event: PointerEvent, child: any) => void
     children?: Snippet
   } = $props()
 </script>
@@ -30,9 +28,6 @@
     selected && 'shadow-[0_0_0_2px_var(--accent),0_18px_46px_rgb(0_0_0/26%)]'
   ]}
   role="listitem"
-  onpointerdown={(event: PointerEvent) => {
-    if (editMode) onPointerDown(event, child)
-  }}
   onclickcapture={(event: MouseEvent) => {
     if (editMode && event.button === 0) onSelect(event, child)
   }}
