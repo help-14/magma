@@ -13,6 +13,7 @@ dashboard:
           h: 4
           config:
             hideTitle: true
+            interface: small
         - id: weather-main
           type: weather
           title: Weather
