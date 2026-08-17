@@ -113,7 +113,9 @@
     idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
-      <div class="grid grid-cols-3 items-center w-full gap-x-2 gap-y-1 p-3">
+      <div
+        class="grid grid-cols-[max-content_1fr_max-content] items-center w-full gap-x-2 gap-y-1 p-3"
+      >
         <span class="text-xs">{m.claude_five_hour()}</span>
         <Progress value={fiveHourPct} class="h-2 grow" />
         <span class="text-xs text-right">{fiveHourPct.toFixed(0)}%</span>
