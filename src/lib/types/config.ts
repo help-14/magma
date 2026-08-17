@@ -64,6 +64,7 @@ export interface ChatGPTConfig {
 }
 
 export interface ClaudeConfig {
+  interface?: WidgetInterface
   cookie?: string
   organizationId?: string
   refreshInterval?: number

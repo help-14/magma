@@ -95,6 +95,7 @@
   "chatgpt_resets_count": "Resets: {count}",
   "claude_five_hour": "5-hour",
   "claude_seven_day": "7-day",
+  "claude_no_active_session": "No active sesion",
   "claude_resets": "Resets {time}",
   "claude_requests": "Requests",
   "claude_tokens": "Tokens",

@@ -50,12 +50,21 @@
   );
 
   let size = $derived(
-    (widget.w ?? 0) <= 2 && (widget.h ?? 0) <= 2 ? "small" : "medium",
+    widget.config?.interface ??
+      ((widget.w ?? 0) <= 2 && (widget.h ?? 0) <= 2 ? "small" : "medium"),
   );
 
   function formatTime(iso: string): string {
-    const d = new Date(iso);
-    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    const resetDate = new Date(iso);
+    const timeStr = resetDate.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    if (resetDate.getTime() - new Date().getTime() > 86400) {
+      const dayStr = resetDate.toLocaleDateString([], { weekday: "short" });
+      return `${dayStr} ${timeStr}`;
+    }
+    return timeStr;
   }
 
   async function doFetch() {
@@ -95,38 +104,31 @@
   });
 </script>
 
-<div class="relative flex flex-col w-full min-w-0 min-h-0 h-full">
+<div
+  class="relative flex flex-col w-full min-w-0 min-h-0 h-full justify-center"
+>
   <WidgetStateWrapper
     state={widgetState}
     {errorMsg}
     idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
-      <div
-        class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 gap-y-3 items-center justify-center h-full p-3"
-      >
+      <div class="grid grid-cols-3 items-center w-full gap-x-2 gap-y-1 p-3">
         <span class="text-xs">{m.claude_five_hour()}</span>
         <Progress value={fiveHourPct} class="h-2 grow" />
         <span class="text-xs text-right">{fiveHourPct.toFixed(0)}%</span>
+        <span class="text-xs text-muted-foreground/60 italic col-span-3 mb-3">
+          {fiveHourReset
+            ? m.claude_resets({ time: fiveHourReset })
+            : "No active sesion"}
+        </span>
         {#if size !== "small"}
-          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-            >{m.claude_resets({ time: fiveHourReset })}</span
-          >
-        {/if}
-        <span class="text-xs mt-3">{m.claude_seven_day()}</span>
-        <Progress value={sevenDayPct} class="h-2 mt-1" />
-        <span class="text-xs text-right mt-1">{sevenDayPct.toFixed(0)}%</span>
-        {#if size !== "small"}
-          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-            >{m.claude_resets({ time: sevenDayReset })}</span
-          >
-          {#if data?.email}
-            <div
-              class="flex items-center gap-1 text-xs text-muted-foreground mt-2 col-span-3"
-            >
-              <span>{data.email}</span>
-            </div>
-          {/if}
+          <span class="text-xs">{m.claude_seven_day()}</span>
+          <Progress value={sevenDayPct} class="h-2 grow" />
+          <span class="text-xs text-right">{sevenDayPct.toFixed(0)}%</span>
+          <span class="text-xs text-muted-foreground/60 italic col-span-3">
+            {m.claude_resets({ time: sevenDayReset })}
+          </span>
         {/if}
       </div>
     {/snippet}

@@ -167,6 +167,13 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
   ],
   claude: [
     {
+      key: 'interface',
+      label: m.properties_field_interface,
+      type: 'select',
+      default: 'medium',
+      options: displaySizes
+    },
+    {
       key: 'cookie',
       label: m.properties_field_cookie,
       type: 'password',
