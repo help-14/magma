@@ -60,7 +60,7 @@
       hour: "numeric",
       minute: "2-digit",
     });
-    if (resetDate.getTime() - new Date().getTime() > 86400) {
+    if (resetDate.getDate() !== new Date().getDate()) {
       const dayStr = resetDate.toLocaleDateString([], { weekday: "short" });
       return `${dayStr} ${timeStr}`;
     }
