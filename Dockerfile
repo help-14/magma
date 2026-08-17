@@ -25,6 +25,9 @@ ENV NODE_ENV=production
 ENV CONFIG_DIR=/config
 ENV HOST=0.0.0.0
 ENV PORT=3000
+RUN apk add --no-cache \
+    --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing \
+    bash curl-impersonate
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=prod-deps /app/package.json ./package.json
 COPY --from=builder /app/build ./build

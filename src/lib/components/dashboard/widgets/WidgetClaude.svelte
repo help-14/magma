@@ -73,7 +73,8 @@
       widgetState = "content";
     } catch (err) {
       widgetState = "error";
-      errorMsg = err instanceof Error ? toErrorMessage(err.message) : String(err);
+      errorMsg =
+        err instanceof Error ? toErrorMessage(err.message) : String(err);
     }
   }
 
@@ -108,8 +109,7 @@
         <Progress value={fiveHourPct} class="h-2 grow" />
         <span class="text-xs text-right">{fiveHourPct.toFixed(0)}%</span>
         {#if size !== "small"}
-          <span
-            class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
             >{m.claude_resets({ time: fiveHourReset })}</span
           >
         {/if}
@@ -117,13 +117,12 @@
         <Progress value={sevenDayPct} class="h-2 mt-1" />
         <span class="text-xs text-right mt-1">{sevenDayPct.toFixed(0)}%</span>
         {#if size !== "small"}
-          <span
-            class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
             >{m.claude_resets({ time: sevenDayReset })}</span
           >
           {#if data?.email}
             <div
-              class="flex items-center gap-1 text-xs text-muted-foreground mt-3 col-span-3"
+              class="flex items-center gap-1 text-xs text-muted-foreground mt-2 col-span-3"
             >
               <span>{data.email}</span>
             </div>

@@ -20,6 +20,9 @@ const IMPERSONATE_BINARIES = [
   '/usr/local/bin/curl_chrome124',
   '/usr/local/bin/curl_chrome120',
   '/usr/local/bin/curl_chrome116',
+  '/usr/bin/curl_chrome131',
+  '/usr/bin/curl_chrome124',
+  '/usr/bin/curl_chrome120',
   '/usr/bin/curl_chrome116',
 ]
 
