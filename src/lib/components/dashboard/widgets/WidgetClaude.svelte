@@ -116,22 +116,22 @@
       <div
         class="grid grid-cols-[max-content_1fr_max-content] items-center w-full gap-x-2 gap-y-1 p-3"
       >
-        <span class="text-xs">{m.claude_five_hour()}</span>
-        <Progress value={fiveHourPct} class="h-2 grow" />
-        <span class="text-xs text-right">{fiveHourPct.toFixed(0)}%</span>
-        <span class="text-xs text-muted-foreground/60 italic col-span-3 mb-2">
-          {fiveHourReset
-            ? m.claude_resets({ time: fiveHourReset })
-            : "No active sesion"}
-        </span>
         {#if size !== "small"}
-          <span class="text-xs">{m.claude_seven_day()}</span>
-          <Progress value={sevenDayPct} class="h-2 grow" />
-          <span class="text-xs text-right">{sevenDayPct.toFixed(0)}%</span>
-          <span class="text-xs text-muted-foreground/60 italic col-span-3">
-            {m.claude_resets({ time: sevenDayReset })}
+          <span class="text-xs">{m.claude_five_hour()}</span>
+          <Progress value={fiveHourPct} class="h-2 grow" />
+          <span class="text-xs text-right">{fiveHourPct.toFixed(0)}%</span>
+          <span class="text-xs text-muted-foreground/60 italic col-span-3 mb-2">
+            {fiveHourReset
+              ? m.claude_resets({ time: fiveHourReset })
+              : "No active sesion"}
           </span>
         {/if}
+        <span class="text-xs">{m.claude_seven_day()}</span>
+        <Progress value={sevenDayPct} class="h-2 grow" />
+        <span class="text-xs text-right">{sevenDayPct.toFixed(0)}%</span>
+        <span class="text-xs text-muted-foreground/60 italic col-span-3">
+          {m.claude_resets({ time: sevenDayReset })}
+        </span>
       </div>
     {/snippet}
   </WidgetStateWrapper>

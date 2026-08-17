@@ -56,7 +56,9 @@
     const hours = seconds / 3600;
     if (hours < 24) {
       const h = Math.round(hours);
-      return h === 1 ? m.chatgpt_hour_usage({ hours: h }) : m.chatgpt_hours_usage({ hours: h });
+      return h === 1
+        ? m.chatgpt_hour_usage({ hours: h })
+        : m.chatgpt_hours_usage({ hours: h });
     }
     const days = Math.round(hours / 24);
     return m.chatgpt_days_usage({ days });
@@ -79,7 +81,10 @@
 
   function formatResetTime(seconds: number): string {
     const resetDate = new Date(Date.now() + seconds * 1000);
-    const timeStr = resetDate.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    const timeStr = resetDate.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    });
     if (seconds > 86400) {
       const dayStr = resetDate.toLocaleDateString([], { weekday: "short" });
       return `${dayStr} ${timeStr}`;
@@ -102,7 +107,8 @@
       widgetState = "content";
     } catch (err) {
       widgetState = "error";
-      errorMsg = err instanceof Error ? toErrorMessage(err.message) : String(err);
+      errorMsg =
+        err instanceof Error ? toErrorMessage(err.message) : String(err);
     }
   }
 
@@ -135,38 +141,39 @@
       <div
         class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 gap-y-3 items-center justify-center p-3"
       >
-          <span class="text-xs">{primaryLabel}</span>
-          <Progress value={primaryPct} class="h-2 grow" />
-          <span class="text-xs text-right">{primaryPct}%</span>
-          <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-            >{m.chatgpt_resets({ time: primaryReset })}</span
+        <span class="text-xs">{primaryLabel}</span>
+        <Progress value={primaryPct} class="h-2 grow" />
+        <span class="text-xs text-right">{primaryPct}%</span>
+        <span class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+          >{m.chatgpt_resets({ time: primaryReset })}</span
+        >
+        {#if hasSecondary}
+          <span class="text-xs">{m.chatgpt_days_usage({ days: 7 })}</span>
+          <Progress value={secondaryPct} class="h-2" />
+          <span class="text-xs text-right">{secondaryPct}%</span>
+          {#if size !== "small"}
+            <span
+              class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+              >{m.chatgpt_resets({ time: secondaryReset })}</span
+            >
+          {/if}
+        {/if}
+        {#if size !== "small"}
+          <div
+            class="flex items-center gap-1 text-xs text-muted-foreground col-span-3"
           >
-          {#if hasSecondary}
-            <span class="text-xs">{m.chatgpt_days_usage({ days: 7 })}</span>
-            <Progress value={secondaryPct} class="h-2" />
-            <span class="text-xs text-right">{secondaryPct}%</span>
-            {#if size !== "small"}
-              <span
-                class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-                >{m.chatgpt_resets({ time: secondaryReset })}</span
+            {planType}
+            {#if creditsBalance}
+              <span>|</span>
+              <span>{m.chatgpt_credits({ balance: creditsBalance })}</span>
+            {/if}
+            {#if resetCreditsCount > 0}
+              <span>|</span>
+              <span>{m.chatgpt_resets_count({ count: resetCreditsCount })}</span
               >
             {/if}
-          {/if}
-          {#if size !== "small"}
-            <div
-              class="flex items-center gap-1 text-xs text-muted-foreground col-span-3"
-            >
-              {planType}
-              {#if creditsBalance}
-                <span>|</span>
-                <span>{m.chatgpt_credits({ balance: creditsBalance })}</span>
-              {/if}
-              {#if resetCreditsCount > 0}
-                <span>|</span>
-                <span>{m.chatgpt_resets_count({ count: resetCreditsCount })}</span>
-              {/if}
-            </div>
-          {/if}
+          </div>
+        {/if}
       </div>
     {/snippet}
   </WidgetStateWrapper>
