@@ -2,7 +2,7 @@
   import { m } from "$lib/paraglide/messages.js";
   import { toErrorMessage } from "$lib/errors.js";
   import { Progress } from "$lib/components/ui/progress/index.js";
-  import { claudeAiUsage, claudeApiUsage } from "$lib/remotes/claude.remote.js";
+  import { claudeAiUsage } from "$lib/remotes/claude.remote.js";
   import { getWidgetRefreshContext } from "$lib/components/dashboard/widget-refresh-context.js";
   import WidgetStateWrapper from "./WidgetStateWrapper.svelte";
   import type { ClaudeWidgetProps } from "$lib/types/widget.js";
@@ -14,8 +14,8 @@
   let errorMsg = $state("");
   let data: any = $state(null);
 
-  let provider = $derived(widget.config?.provider ?? "claude.ai");
-  let authToken = $derived(widget.config?.authToken || "");
+  let cookie = $derived(widget.config?.cookie || "");
+  let organizationId = $derived(widget.config?.organizationId || "");
   let refreshInterval = $derived(widget.config?.refreshInterval ?? 600);
 
   let fiveHourPct = $derived(
@@ -39,30 +39,14 @@
       : 0,
   );
   let fiveHourReset = $derived(
-    data?.fiveHour?.resets_at ? formatTime(data.fiveHour.resets_at) : "",
+    data?.fiveHour?.reset_at || data?.fiveHour?.resets_at
+      ? formatTime(data.fiveHour?.reset_at || data.fiveHour?.resets_at)
+      : "",
   );
   let sevenDayReset = $derived(
-    data?.sevenDay?.resets_at ? formatTime(data.sevenDay.resets_at) : "",
-  );
-
-  let requestsPct = $derived(
-    data?.requestsLimit
-      ? ((data.requestsLimit - data.requestsRemaining) / data.requestsLimit) *
-          100
-      : 0,
-  );
-  let tokensPct = $derived(
-    data?.tokensLimit
-      ? ((data.tokensLimit - data.tokensRemaining) / data.tokensLimit) * 100
-      : 0,
-  );
-  let requestsUsed = $derived(
-    data?.requestsLimit != null
-      ? data.requestsLimit - data.requestsRemaining
-      : 0,
-  );
-  let tokensUsed = $derived(
-    data?.tokensLimit != null ? data.tokensLimit - data.tokensRemaining : 0,
+    data?.sevenDay?.reset_at || data?.sevenDay?.resets_at
+      ? formatTime(data.sevenDay?.reset_at || data.sevenDay?.resets_at)
+      : "",
   );
 
   let size = $derived(
@@ -74,19 +58,12 @@
     return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   }
 
-  function formatTokenCount(n: number): string {
-    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-    if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
-    return n.toString();
-  }
-
   async function doFetch() {
-    if (!authToken) return;
+    if (!cookie) return;
     widgetState = "loading";
     errorMsg = "";
     try {
-      const fn = provider === "claude.ai" ? claudeAiUsage : claudeApiUsage;
-      const result = await fn({ authToken });
+      const result = await claudeAiUsage({ cookie, organizationId });
       if (!result.ok) {
         widgetState = "error";
         errorMsg = toErrorMessage(result.error || "");
@@ -101,7 +78,7 @@
   }
 
   $effect(() => {
-    if (!authToken) {
+    if (!cookie) {
       widgetState = "idle";
       data = null;
       return;
@@ -124,54 +101,35 @@
     idleMessage={m.widget_state_configure()}
   >
     {#snippet children()}
-      {#if provider === "claude.ai"}
-        <div
-          class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 gap-y-3 items-center justify-center h-full p-3"
-        >
-          <span class="text-xs">{m.claude_five_hour()}</span>
-          <Progress value={fiveHourPct} class="h-2 grow" />
-          <span class="text-xs text-right">{fiveHourPct.toFixed(0)}%</span>
-          {#if size !== "small"}
-            <span
-              class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-              >{m.claude_resets({ time: fiveHourReset })}</span
-            >
-          {/if}
-          <span class="text-xs mt-3">{m.claude_seven_day()}</span>
-          <Progress value={sevenDayPct} class="h-2 mt-1" />
-          <span class="text-xs text-right mt-1">{sevenDayPct.toFixed(0)}%</span>
-          {#if size !== "small"}
-            <span
-              class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
-              >{m.claude_resets({ time: sevenDayReset })}</span
-            >
-            {#if data?.email}
-              <div
-                class="flex items-center gap-1 text-xs text-muted-foreground mt-3 col-span-3"
-              >
-                <span>{data.email}</span>
-              </div>
-            {/if}
-          {/if}
-        </div>
-      {:else}
-        <div
-          class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 items-center justify-center h-full p-3"
-        >
-          <span class="text-xs">{m.claude_requests()}</span>
-          <Progress value={requestsPct} class="h-2 grow" />
-          <span class="text-xs text-right"
-            >{requestsUsed}/{data?.requestsLimit ?? 0}</span
+      <div
+        class="grid grid-cols-[max-content_1fr_max-content] gap-x-2 gap-y-3 items-center justify-center h-full p-3"
+      >
+        <span class="text-xs">{m.claude_five_hour()}</span>
+        <Progress value={fiveHourPct} class="h-2 grow" />
+        <span class="text-xs text-right">{fiveHourPct.toFixed(0)}%</span>
+        {#if size !== "small"}
+          <span
+            class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+            >{m.claude_resets({ time: fiveHourReset })}</span
           >
-          <span class="text-xs mt-3">{m.claude_tokens()}</span>
-          <Progress value={tokensPct} class="h-2 mt-1" />
-          <span class="text-xs text-right mt-1"
-            >{formatTokenCount(tokensUsed)}/{formatTokenCount(
-              data?.tokensLimit ?? 0,
-            )}</span
+        {/if}
+        <span class="text-xs mt-3">{m.claude_seven_day()}</span>
+        <Progress value={sevenDayPct} class="h-2 mt-1" />
+        <span class="text-xs text-right mt-1">{sevenDayPct.toFixed(0)}%</span>
+        {#if size !== "small"}
+          <span
+            class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
+            >{m.claude_resets({ time: sevenDayReset })}</span
           >
-        </div>
-      {/if}
+          {#if data?.email}
+            <div
+              class="flex items-center gap-1 text-xs text-muted-foreground mt-3 col-span-3"
+            >
+              <span>{data.email}</span>
+            </div>
+          {/if}
+        {/if}
+      </div>
     {/snippet}
   </WidgetStateWrapper>
 </div>

@@ -64,8 +64,8 @@ export interface ChatGPTConfig {
 }
 
 export interface ClaudeConfig {
-  provider?: 'claude.ai' | 'api'
-  authToken?: string
+  cookie?: string
+  organizationId?: string
   refreshInterval?: number
 }
 

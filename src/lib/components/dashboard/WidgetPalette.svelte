@@ -37,7 +37,7 @@
       title: m.widget_name_claude(),
       w: 6,
       h: 7,
-      config: { provider: 'claude.ai', refreshInterval: 600 }
+      config: { refreshInterval: 600 }
     },
     {
       type: 'deepseek',

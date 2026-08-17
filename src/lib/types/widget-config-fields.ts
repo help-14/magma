@@ -167,20 +167,18 @@ export const widgetConfigFields: Record<string, ConfigFieldDescriptor[]> = {
   ],
   claude: [
     {
-      key: 'provider',
-      label: m.properties_field_provider,
-      type: 'select',
-      default: 'claude.ai',
-      options: [
-        { label: m.properties_option_claude_session, value: 'claude.ai' },
-        { label: m.properties_option_api_key, value: 'api' }
-      ]
+      key: 'cookie',
+      label: m.properties_field_cookie,
+      type: 'password',
+      default: '',
+      placeholder: m.properties_placeholder_claude_cookie
     },
     {
-      key: 'authToken',
-      label: m.properties_field_auth_token,
-      type: 'password',
-      default: ''
+      key: 'organizationId',
+      label: m.properties_field_organization_id,
+      type: 'text',
+      default: '',
+      placeholder: m.properties_placeholder_claude_org
     },
     refreshInterval(600)
   ],
