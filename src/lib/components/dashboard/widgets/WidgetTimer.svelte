@@ -106,7 +106,7 @@
       {mediumDateTimeStr}
     </span>
     {#if widget.config?.showGreeting ?? true}
-      <strong class="text-3xl">
+      <strong class="text-2xl">
         {greetingStr}
       </strong>
     {/if}

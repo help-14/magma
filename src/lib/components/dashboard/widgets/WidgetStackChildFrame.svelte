@@ -19,6 +19,8 @@
     onDelete?: (event: MouseEvent, child: any) => void
     children?: Snippet
   } = $props()
+
+  let deleteBtn = $state<HTMLButtonElement | null>(null)
 </script>
 
 <div
@@ -29,11 +31,14 @@
   ]}
   role="listitem"
   onclickcapture={(event: MouseEvent) => {
-    if (editMode && event.button === 0) onSelect(event, child)
+    if (editMode && event.button === 0 && !deleteBtn?.contains(event.target as Node)) {
+      onSelect(event, child)
+    }
   }}
 >
   {#if editMode}
     <Button
+      bind:ref={deleteBtn}
       variant="ghost"
       size="icon"
       class="absolute top-1.5 right-1.5 z-5 size-7 border border-white/18 rounded-lg bg-red-950/90 text-red-100 cursor-pointer transition-all duration-100 hover:bg-red-800/95 active:scale-96 focus-visible:opacity-100 opacity-100"

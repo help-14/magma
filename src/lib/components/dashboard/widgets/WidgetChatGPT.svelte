@@ -151,7 +151,7 @@
           <span class="text-xs">{m.chatgpt_days_usage({ days: 7 })}</span>
           <Progress value={secondaryPct} class="h-2" />
           <span class="text-xs text-right">{secondaryPct}%</span>
-          {#if size !== "small"}
+          {#if secondaryReset}
             <span
               class="text-xs text-muted-foreground/60 italic col-span-3 -mt-2"
               >{m.chatgpt_resets({ time: secondaryReset })}</span
